@@ -1037,6 +1037,28 @@ if(!S.lists) S.lists={trips:[],goals:[],todo:[],buy:[]};  // migrate older saves
   S._v24=true; persist();
 })();
 
+// migration v25: Paracosm — name the two game apps under their sections
+(function(){
+  if(S._v25) return;
+  const para=(S.projects||[]).find(p=>p.id==='paracosm');
+  if(para){ if(!Array.isArray(para.nodes))para.nodes=[];
+    // Voracity: give the existing node its full name + canon note, bucket = In development
+    let vor=para.nodes.find(n=>/voracit/i.test(n.t||''));
+    if(!vor){ vor={t:''}; para.nodes.push(vor); }
+    vor.t='Voracity — resource & hive game';
+    vor.note='Hive-construction resource city-builder — FIRST app in dev. Sun-as-stealth braid, Queen as central ganglion, gene/ploidy system, King-mate organ, inside-out carapace endgame, star-type meta.';
+    vor.b='In development';
+    // The Civ Game (Unity 4X) — add if not already present
+    if(!para.nodes.some(n=>/civ game|unity 4x/i.test(n.t||''))){
+      para.nodes.push({t:'The Civ Game — Unity 4X',
+        note:'Unity-only 4X — Civ + SimCity + Stellaris. Build-is-vote (Kingdoms-Reborn cards = arcologies), Stellaris-modeled economy, STC growth lineage (Capitol → colony bud → new STC world), antithesis cross-game engine.',
+        b:'In development'});
+    }
+    para.up=Date.now();
+  }
+  S._v25=true; persist();
+})();
+
 /* ---------- date helpers ---------- */
 const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 function ymd(d){return d.toISOString().slice(0,10);}
