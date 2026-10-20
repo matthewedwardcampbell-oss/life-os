@@ -56,6 +56,7 @@
   .cbub.me{align-self:flex-end;background:var(--purple);color:#fff;border-bottom-right-radius:5px}
   .cbub.ai{align-self:flex-start;background:var(--sky-2);color:var(--ink);border-bottom-left-radius:5px}
   .cbub.err{align-self:flex-start;background:rgba(224,122,122,.14);color:#f0aeae;border:1px solid rgba(224,122,122,.3)}
+  .cbub.tool{align-self:center;background:rgba(132,184,202,.13);color:var(--selenite);font-size:11.5px;border:1px solid rgba(132,184,202,.28);max-width:92%;text-align:center;border-radius:10px}
   .ctyping{align-self:flex-start;color:var(--ink-faint);font-size:13px;padding:4px 10px;letter-spacing:2px}
   .chcompose{display:flex;gap:8px;align-items:flex-end;padding-top:9px;border-top:1px solid var(--sky-2)}
   .chcompose textarea{flex:1;min-width:0;resize:none;max-height:120px;background:var(--sky-0);border:1px solid var(--sky-3);border-radius:12px;color:var(--ink);font-family:inherit;font-size:14px;padding:10px 12px;outline:none;line-height:1.4}
@@ -2962,8 +2963,44 @@ function lifeOSContext(){ const L=[];
     const inc=mo.filter(x=>x.type==='income').reduce((a,b)=>a+(+b.amount||0),0), exp=mo.filter(x=>x.type==='expense').reduce((a,b)=>a+(+b.amount||0),0);
     L.push('This month ledger: income $'+inc.toFixed(0)+', expense $'+exp.toFixed(0)+', net $'+(inc-exp).toFixed(0)); } }catch(e){}
   try{ const tr=(S.lists&&S.lists.trips)||[]; if(tr.length)L.push('Planned trips: '+tr.map(t=>t.t).join(', ')); }catch(e){}
+  try{ const crm=S.crm||{}, ks=Object.keys(crm);
+    if(ks.length)L.push('Current CRM contacts: '+ks.map(k=>{const r=crm[k]||{};return (r.name||k)+(r.status?' ['+r.status+']':'');}).slice(0,80).join(', ')); }catch(e){}
+  try{ const evs=[], t0=new Date();
+    for(let i=0;i<14;i++){ const d=new Date(t0); d.setDate(d.getDate()+i); const key=ymd(d); const m=merged(key);
+      [...(m.work||[]),...(m.evening||[])].forEach(e=>{ if(e&&e.t) evs.push(key+' '+(e.time||'')+' — '+e.t); }); }
+    if(evs.length)L.push('Upcoming events (next 14 days):\n'+evs.slice(0,80).join('\n')); }catch(e){}
   L.push('Standard week: Tue–Sat morning gym+meal prep+CRM then a nap then afternoon massage; Sunday massage AM + gaming PM; Monday full rest.');
   return L.join('\n'); }
+
+/* ---- actions the Ansible can take (function calling) ---- */
+function crmUpsert(a){ a=a||{}; const name=(a.name||'').trim(); if(!name)return{ok:false,error:'name required'};
+  const k=name.toLowerCase(); const r=S.crm[k]||(S.crm[k]={manual:true,name});
+  r.manual=true; r.name=name;
+  if(a.phone!=null&&a.phone!=='')r.phone=a.phone;
+  if(a.city!=null&&a.city!=='')r.city=a.city;
+  if(a.status!=null&&a.status!==''){ const s=(''+a.status).toLowerCase(); r.status=['new','active','lapsed'].includes(s)?s:'new'; } else if(!r.status){ r.status='new'; }
+  if(a.next!=null&&a.next!=='')r.next=a.next;
+  if(a.notes!=null&&a.notes!=='')r.notes=a.notes;
+  persist(); try{ if(activeView&&activeView()==='trust')renderTrust(); }catch(e){}
+  return {ok:true,name:name,status:r.status}; }
+const ANSIBLE_TOOLS=[{function_declarations:[
+  {name:'upsert_crm',description:'Create or update a CRM client record in Matthew’s Life OS. Use when he asks to add or update a client — e.g. from a calendar event like "Adam outcall" (that means a client named Adam, an outcall session). Call this once per client.',
+   parameters:{type:'OBJECT',properties:{
+     name:{type:'STRING',description:'Client name, e.g. "Adam"'},
+     status:{type:'STRING',description:'one of: new, active, lapsed (default new)'},
+     city:{type:'STRING',description:'city if known'},
+     phone:{type:'STRING',description:'phone if known'},
+     next:{type:'STRING',description:'next/last session date as YYYY-MM-DD if known'},
+     notes:{type:'STRING',description:'short note, e.g. "outcall"'}
+   },required:['name']}}
+]}];
+function ansibleExec(name,args){ if(name==='upsert_crm')return crmUpsert(args); return {ok:false,error:'unknown action: '+name}; }
+function ansibleToolNote(name,args,res){ if(name==='upsert_crm'){ return res.ok?('✓ CRM: saved '+res.name+(args&&args.notes?' — '+args.notes:'')+' ['+res.status+']'):('✗ CRM save failed: '+(res.error||'')); } return name; }
+async function geminiCall(c,sys,contents){ const body={system_instruction:{parts:[{text:sys}]},contents,tools:ANSIBLE_TOOLS,generationConfig:{temperature:0.6}};
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(c.cfg.model)+':generateContent?key='+encodeURIComponent(c.cfg.key),
+    {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const j=await r.json(); if(!r.ok)return{error:'Gemini error: '+((j&&j.error&&j.error.message)||('HTTP '+r.status))};
+  return {parts:(((j.candidates||[])[0]||{}).content||{}).parts||[]}; }
 
 function renderChat(){ const c=chatCfg();
   document.getElementById('chsub').textContent = c.cfg.key
@@ -2975,7 +3012,7 @@ function renderChat(){ const c=chatCfg();
       ? 'Ask the Ansible anything — or about your Life OS: “what am I low on?”, “what’s my fortnight focus?”'
       : '<b>Set up the Ansible (free):</b><br>1) Get a key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com</a> → “Get API key”.<br>2) Tap ⚙ above and paste it.<br><br>The Ansible runs on Gemini’s free tier.')+'</div>';
     return; }
-  box.innerHTML=c.msgs.map(m=>'<div class="cbub '+(m.role==='user'?'me':(m.role==='error'?'err':'ai'))+'">'+esc(m.content)+'</div>').join('');
+  box.innerHTML=c.msgs.map(m=>'<div class="cbub '+(m.role==='user'?'me':(m.role==='error'?'err':(m.role==='tool'?'tool':'ai')))+'">'+esc(m.content)+'</div>').join('');
   box.scrollTop=box.scrollHeight; }
 
 function chatTyping(on){ const box=document.getElementById('chMsgs'); let t=document.getElementById('ctyping');
@@ -2985,19 +3022,34 @@ function chatTyping(on){ const box=document.getElementById('chMsgs'); let t=docu
 async function sendChat(text){ const c=chatCfg(); text=(text||'').trim(); if(!text)return;
   if(!c.cfg.key){ openChatSettings(); return; }
   c.msgs.push({role:'user',content:text}); persist(); renderChat(); chatTyping(true);
-  const sys='You are the Ansible — Matthew’s chief-of-staff / orchestrator AI living inside his personal "Life OS" app. Matthew is a mobile massage therapist in Colorado (he is AuDHD — keep replies clear, concrete, and not overwhelming). Be concise, warm, and practical; help him route his day, his resources, and his goals. Use US units and dollars.'
+  const sys='You are the Ansible — Matthew’s chief-of-staff / orchestrator AI living inside his personal "Life OS" app. Matthew is a mobile massage therapist in Colorado (he is AuDHD — keep replies clear, concrete, and not overwhelming). Be concise, warm, and practical.\n'
+    + 'You can take actions in his app via tools. When he asks to add or update a client — including recognizing a client from a calendar event such as "Adam outcall" (a client named Adam, an outcall session) — call upsert_crm. Pull the name and any details (notes like "outcall", dates, city) from his request or his calendar. After acting, confirm in one short line what you did. Only act when he asks; do not invent clients. Use US units and dollars.'
     + (c.cfg.aware ? ('\n\nHis current Life OS data:\n'+lifeOSContext()) : '');
-  const contents=c.msgs.filter(m=>m.role==='user'||m.role==='model').slice(-20)
+  let contents=c.msgs.filter(m=>m.role==='user'||m.role==='model').slice(-20)
     .map(m=>({role:(m.role==='user'?'user':'model'),parts:[{text:m.content}]}));
   try{
-    const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(c.cfg.model)+':generateContent?key='+encodeURIComponent(c.cfg.key),
-      {method:'POST',headers:{'Content-Type':'application/json'},
-       body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents,generationConfig:{temperature:0.7}})});
-    const j=await r.json(); chatTyping(false);
-    if(!r.ok){ const em=(j&&j.error&&j.error.message)||('HTTP '+r.status); c.msgs.push({role:'error',content:'Gemini error: '+em}); persist(); renderChat(); return; }
-    const parts=(((j.candidates||[])[0]||{}).content||{}).parts;
-    const out=parts&&parts.length?parts.map(p=>p.text||'').join(''):'(no response — try again)';
-    c.msgs.push({role:'model',content:out}); persist(); renderChat();
+    for(let round=0; round<4; round++){
+      const r=await geminiCall(c,sys,contents);
+      if(r.error){ chatTyping(false); c.msgs.push({role:'error',content:r.error}); persist(); renderChat(); return; }
+      const parts=r.parts||[];
+      const fcs=parts.filter(p=>p.functionCall).map(p=>p.functionCall);
+      const txt=parts.filter(p=>p.text).map(p=>p.text).join('');
+      if(txt){ c.msgs.push({role:'model',content:txt}); }
+      if(fcs.length){
+        contents.push({role:'model',parts:parts});
+        const respParts=[];
+        for(const fc of fcs){ const res=ansibleExec(fc.name,fc.args||{});
+          c.msgs.push({role:'tool',content:ansibleToolNote(fc.name,fc.args,res)});
+          respParts.push({functionResponse:{name:fc.name,response:res}}); }
+        persist(); renderChat(); chatTyping(true);
+        contents.push({role:'user',parts:respParts});
+        continue; // let it summarize after acting
+      }
+      chatTyping(false);
+      if(!txt) c.msgs.push({role:'model',content:'(no response — try again)'});
+      persist(); renderChat(); return;
+    }
+    chatTyping(false); persist(); renderChat();
   }catch(e){ chatTyping(false); c.msgs.push({role:'error',content:'Network error: '+e.message+'. You need internet, and double-check your API key in ⚙.'}); persist(); renderChat(); }
 }
 
