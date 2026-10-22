@@ -1059,6 +1059,17 @@ if(!S.lists) S.lists={trips:[],goals:[],todo:[],buy:[]};  // migrate older saves
   S._v25=true; persist();
 })();
 
+// migration v26: touch-base — Ken (client), booked by Michele; session Tue Oct 27
+(function(){
+  if(S._v26) return;
+  if(!S.crm) S.crm={};
+  if(!S.crm['ken']) S.crm['ken']={manual:true,name:'Ken',phone:'(303) 810-1582',status:'new',
+    notes:'Booked by Michele (contact) · (303) 810-1582'};
+  if(!S.crmSched) S.crmSched={};
+  if(!S.crmSched['ken']) S.crmSched['ken']=[{d:'2026-10-27',t:'',len:60,note:'massage for Ken — contact Michele'}];
+  S._v26=true; persist();
+})();
+
 /* ---------- date helpers ---------- */
 const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 function ymd(d){return d.toISOString().slice(0,10);}
