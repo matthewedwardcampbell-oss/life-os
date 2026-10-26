@@ -1070,6 +1070,21 @@ if(!S.lists) S.lists={trips:[],goals:[],todo:[],buy:[]};  // migrate older saves
   S._v26=true; persist();
 })();
 
+// migration v27: Quartermaster — Personal care staples (non-food, from the Walmart haul)
+(function(){
+  if(S._v27) return;
+  if(!S.lists) S.lists={};
+  const buy=S.lists.buy||(S.lists.buy=[]);
+  if(!buy.some(x=>(x.t||'').toLowerCase()==='personal care')){
+    buy.push({t:'Personal care',status:'stocked',link:'',qty:'',note:'',tag:'personal',_open:true,
+      kids:[
+        {t:'Lip balm — O’Keeffe’s',link:'',qty:'',note:'2-pack'},
+        {t:'Silicone lube — Wet Platinum',link:'',qty:'',note:'6.1 fl oz'}
+      ]});
+  }
+  S._v27=true; persist();
+})();
+
 /* ---------- date helpers ---------- */
 const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 function ymd(d){return d.toISOString().slice(0,10);}
