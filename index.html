@@ -1085,6 +1085,43 @@ if(!S.lists) S.lists={trips:[],goals:[],todo:[],buy:[]};  // migrate older saves
   S._v27=true; persist();
 })();
 
+// migration v28: Quartermaster — Wish list (comparison-shopped picks + targets)
+(function(){
+  if(S._v28) return;
+  if(!S.lists) S.lists={};
+  const buy=S.lists.buy||(S.lists.buy=[]);
+  if(!buy.some(x=>(x.t||'').toLowerCase()==='wish list')){
+    buy.push({t:'Wish list',status:'wish',link:'',qty:'',note:'comparison-shopped — pick + target price',tag:'wish',_open:true,
+      kids:[
+        {t:'Foam roller (high density)',link:'',qty:'',note:'ProsourceFit HD — Walmart ~$12 (pick). Low-density: 321 STRONG ~$25'},
+        {t:'Food processor',link:'',qty:'',note:'Cuisinart 14-cup — Costco ~$89 · target <=$90'},
+        {t:'Massage oil (bulk)',link:'',qty:'',note:'Costco gallon ~$0.31/oz — reorder at min, refill bottles'},
+        {t:'Himalayan salt lamp',link:'',qty:'',note:'Himalayan Shop small 4-5.5lb — Walmart $19.94'},
+        {t:'USB-C touch desk lamp',link:'',qty:'',note:'confirm USB-C + 2700K warm mode · ~$20'},
+        {t:'Horticultural heat mat + thermostat',link:'',qty:'',note:'AC Infinity SUNCORE H3 — IP67, probe, 17-25W · <=$40. Use saucer + insulate under'},
+        {t:'Packable blackout sleep mask',link:'',qty:'',note:'FACEMOON weighted 3D / Trtl Glimpse — packs flat · <=$20'},
+        {t:'Non-toxic night guard',link:'',qty:'',note:'Natural Fiber Guard (hemp/cotton, no EVA/BPA) ~$25'},
+        {t:'Veggie chopper',link:'',qty:'',note:'labor-saver · <=$25, buy now'},
+        {t:'Auto stir-fry machine',link:'',qty:'',note:'labor-saver · <=$120, wait Black Friday'},
+        {t:'Robot vacuum + mop',link:'',qty:'',note:'labor-saver · <=$250, wait Black Friday'},
+        {t:'Rice cooker — Zojirushi',link:'',qty:'',note:'Korean food · <=$150, wait Black Friday'},
+        {t:'Immersion blender',link:'',qty:'',note:'sauces/broth in-pot · <=$40, buy now'}
+      ]});
+  }
+  S._v28=true; persist();
+})();
+
+// migration v29: Quartermaster — Celtic sea salt (pantry staple)
+(function(){
+  if(S._v29) return;
+  if(!S.lists) S.lists={};
+  const buy=S.lists.buy||(S.lists.buy=[]);
+  if(!buy.some(x=>(x.t||'').toLowerCase().indexOf('celtic sea salt')>-1)){
+    buy.push({t:'Celtic sea salt',status:'stocked',link:'',qty:'',note:'pantry staple',tag:'pantry'});
+  }
+  S._v29=true; persist();
+})();
+
 /* ---------- date helpers ---------- */
 const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 function ymd(d){return d.toISOString().slice(0,10);}
