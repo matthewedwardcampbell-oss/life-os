@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Loki · Build Tree</title>
+<style>
+  :root{
+    --sky-0:#12162a; --sky-1:#1a2038; --sky-2:#232a48; --sky-3:#2e3760;
+    --purple:#8a6fd4; --purple-lt:#a487da; --amber:#e9a95c; --selenite:#84b8ca;
+    --good:#7ac9a0; --warn:#e07a7a; --ink:#eceaf4; --ink-dim:#a1a4c2; --ink-faint:#6d7199;
+    --pink:#ff7aa8; --wood:#b07a42; --gold:#ffd24a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--sky-0)}
+  body{color:var(--ink);font-family:'Inter',-apple-system,system-ui,sans-serif;font-size:15px;line-height:1.5;
+    max-width:680px;margin:0 auto;min-height:100vh;background-image:radial-gradient(1200px 520px at 50% -10%,rgba(138,111,212,.13),transparent);}
+  .wrap{padding:20px 16px 70px}
+  .top{display:flex;align-items:center;gap:11px}
+  .gcirc{width:52px;height:52px;border-radius:50%;background:var(--sky-2);border:2.5px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:26px}
+  h1{font-family:'Fraunces',Georgia,serif;font-size:23px;font-weight:600}
+  .sub{color:var(--ink-dim);font-size:12px}
+
+  /* breadcrumb line */
+  .line{display:flex;align-items:center;gap:7px;flex-wrap:wrap;background:var(--sky-1);border:1px solid var(--sky-2);
+    border-radius:13px;padding:11px 13px;margin:16px 0 6px}
+  .line .ll{font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-right:3px}
+  .line .pill{font-size:12px;font-weight:600;background:var(--sky-2);border:1px solid var(--sky-3);border-radius:99px;padding:3px 11px;color:var(--ink-dim)}
+  .line .pill.on{color:var(--sky-0);background:var(--amber);border-color:var(--amber)}
+  .line .arr{color:var(--ink-faint);font-size:11px}
+  .resetbtn{margin-left:auto;font-size:10px;color:var(--ink-faint);background:none;border:1px solid var(--sky-3);border-radius:99px;padding:4px 10px;cursor:pointer}
+  .hint{font-size:11px;color:var(--ink-faint);margin-bottom:14px}
+
+  /* tree */
+  .age{position:relative;padding:14px 0 6px}
+  .age:not(:last-child)::after{content:'';position:absolute;left:50%;bottom:-6px;width:2px;height:16px;background:var(--sky-3);transform:translateX(-50%)}
+  .agelabel{font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;text-align:center;margin-bottom:11px}
+  .agelabel b{color:var(--selenite)}
+  .opts{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+  .opt{display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;transition:opacity .2s,transform .1s;width:92px}
+  .opt:active{transform:scale(.95)}
+  .ocirc{width:66px;height:66px;border-radius:50%;background:var(--sky-1);border:2.5px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:29px;transition:border-color .2s,box-shadow .2s}
+  .olbl{font-size:12.5px;font-weight:700;text-align:center;line-height:1.15}
+  .orole{font-size:9.5px;color:var(--ink-faint);text-align:center;line-height:1.2}
+  .opt.sel .ocirc{border-color:var(--amber);box-shadow:0 0 0 4px rgba(233,169,92,.18)}
+  .opt.sel .olbl{color:var(--amber)}
+  .age.chosen .opt:not(.sel){opacity:.32}
+  .opt .rec{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--good);background:rgba(122,201,160,.14);border-radius:99px;padding:1px 6px;margin-top:-2px}
+
+  /* shared archaic node */
+  .shared .ocirc{border-color:var(--selenite);cursor:pointer}
+  .sharedbadge{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--selenite);background:rgba(132,184,202,.14);border-radius:99px;padding:1px 7px}
+
+  /* detail panel */
+  .dwrap{margin-top:12px}
+  .odetail{display:none;background:var(--sky-1);border:1px solid var(--sky-2);border-left:3px solid var(--amber);border-radius:13px;padding:13px 14px;animation:fade .2s ease}
+  .odetail.show{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+  .dh{font-family:'Fraunces',serif;font-size:16px;margin-bottom:3px}
+  .drole{font-size:11px;color:var(--selenite);font-weight:600;margin-bottom:9px}
+  .dline{font-size:12.5px;color:var(--ink-dim);line-height:1.55;margin-top:7px}.dline b{color:var(--ink)}
+  .dchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  .dchips span{font-size:10px;color:var(--ink-dim);background:var(--sky-2);border:1px solid var(--sky-3);border-radius:99px;padding:3px 9px}
+  .econ{font-size:11px;color:var(--ink-faint);margin-top:9px}
+  .econ b.f{color:var(--pink)}.econ b.w{color:var(--wood)}.econ b.g{color:var(--gold)}
+
+  /* archaic build order (shared detail) */
+  #d-archaic{border-left-color:var(--selenite)}
+  .step{display:flex;gap:8px;margin-top:6px;font-size:12px;color:var(--ink-dim);line-height:1.4}
+  .step b{color:var(--ink)}
+  .step .k{width:18px;height:18px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:1px solid var(--sky-3);font-size:10px;font-weight:700;color:var(--selenite);display:flex;align-items:center;justify-content:center}
+  .rf{color:var(--pink);font-weight:700}.rw{color:var(--wood);font-weight:700}.rg{color:var(--gold);font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div class="gcirc">🧌</div><div><h1>Loki · build tree</h1><div class="sub">Tap the branch you're taking each age. Only your line stays lit.</div></div></div>
+
+  <div class="line" id="line">
+    <span class="ll">Your line</span>
+    <span class="pill on">Loki</span>
+    <span class="arr">→</span><span class="pill" id="p-arch">Archaic</span>
+    <span class="arr">→</span><span class="pill" id="p-classical">Classical?</span>
+    <span class="arr">→</span><span class="pill" id="p-heroic">Heroic?</span>
+    <span class="arr">→</span><span class="pill" id="p-mythic">Mythic?</span>
+    <button class="resetbtn" onclick="resetTree()">reset</button>
+  </div>
+  <div class="hint">Named lines: <b style="color:var(--amber)">Einherjar Blitz</b> = Heimdall · <b style="color:var(--amber)">Troll Hegemony</b> = Forseti → Bragi → Hel.</div>
+
+  <!-- ARCHAIC (shared) -->
+  <div class="age shared">
+    <div class="agelabel"><b>Archaic</b> · Age 1 · shared opener</div>
+    <div class="dwrap"><div class="odetail show" id="d-archaic">
+      <div class="dh">Archaic opener · exact order</div>
+      <div class="drole">Same for every branch — ends ~3:30 at <span class="rf">8F</span> · <span class="rw">2W</span> · <span class="rg">4G</span></div>
+      <div class="step"><span class="k">1</span><span><b>Gatherer</b> → <span class="rg">Gold</span> (buffer)</span></div>
+      <div class="step"><span class="k">2</span><span><b>Dwarf</b> → <span class="rg">Gold</span> · Ox Cart #1</span></div>
+      <div class="step"><span class="k">3</span><span><b>Gatherer</b> → <span class="rw">Wood</span> · Ox Cart #2</span></div>
+      <div class="step"><span class="k">4</span><span><b>Dwarf</b> → <span class="rg">Gold</span></span></div>
+      <div class="step"><span class="k">5</span><span><b>Gatherer</b> → <span class="rf">Food</span></span></div>
+      <div class="step"><span class="k">6</span><span><b>Dwarf</b> → <span class="rg">Gold</span></span></div>
+      <div class="step"><span class="k">↔</span><span>lone <b>Gatherer: <span class="rg">Gold</span> → <span class="rw">Wood</span></b></span></div>
+      <div class="step"><span class="k">7</span><span><b>Gatherer ×4</b> → <span class="rf">Food</span></span></div>
+      <div class="step"><span class="k">8</span><span><b>Dwarf</b> → <span class="rg">Gold</span></span></div>
+      <div class="dline">Berserk builds <b>House → Temple</b> (~2:10). Age up at <b>400 <span class="rf">Food</span></b> → pick your Classical god below.</div>
+    </div></div>
+  </div>
+
+  <!-- CLASSICAL -->
+  <div class="age" data-age="classical">
+    <div class="agelabel"><b>Classical</b> · Age 2 · pick your god</div>
+    <div class="opts">
+      <div class="opt" data-d="d-heimdall" data-name="Heimdall" onclick="pick(this)"><div class="ocirc">🎺</div><div class="olbl">Heimdall</div><div class="orole">rush / anti-turtle</div></div>
+      <div class="opt" data-d="d-forseti" data-name="Forseti" onclick="pick(this)"><div class="ocirc">🧌</div><div class="olbl">Forseti</div><div class="orole">map control / late</div></div>
+    </div>
+    <div class="dwrap">
+      <div class="odetail" id="d-heimdall"><div class="dh">🎺 Heimdall</div><div class="drole">The Einherjar Blitz line</div>
+        <div class="dchips"><span>GP: Undermine</span><span>Myth: Einherjar</span></div>
+        <div class="dline"><b>Undermine</b> cracks walls/towers/TC; <b>Einherjar</b> war-horn buffs the chokepoint brawl. Commit to ending before 10:00.</div>
+        <div class="econ">Econ: push to <b class="f">10F</b> · <b class="w">6W</b> · <b class="g">6G</b>, then stop villagers — all army.</div>
+      </div>
+      <div class="odetail" id="d-forseti"><div class="dh">🧌 Forseti</div><div class="drole">The Troll Hegemony line</div>
+        <div class="dchips"><span>GP: Healing Spring</span><span>Myth: Troll</span><span>Hall of Thanes</span></div>
+        <div class="dline"><b>Trolls</b> zone the map (ranged AoE); <b>Hall of Thanes</b> Hersirs own the map; <b>Healing Spring</b> for zero-downtime raids. Boom into the late game.</div>
+        <div class="econ">Econ: keep booming — <b class="f">12F</b> · <b class="w">8W</b> · <b class="g">8G</b>, take a 2nd gold.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEROIC -->
+  <div class="age" data-age="heroic">
+    <div class="agelabel"><b>Heroic</b> · Age 3 · pick your god</div>
+    <div class="opts">
+      <div class="opt" data-d="d-bragi" data-name="Bragi" onclick="pick(this)"><div class="ocirc">🐗</div><div class="olbl">Bragi</div><div class="orole">aggressive</div><span class="rec">troll line</span></div>
+      <div class="opt" data-d="d-njord" data-name="Njord" onclick="pick(this)"><div class="ocirc">⛰️</div><div class="olbl">Njord</div><div class="orole">siege / turtle maps</div></div>
+    </div>
+    <div class="dwrap">
+      <div class="odetail" id="d-bragi"><div class="dh">🐗 Bragi</div><div class="drole">Flankers + fight-winner</div>
+        <div class="dchips"><span>GP: Flaming Weapons</span><span>Myth: Battle Boar</span></div>
+        <div class="dline"><b>Battle Boars</b> run down archers/siege and screen your Trolls; <b>Flaming Weapons</b> (+100% hack) wins the fight or clears a base.</div>
+        <div class="econ">Econ: <b class="f">15F</b> · <b class="w">12W</b> · <b class="g">12G</b> — farms as the hunt runs out.</div>
+      </div>
+      <div class="odetail" id="d-njord"><div class="dh">⛰️ Njord</div><div class="drole">Structural demolition</div>
+        <div class="dchips"><span>GP: Living Forest</span><span>Myth: Mountain Giant</span></div>
+        <div class="dline"><b>Mountain Giants</b> tank fire and demolish buildings with no siege needed; <b>Living Forest</b> punishes woodline-huggers. Best vs walls/Hill-Fort turtles and on water.</div>
+        <div class="econ">Econ: similar ramp — more <b class="w">wood</b> for Portable Rams if you skip giants.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MYTHIC -->
+  <div class="age" data-age="mythic">
+    <div class="agelabel"><b>Mythic</b> · Age 4 · pick your god</div>
+    <div class="opts">
+      <div class="opt" data-d="d-hel" data-name="Hel" onclick="pick(this)"><div class="ocirc">🐉</div><div class="olbl">Hel</div><div class="orole">myth deathball</div><span class="rec">troll line</span></div>
+      <div class="opt" data-d="d-baldr" data-name="Baldr" onclick="pick(this)"><div class="ocirc">☄️</div><div class="olbl">Baldr</div><div class="orole">game-ender</div></div>
+      <div class="opt" data-d="d-tyr" data-name="Tyr" onclick="pick(this)"><div class="ocirc">🐺</div><div class="olbl">Tyr</div><div class="orole">team / FFA</div></div>
+    </div>
+    <div class="dwrap">
+      <div class="odetail" id="d-hel"><div class="dh">🐉 Hel</div><div class="drole">The myth mass</div>
+        <div class="dchips"><span>GP: Nidhogg</span><span>Multi-myth giants</span><span>Rampage</span></div>
+        <div class="dline">Train Fire/Frost/Mountain Giants <b>at once</b>; <b>Nidhogg</b> forces enemy anti-air. The payoff for a Forseti → Bragi line.</div>
+        <div class="econ">Econ: max it — <b class="f">18F</b> · <b class="w">15W</b> · <b class="g">16G</b>, Dwarves deep on gold.</div>
+        <div class="dline" style="margin-top:12px"><b>🐉 Nidhogg — use it right</b></div>
+        <div class="dline">• <b>Melee-immune &amp; flying</b> — park it over melee-heavy armies for free, untouchable damage.</div>
+        <div class="dline">• <b>Hunt villagers</b> — its best target is an undefended economy; workers can't shoot back.</div>
+        <div class="dline">• <b>It forces archers</b> — when they build Toxotes to answer it, your Boars/Hersirs eat those archers. Win either way.</div>
+        <div class="dline">• <b>Cast on commitment</b> — fly it just ahead of the giant deathball; pull it out if dedicated anti-air is up, never suicide it.</div>
+        <div class="econ">⚑ exact HP / duration / fire damage — needs patch check.</div>
+      </div>
+      <div class="odetail" id="d-baldr"><div class="dh">☄️ Baldr</div><div class="drole">Sudden death</div>
+        <div class="dchips"><span>GP: Ragnarok</span><span>Myth: Fire Giant</span></div>
+        <div class="dline"><b>Ragnarok</b> converts every villager into a Hero — a 200-pop all-in. Only when you can refund the economy or you're closing the game right now.</div>
+        <div class="econ">Econ: bank <b class="g">1,000+ gold/food</b> to retrain villagers behind the push.</div>
+      </div>
+      <div class="odetail" id="d-tyr"><div class="dh">🐺 Tyr</div><div class="drole">Multi-base chaos</div>
+        <div class="dchips"><span>GP: Fimbulwinter</span><span>Myth: Fenris Wolves</span></div>
+        <div class="dline"><b>Fimbulwinter</b> spawns wolves at <b>every</b> enemy TC — devastating in 2v2 / FFA. Fenris packs assassinate retreating armies. Sustained with Winter Harvest.</div>
+        <div class="econ">Econ: strongest post-Mythic economy of the three (Winter Harvest farms).</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleArch(){document.getElementById('d-archaic').classList.toggle('show');}
+function pick(opt){
+  var age=opt.closest('.age'); age.classList.add('chosen');
+  age.querySelectorAll('.opt').forEach(function(o){o.classList.remove('sel');});
+  opt.classList.add('sel');
+  age.querySelectorAll('.odetail').forEach(function(d){d.classList.remove('show');});
+  document.getElementById(opt.dataset.d).classList.add('show');
+  var pid='p-'+age.dataset.age, pill=document.getElementById(pid);
+  if(pill){pill.textContent=opt.dataset.name;pill.classList.add('on');}
+}
+function resetTree(){
+  document.querySelectorAll('.age').forEach(function(a){a.classList.remove('chosen');a.querySelectorAll('.opt').forEach(function(o){o.classList.remove('sel');});a.querySelectorAll('.odetail').forEach(function(d){d.classList.remove('show');});});
+  [['p-classical','Classical?'],['p-heroic','Heroic?'],['p-mythic','Mythic?']].forEach(function(x){var p=document.getElementById(x[0]);p.textContent=x[1];p.classList.remove('on');});
+  document.getElementById('d-archaic').classList.remove('show');
+}
+// archaic pill is always locked on
+document.getElementById('p-arch').classList.add('on');
+</script>
+</body>
+</html>

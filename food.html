@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Chez Matthew — meal prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-0:#12162a;--sky-1:#1a2038;--sky-2:#232a48;--sky-3:#2e3760;
+    --purple:#8a6fd4;--purple-lt:#a487da;--amber:#e9a95c;--selenite:#84b8ca;
+    --good:#7ac9a0;--warn:#e07a7a;
+    --ink:#eceaf4;--ink-dim:#a1a4c2;--ink-faint:#6d7199;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{background:radial-gradient(130% 70% at 50% -10%,#2a2246 0%,rgba(42,34,70,0) 55%),var(--sky-0);
+    background-attachment:fixed;color:var(--ink);font-family:'Inter',system-ui,sans-serif;min-height:100vh;padding:18px 15px 50px}
+  .wrap{max-width:460px;margin:0 auto}
+  .mocklbl{font-size:10.5px;color:var(--ink-faint);letter-spacing:.07em;text-transform:uppercase;font-weight:600;margin:0 2px 10px}
+
+  .chhead{text-align:center;margin-bottom:12px}
+  .chhead .nm{font-family:'Fraunces',serif;font-size:27px}
+  .chhead .nm .g{color:var(--amber)}
+  .chhead .tag{font-size:11.5px;color:var(--ink-dim);margin-top:2px;font-style:italic}
+
+  .seclbl{font-size:10.5px;color:var(--ink-faint);letter-spacing:.06em;text-transform:uppercase;font-weight:700;margin:22px 2px 9px;display:flex;align-items:center;gap:8px}
+  .seclbl .n{background:var(--sky-2);color:var(--ink-dim);font-size:9.5px;border-radius:6px;padding:1px 7px;font-weight:600}
+
+  /* macros */
+  .goals{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:7px}
+  .gt{background:var(--sky-1);border:1px solid var(--sky-3);border-radius:12px;padding:10px 6px;text-align:center}
+  .gt b{font-family:'Fraunces',serif;font-size:19px;display:block;line-height:1}
+  .gt .u{font-size:10px;color:var(--ink-faint);font-weight:400}
+  .gt span{font-size:8.5px;color:var(--ink-faint);font-weight:600;display:block;margin-top:5px;line-height:1.25}
+  .gt.pro b{color:var(--good)} .gt.cal b{color:var(--amber)} .gt.rdy b{color:var(--selenite)} .gt.sav b{color:var(--purple-lt)}
+  .goalnote{font-size:10px;color:var(--ink-faint);text-align:center;margin-top:7px}
+  /* culture focus */
+  .focusband{margin-top:13px;background:radial-gradient(circle at 12% 20%,#2a2340,#161a30 75%);border:1px solid var(--purple);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px}
+  .focusband .flag{font-size:26px;flex:0 0 auto}
+  .fb-cuisine{font-family:'Fraunces',serif;font-size:18px}
+  .fb-sub{font-size:9.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-top:1px}
+  .fb-prog{margin-left:auto;display:flex;flex-direction:column;gap:3px;align-items:flex-end}
+  .fb-step{font-size:9.5px;color:var(--ink-faint);display:flex;align-items:center;gap:5px}
+  .fb-step.on{color:var(--purple-lt);font-weight:600}
+  .fb-step .d{width:7px;height:7px;border-radius:99px;background:var(--sky-3)}
+  .fb-step.on .d{background:var(--purple-lt)} .fb-step.done .d{background:var(--good)}
+  .fb-note{font-size:10px;color:var(--ink-faint);text-align:center;margin-top:8px;line-height:1.5}
+  /* shopping run */
+  .shop{display:flex;flex-direction:column;gap:8px}
+  .store{display:flex;align-items:center;gap:11px;background:var(--sky-1);border:1px solid var(--sky-2);border-radius:12px;padding:11px 12px}
+  .store .ic{font-size:19px;flex:0 0 auto}
+  .store .sb{flex:1;min-width:0}
+  .store .sn{font-size:13px;font-weight:600}
+  .store .sm{font-size:10.5px;color:var(--ink-dim);margin-top:2px}
+  .store .stot{flex:0 0 auto;text-align:right}
+  .store .stot b{display:block;font-family:'Fraunces',serif;font-size:15px;color:var(--good)}
+  .store .order{font-size:9px;color:var(--selenite);font-weight:600}
+  .splitnote{text-align:center;font-size:11px;color:var(--purple-lt);font-weight:600;margin-top:9px}
+  /* recipe lab */
+  .rl-head{font-size:12px;color:var(--ink-dim);margin-bottom:4px;font-weight:600}
+  .rlcard{background:var(--sky-1);border:1px solid var(--sky-2);border-radius:13px;padding:12px 13px;margin-top:8px}
+  .rlcard.best{border-color:var(--good)}
+  .rl-top{display:flex;align-items:center;gap:8px}
+  .rl-top .src{font-family:'Fraunces',serif;font-size:14.5px}
+  .rl-top .via{font-size:10px;color:var(--ink-faint)}
+  .rl-top .pick{margin-left:auto;font-size:9.5px;font-weight:700;color:var(--good);background:rgba(122,201,160,.14);border-radius:99px;padding:2px 8px}
+  .rl-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .rl-meta span{font-size:9.5px;color:var(--ink-dim);background:var(--sky-2);border:1px solid var(--sky-3);border-radius:99px;padding:2px 8px}
+  .pc{font-size:11px;line-height:1.6;margin-top:9px}
+  .pc .p{color:var(--good)} .pc .c{color:var(--warn)}
+
+  .cookbtn{display:block;width:100%;margin-top:14px;background:linear-gradient(90deg,var(--amber),#d6935a);border:none;color:#2a1e10;font-family:inherit;font-weight:700;font-size:14px;padding:13px;border-radius:13px;cursor:pointer;letter-spacing:.01em}
+
+  /* two week-wheels, food as friendly circles */
+  .weekrow{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  .weekcol{background:var(--sky-1);border:1px solid var(--sky-3);border-radius:18px;padding:13px 9px 15px}
+  .weekcol.next{background:rgba(26,32,56,.55);border-style:dashed}
+  .whub{width:86px;height:86px;border-radius:50%;margin:0 auto 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 38% 32%,#2b3560,#161a30);border:2px solid var(--selenite);box-shadow:0 4px 16px rgba(0,0,0,.3)}
+  .weekcol.next .whub{border-color:var(--amber);border-style:dashed;background:radial-gradient(circle at 38% 32%,#33291b,#161a30)}
+  .whub .wk{font-size:8.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+  .whub b{font-family:'Fraunces',serif;font-size:22px;line-height:1;margin-top:1px}
+  .whub .wsub{font-size:8px;color:var(--ink-faint);margin-top:2px}
+  .foods{display:flex;flex-wrap:wrap;gap:10px 5px;justify-content:center}
+  .fcirc{width:57px;text-align:center;cursor:pointer;transition:.1s}
+  .fcirc:active{transform:scale(.93)}
+  .fcirc.out{opacity:.35}
+  .bub{width:50px;height:50px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:21px;position:relative;
+    background:radial-gradient(circle at 38% 30%,#2a3156,#1a2038);border:2px solid var(--sky-3)}
+  .bub.freezer{border-color:var(--purple-lt)} .bub.fridge{border-color:var(--selenite)} .bub.shelf{border-color:var(--amber)}
+  .bub.plan{border-style:dashed;background:radial-gradient(circle at 38% 30%,#2c2a1f,#1a2038)}
+  .cnt{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;border-radius:50%;background:var(--sky-0);border:1.5px solid currentColor;
+    font-size:9.5px;font-weight:700;display:flex;align-items:center;justify-content:center;line-height:1;padding:0 2px}
+  .cnt.freezer{color:var(--purple-lt)} .cnt.fridge{color:var(--selenite)} .cnt.shelf{color:var(--amber)}
+  .fcirc .fn{font-size:8.5px;color:var(--ink-dim);margin-top:4px;line-height:1.12}
+  .fcirc.plan .fn{color:var(--ink-faint)}
+  .hint{font-size:10px;color:var(--ink-faint);text-align:center;margin-top:9px;line-height:1.5}
+  /* staples by food group */
+  .sgroup{margin-top:13px}
+  .sgh{font-size:10px;color:var(--ink-dim);font-weight:700;letter-spacing:.03em;margin-bottom:8px;display:flex;align-items:center;gap:6px;text-transform:uppercase}
+  .sgh .gi{font-size:13px}
+  .sgrid{display:flex;flex-wrap:wrap;gap:11px 7px}
+  .scirc{width:52px;text-align:center}
+  .sbub{width:40px;height:40px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:17px;background:radial-gradient(circle at 38% 30%,#262c4e,#191f36);border:2px solid var(--sky-3)}
+  .sbub.ok{border-color:var(--good)} .sbub.low{border-color:var(--amber)} .sbub.out{border-color:var(--warn);opacity:.65}
+  .scirc .sn{font-size:8px;color:var(--ink-faint);margin-top:3px;line-height:1.1}
+
+  /* bulk cook full screen */
+  .bulk{background:var(--sky-0);border:1px solid var(--sky-3);border-radius:16px;padding:0;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .bulk .bh{background:radial-gradient(circle at 15% 20%,#3a2a1e,#161a30 75%);padding:13px 15px;border-bottom:1px solid var(--sky-3);display:flex;align-items:center;gap:10px}
+  .bulk .bh .x{font-size:16px;color:var(--ink-faint)}
+  .bulk .bh .t{font-family:'Fraunces',serif;font-size:17px}
+  .bulk .bh .y{margin-left:auto;text-align:right}
+  .bulk .bh .y b{display:block;font-family:'Fraunces',serif;font-size:16px;color:var(--amber)}
+  .bulk .bh .y span{font-size:9px;color:var(--ink-faint)}
+  .bulk .bbody{padding:13px 15px}
+
+  .mise{background:var(--sky-1);border:1px solid var(--sky-3);border-radius:11px;padding:10px 12px;margin-bottom:13px}
+  .mise .mh{font-size:10.5px;font-weight:700;color:var(--selenite);text-transform:uppercase;letter-spacing:.03em;margin-bottom:7px}
+  .mise .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .mchip{font-size:10.5px;color:var(--ink-dim);background:var(--sky-2);border:1px solid var(--sky-3);border-radius:99px;padding:3px 9px}
+  .mchip.done{color:var(--good);border-color:rgba(122,201,160,.3);text-decoration:line-through;opacity:.8}
+
+  /* timeline */
+  .tlwrap{margin-bottom:13px}
+  .tlh{font-size:10.5px;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px}
+  .lane{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .lane .ln{flex:0 0 96px;font-size:10.5px;color:var(--ink-dim);display:flex;align-items:center;gap:5px}
+  .lane .track{flex:1;height:22px;background:var(--sky-1);border-radius:6px;position:relative;overflow:hidden}
+  .bar{position:absolute;top:0;height:100%;border-radius:6px;display:flex;align-items:center;padding:0 6px;font-size:9.5px;font-weight:600;color:#10140f;white-space:nowrap;overflow:hidden}
+  .axis{display:flex;justify-content:space-between;margin:2px 0 0 104px;font-size:8.5px;color:var(--ink-faint)}
+
+  .stations{display:flex;flex-direction:column;gap:7px}
+  .stn{display:flex;align-items:center;gap:10px;background:var(--sky-1);border:1px solid var(--sky-2);border-radius:10px;padding:9px 11px}
+  .stn .ic{font-size:17px;flex:0 0 auto}
+  .stn .sb{flex:1;min-width:0}
+  .stn .sname{font-size:9.5px;color:var(--ink-faint);font-weight:600;text-transform:uppercase}
+  .stn .sdish{font-size:12.5px;font-weight:500;margin-top:1px}
+  .stn .timer{flex:0 0 auto;font-family:'Fraunces',serif;font-size:13px;color:var(--amber)}
+  .outline{font-size:10.5px;color:var(--good);text-align:center;margin-top:12px;font-weight:600}
+
+  /* cookbook */
+  .regions{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px}
+  .region{flex:0 0 auto;background:transparent;border:1px solid var(--sky-3);color:var(--ink-dim);font-family:inherit;font-size:12px;font-weight:500;padding:6px 12px;border-radius:99px;cursor:pointer;white-space:nowrap}
+  .region.on{background:var(--amber);border-color:var(--amber);color:#2a1e10;font-weight:600}
+  .dish{background:var(--sky-1);border:1px solid var(--sky-2);border-radius:12px;padding:11px 12px;margin-top:8px}
+  .dish .top{display:flex;align-items:baseline;gap:8px}
+  .dish .dn{font-family:'Fraunces',serif;font-size:14.5px}
+  .dish .frz{color:var(--selenite);font-size:12px}
+  .dish .makes{margin-left:auto;font-size:10px;font-weight:600;color:var(--purple-lt);background:rgba(164,135,218,.14);border-radius:99px;padding:2px 8px;white-space:nowrap}
+  .dish .copies{font-size:11px;color:var(--ink-dim);margin-top:2px;font-style:italic}
+  .dish .stat{display:flex;gap:13px;margin-top:7px;font-size:10.5px;color:var(--ink-dim)}
+  .dish .stat b{color:var(--ink)} .dish .stat .save{color:var(--good)}
+  .tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+  .tg{font-size:9px;color:var(--ink-dim);background:var(--sky-2);border:1px solid var(--sky-3);border-radius:99px;padding:2px 7px}
+  .tg.proc{color:var(--purple-lt)} .tg.ing{color:var(--selenite)}
+
+  .note{font-size:11.5px;color:var(--ink-faint);line-height:1.6;margin-top:24px;padding:13px 15px;background:var(--sky-1);border:1px solid var(--sky-3);border-radius:12px}
+  .note b{color:var(--ink-dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="mocklbl">MISC › Chez Matthew — meal-prep rebuild (mock)</div>
+
+  <div class="chhead">
+    <div class="nm">✦ Chez <span class="g">Matthew</span></div>
+    <div class="tag">Cook in batches · eat from the store · relax at dinner</div>
+  </div>
+
+  <!-- macros -->
+  <div class="goals">
+    <div class="gt pro"><b>160<span class="u">g</span></b><span>Protein<br>/ day</span></div>
+    <div class="gt cal"><b>2,250<span class="u">kcal</span></b><span>Gentle<br>deficit</span></div>
+    <div class="gt rdy"><b>14</b><span>Portions<br>ready</span></div>
+    <div class="gt sav"><b>$214</b><span>Saved<br>this mo.</span></div>
+  </div>
+  <div class="goalnote">14 portions ≈ <b style="color:var(--ink-dim)">4 days covered</b> · protein from 200-lb × 1.6–1.8 g/kg · savings from the Ledger</div>
+
+  <!-- culture focus -->
+  <div class="focusband">
+    <span class="flag">🇰🇷</span>
+    <div><div class="fb-cuisine">Korean</div><div class="fb-sub">Culture focus · week 2 of 3</div></div>
+    <div class="fb-prog">
+      <span class="fb-step done"><span class="d"></span>To learn</span>
+      <span class="fb-step on"><span class="d"></span>Practicing</span>
+      <span class="fb-step"><span class="d"></span>Mastered</span>
+    </div>
+  </div>
+  <div class="fb-note">Dinners lean Korean — bulk soups + ready marinades · breakfast stays 🌯 Mex-American · graze keeps variety · up next: 🇯🇵 Japanese</div>
+
+  <button class="cookbtn">🔥 Start a bulk cook session →</button>
+
+  <!-- two week-wheels -->
+  <div class="seclbl">The store · this week & next · tap a circle to mark one eaten</div>
+  <div class="weekrow">
+    <div class="weekcol">
+      <div class="whub"><span class="wk">This week</span><b id="rdyN">14</b><span class="wsub">~4 days ready</span></div>
+      <div class="foods" id="foodsNow"></div>
+    </div>
+    <div class="weekcol next">
+      <div class="whub"><span class="wk">Next week</span><b>5</b><span class="wsub">to batch</span></div>
+      <div class="foods" id="foodsNext"></div>
+    </div>
+  </div>
+  <div class="hint">Friendly circles, not squares — this week's cooked food, next week's planned batches. Ring color = where it lives: freezer (purple) · fridge (teal) · shelf (amber). Tap a circle = one gone.</div>
+
+  <!-- SAUCES -->
+  <div class="seclbl">Sauces &amp; marinades · frozen, ready to go <span class="n">the secret weapon</span></div>
+  <div class="foods" id="sauces" style="justify-content:flex-start"></div>
+  <div class="hint">A great sauce + a protein + a base = a restaurant dish. <b>Marinades</b> mean: buy the meat, marinate, make rice, eat. Batch them, freeze in portions, thaw &amp; assemble.</div>
+
+  <!-- STAPLES -->
+  <div class="seclbl">Staples · by food group <span class="n">mirrors Quartermaster</span></div>
+  <div id="staples"></div>
+
+  <!-- BEVERAGES -->
+  <div class="seclbl">Beverages · house-made &amp; fizzy <span class="n">placeholder</span></div>
+  <div class="sgroup" style="margin-top:0">
+    <div class="sgrid">
+      <div class="scirc"><div class="sbub low"><span>🍵</span></div><div class="sn">Kombucha</div></div>
+      <div class="scirc"><div class="sbub out"><span>🍹</span></div><div class="sn">Festival drinks</div></div>
+      <div class="scirc"><div class="sbub ok"><span>🥤</span></div><div class="sn">SodaStream</div></div>
+    </div>
+    <div style="font-size:11px;color:var(--ink-faint);margin-top:11px;line-height:1.55">
+      Placeholder — drop in your <b style="color:var(--ink)">kombucha brew schedule</b> (SCOBY, 1st/2nd ferment, flavors), your <b style="color:var(--ink)">festival drink recipes</b>, and favorite <b style="color:var(--ink)">SodaStream syrups &amp; mixes</b>, and I'll build each out like the sauces — rings show status (🟢 on hand · 🟡 in progress · 🔴 needs recipe).
+    </div>
+  </div>
+  <div class="hint">Your always-on base stock. Ring: green = stocked, amber = low, red = out — synced with Quartermaster. Non-food (lube, poppers, etc.) lives in Quartermaster only, not here.</div>
+
+  <!-- SHOPPING RUN -->
+  <div class="seclbl">Shopping run · best price → pre-order for pickup</div>
+  <div class="shop">
+    <div class="store"><span class="ic">🏪</span><div class="sb"><div class="sn">King Soopers</div><div class="sm">produce · dairy · eggs — cheapest here</div></div><div class="stot"><b>$42.80</b><span class="order">Order pickup →</span></div></div>
+    <div class="store"><span class="ic">🏬</span><div class="sb"><div class="sn">H Mart</div><div class="sm">Korean pantry · gochujang · short rib</div></div><div class="stot"><b>$31.20</b><span class="order">Order pickup →</span></div></div>
+    <div class="store"><span class="ic">📦</span><div class="sb"><div class="sn">Costco</div><div class="sm">bulk: rice 25 lb · chicken thigh</div></div><div class="stot"><b>$38.00</b><span class="order">Order pickup →</span></div></div>
+  </div>
+  <div class="splitnote">Smart split: $112 total · ~$19 cheaper than a single store</div>
+  <div class="hint">Keeps a price book per item &amp; store, builds the cheapest basket, and splits it into one pickup order per store — grab &amp; go. Live prices need a store link-up (Kroger / Walmart / Instacart) or the Ansible looking them up; your saved prices work offline either way.</div>
+
+  <!-- BULK COOK FULL SCREEN -->
+  <div class="seclbl">Bulk cook · the full-screen orchestrator</div>
+  <div class="bulk">
+    <div class="bh"><span class="x">←</span><span class="t">Sunday batch</span>
+      <div class="y"><b>16 portions</b><span>5 dishes · ~90 min</span></div></div>
+    <div class="bbody">
+      <div class="mise">
+        <div class="mh">① Mise en place — prep everything first</div>
+        <div class="chips">
+          <span class="mchip done">rice rinsed ×6c</span>
+          <span class="mchip done">chicken cubed</span>
+          <span class="mchip">veg chopped</span>
+          <span class="mchip">sauces mixed</span>
+          <span class="mchip">pork marinated</span>
+          <span class="mchip">aromatics minced</span>
+        </div>
+      </div>
+
+      <div class="tlwrap">
+        <div class="tlh">② Everything running at once</div>
+        <div class="lane"><span class="ln">⏲ Pressure</span><div class="track"><div class="bar" style="left:0%;width:20%;background:var(--selenite)">Rice</div></div></div>
+        <div class="lane"><span class="ln">🔥 Oven</span><div class="track"><div class="bar" style="left:8%;width:42%;background:var(--amber)">Char siu</div></div></div>
+        <div class="lane"><span class="ln">♨ Air fryer</span><div class="track"><div class="bar" style="left:30%;width:22%;background:#d08bd0">Karaage</div></div></div>
+        <div class="lane"><span class="ln">🍳 Stove 1</span><div class="track"><div class="bar" style="left:55%;width:18%;background:var(--good)">Lo mein</div></div></div>
+        <div class="lane"><span class="ln">🍳 Stove 2</span><div class="track"><div class="bar" style="left:0%;width:100%;background:var(--purple-lt)">Bone broth (simmer)</div></div></div>
+        <div class="axis"><span>0</span><span>30m</span><span>60m</span><span>90m</span></div>
+      </div>
+
+      <div class="stations">
+        <div class="stn"><span class="ic">⏲</span><div class="sb"><div class="sname">Pressure cooker</div><div class="sdish">Rice ×6 cups → base for everything</div></div><span class="timer">12m</span></div>
+        <div class="stn"><span class="ic">🔥</span><div class="sb"><div class="sname">Oven · 400°</div><div class="sdish">Char siu pork</div></div><span class="timer">25m</span></div>
+        <div class="stn"><span class="ic">♨</span><div class="sb"><div class="sname">Air fryer</div><div class="sdish">Chicken karaage</div></div><span class="timer">14m</span></div>
+        <div class="stn"><span class="ic">🍳</span><div class="sb"><div class="sname">Stove · front</div><div class="sdish">Lo mein stir-fry (last, fast)</div></div><span class="timer">8m</span></div>
+        <div class="stn"><span class="ic">🍲</span><div class="sb"><div class="sname">Stove · back</div><div class="sdish">Bone broth — set & forget</div></div><span class="timer">simmer</span></div>
+      </div>
+      <div class="outline">→ lands 16 portions in the store · half eaten this week, half frozen</div>
+    </div>
+  </div>
+
+  <!-- recipe lab -->
+  <div class="seclbl">Recipe lab · compare versions, pick one to master <span class="n">🇰🇷 this focus</span></div>
+  <div class="rl-head">Deciding: 🥬 <b>Napa kimchi</b> — which recipe to batch & ferment</div>
+
+  <div class="rlcard best">
+    <div class="rl-top"><span class="src">Maangchi</span><span class="via">· Tongbaechu-kimchi</span><span class="pick">★ leading</span></div>
+    <div class="rl-meta"><span>⏱ ~2 hr + 1–2 day ferment</span><span>🔥 medium</span><span>makes ~1 gal</span><span>🎥 video + photos</span></div>
+    <div class="pc">
+      <span class="p">✓ The reference recipe — deepest, most authentic flavor</span><br>
+      <span class="p">✓ Huge batch, keeps months, freezes</span><br>
+      <span class="c">✗ Needs salted shrimp (saeu-jeot) + fish sauce</span><br>
+      <span class="c">✗ Longest salting/rinsing step</span>
+    </div>
+  </div>
+
+  <div class="rlcard">
+    <div class="rl-top"><span class="src">Seonkyoung Longest</span><span class="via">· Easy Kimchi</span></div>
+    <div class="rl-meta"><span>⏱ ~1 hr + ferment</span><span>🔥 easy</span><span>makes ~½ gal</span><span>🎥 video</span></div>
+    <div class="pc">
+      <span class="p">✓ Faster, beginner-friendly, fewer specialty items</span><br>
+      <span class="p">✓ Good first attempt to learn the motion</span><br>
+      <span class="c">✗ Shallower depth than the traditional ferment</span><br>
+      <span class="c">✗ Smaller yield — less to stock</span>
+    </div>
+  </div>
+
+  <div class="rlcard">
+    <div class="rl-top"><span class="src">Aaron & Claire</span><span class="via">· Quick Mak-kimchi</span></div>
+    <div class="rl-meta"><span>⏱ ~45 min</span><span>🔥 easy</span><span>makes ~1 qt</span><span>🎥 video</span></div>
+    <div class="pc">
+      <span class="p">✓ Cut-style (no whole leaves) — fastest prep</span><br>
+      <span class="p">✓ Clear substitutions for hard-to-find items</span><br>
+      <span class="c">✗ Eat-soon style, not a long-keeper</span><br>
+      <span class="c">✗ Least traditional texture</span>
+    </div>
+  </div>
+
+  <div class="splitnote">Verdict: learn on Seonkyoung's easy version → graduate to Maangchi's for the real stock batch.</div>
+
+  <!-- cookbook -->
+  <div class="seclbl">The cookbook · recipes that feed the store <span class="n">by region</span></div>
+  <div class="regions" id="regions">
+    <button class="region on" data-r="korean">🇰🇷 Korean</button>
+    <button class="region" data-r="japanese">🇯🇵 Japanese</button>
+    <button class="region" data-r="cantonese">🇭🇰 Cantonese</button>
+    <button class="region" data-r="indian">🇮🇳 Indian</button>
+    <button class="region" data-r="mexican">🇲🇽 Mexican</button>
+    <button class="region" data-r="thai">🇹🇭 Thai</button>
+  </div>
+  <div id="dishes"></div>
+
+  <div class="note"><b>Rebuilt around meal prep.</b> The <b>store</b> is the hub — two columns, everything you've cooked as tappable icon tiles with portion counts (tap = mark one eaten), freezer vs fridge color-coded, like the fortnight glance. <b>Macros stay up top</b> plus portions-ready / days-covered. <b>🔥 Bulk cook</b> opens a full-screen orchestrator: mise en place first, then a shared timeline so the pressure cooker, oven, air fryer and both burners all run at once and finish together — the batch lands as portions in the store. The <b>cookbook</b> feeds it, each recipe showing how many portions it makes + a ❄ freezer flag. Tell me what to fix — this is the shape before I wire it in.</div>
+</div>
+
+<script>
+  // store piles
+  let READY=[
+    {em:'🥣',n:'Apple-cinnamon oats',c:4,loc:'fridge',note:'morning · in rotation'},
+    {em:'🥣',n:'PB-banana oats',c:3,loc:'fridge',note:'morning · in rotation'},
+    {em:'🍜',n:'Lo mein',c:3,loc:'store',note:'sesame-chicken combo'},
+    {em:'🍤',n:'Singapore noodles',c:4,loc:'store',note:'with shrimp'},
+    {em:'🥘',n:'Butter chicken',c:3,loc:'store',note:''},
+    {em:'🍲',n:'Bone broth',c:5,loc:'store',note:'nightcap / base'},
+    {em:'🌮',n:'Carne asada',c:2,loc:'fridge',note:''},
+    {em:'🥩',n:'Beef jerky',c:6,loc:'shelf',note:'dehydrated · graze'},
+    {em:'🥜',n:'Trail mix',c:5,loc:'shelf',note:'sprouted · rotating blends'},
+    {em:'🍮',n:'Sweet treat',c:3,loc:'fridge',note:'rotates · one every 3 days'}
+  ];
+  const NEXT=[
+    {em:'🥣',n:'Oatmeal cups',yield:'→ 6 cups',need:'low — restock soon'},
+    {em:'🍖',n:'Galbi',yield:'→ 6 portions',need:'need short rib'},
+    {em:'🍅',n:'Sauce batch',yield:'→ freeze 12',need:'marinara + curry'},
+    {em:'🍞',n:'Bread (DIY)',yield:'→ 2 loaves',need:'make, don’t buy'},
+    {em:'🥚',n:'Mayo (DIY)',yield:'→ 1 jar',need:'make, don’t buy'},
+    {em:'🥛',n:'Nut milk (DIY)',yield:'→ ½ gal',need:'nuts → upcycle'},
+    {em:'🥩',n:'Beef jerky',yield:'→ dehydrator',need:'need top round'},
+    {em:'🥬',n:'Kimchi',yield:'2 gal',need:'all on hand'}
+  ];
+  const locClass=l=> l==='store'?'freezer':l; // store = freezer
+  function renderReady(){
+    document.getElementById('foodsNow').innerHTML=READY.map((d,i)=>{const lc=locClass(d.loc);
+      return '<div class="fcirc '+(d.c<=0?'out':'')+'" data-i="'+i+'"><div class="bub '+lc+'"><span>'+d.em+'</span>'+
+      '<span class="cnt '+lc+'">×'+Math.max(d.c,0)+'</span></div><div class="fn">'+d.n+'</div></div>';}).join('');
+  }
+  function renderNext(){
+    document.getElementById('foodsNext').innerHTML=NEXT.map(d=>
+      '<div class="fcirc plan"><div class="bub plan"><span>'+d.em+'</span></div><div class="fn">'+d.n+'</div></div>'
+    ).join('');
+  }
+  function updateCounts(){ const total=READY.reduce((s,d)=>s+Math.max(d.c,0),0);
+    document.querySelector('.gt.rdy b').textContent=total; document.getElementById('rdyN').textContent=total; }
+  document.getElementById('foodsNow').addEventListener('click',e=>{const el=e.target.closest('.fcirc');if(!el)return;
+    const i=+el.dataset.i; if(READY[i].c>0)READY[i].c--; renderReady(); updateCounts();
+  });
+  renderReady(); renderNext();
+
+  // sauces — batched & frozen (the secret weapon)
+  const SAUCES=[
+    {em:'🥩',n:'Bulgogi marinade',c:4},{em:'🍖',n:'Galbi marinade',c:3},{em:'🌶',n:'Gochujang base',c:6},
+    {em:'🍛',n:'Curry base',c:5},{em:'🍅',n:'Marinara',c:8},{em:'🍢',n:'Mapo sauce',c:4},
+    {em:'🍗',n:'Teriyaki',c:6},{em:'🌮',n:'Birria consommé',c:5}
+  ];
+  document.getElementById('sauces').innerHTML=SAUCES.map(s=>
+    '<div class="fcirc"><div class="bub freezer"><span>'+s.em+'</span><span class="cnt freezer">×'+s.c+'</span></div><div class="fn">'+s.n+'</div></div>'
+  ).join('');
+
+  // staples by food group
+  const STAPLES=[
+    {g:'Dairy & alt',ic:'🥛',items:[['Butter','ok','🧈'],['Nut milk','low','🥛'],['Eggs','ok','🥚']]},
+    {g:'Bread & grains',ic:'🍞',items:[['Sourdough','ok','🍞'],['Rice','ok','🍚'],['Noodles','low','🍜']]},
+    {g:'Produce',ic:'🥬',items:[['Veggies','ok','🥦'],['Fruit','low','🍎'],['Alliums','ok','🧅'],['Herbs','ok','🌿']]},
+    {g:'Proteins',ic:'🐟',items:[['Chicken','ok','🍗'],['Beef','low','🥩'],['Seafood','out','🍤'],['Tofu','ok','🧊']]},
+    {g:'Dips & condiments',ic:'🫙',items:[['Hummus','ok','🥣'],['Mayo','ok','🥚']]},
+    {g:'Korean pantry',ic:'🇰🇷',items:[['Gochujang','ok','🌶'],['Gochugaru','low','🌶'],['Doenjang','ok','🫙'],['Soy','ok','🍶'],['Sesame oil','low','🫗'],['Fish sauce','ok','🐟']]}
+  ];
+  document.getElementById('staples').innerHTML=STAPLES.map(gr=>
+    '<div class="sgroup"><div class="sgh"><span class="gi">'+gr.ic+'</span>'+gr.g+'</div><div class="sgrid">'+
+    gr.items.map(it=>'<div class="scirc"><div class="sbub '+it[1]+'"><span>'+it[2]+'</span></div><div class="sn">'+it[0]+'</div></div>').join('')+
+    '</div></div>').join('');
+
+  // cookbook (condensed, with portion yield)
+  const DISHES={
+    korean:[
+      {n:'Galbi',frz:1,makes:'makes 6',copies:'copies Gen KBBQ',cost:'$6.10',eat:'$26',sv:'$20',tags:[['ing','short rib'],['proc','marinate'],['proc','grill'],['proc','freezes']]},
+      {n:'Bibimbap',frz:0,makes:'makes 4',copies:'copies Bibigo — better',cost:'$3.80',eat:'$15',sv:'$11',tags:[['ing','rice'],['ing','beef'],['proc','assemble']]},
+      {n:'Mandu',frz:1,makes:'makes 40 pc',copies:'copies Mandoo Bar',cost:'$4.00',eat:'$14',sv:'$10',tags:[['ing','pork'],['proc','fold'],['proc','batch & freeze']]}
+    ],
+    japanese:[
+      {n:'Gyudon',frz:1,makes:'makes 5',copies:'copies Yoshinoya',cost:'$3.20',eat:'$9',sv:'$5.80',tags:[['ing','beef'],['proc','simmer'],['proc','freezes']]},
+      {n:'Katsu curry',frz:1,makes:'makes 5',copies:'copies CoCo Ichibanya',cost:'$4.50',eat:'$16',sv:'$11.50',tags:[['ing','pork'],['proc','fry'],['proc','freeze sauce']]}
+    ],
+    cantonese:[
+      {n:'Char siu',frz:1,makes:'makes 8',copies:'copies a BBQ shop',cost:'$5.00',eat:'$18',sv:'$13',tags:[['ing','pork shoulder'],['proc','roast'],['proc','batch & freeze']]},
+      {n:'Mapo tofu',frz:1,makes:'makes 4',copies:'copies Din Tai Fung',cost:'$2.80',eat:'$14',sv:'$11.20',tags:[['ing','tofu'],['proc','stir-fry'],['proc','freezes']]}
+    ],
+    indian:[
+      {n:'Butter chicken',frz:1,makes:'makes 6',copies:'copies the Curry Pot',cost:'$4.20',eat:'$17',sv:'$12.80',tags:[['ing','chicken'],['proc','simmer'],['proc','freeze sauce']]},
+      {n:'Chana masala',frz:1,makes:'makes 6',copies:'copies a buffet',cost:'$1.90',eat:'$12',sv:'$10',tags:[['ing','chickpea'],['proc','simmer'],['proc','vegan']]}
+    ],
+    mexican:[
+      {n:'Carne asada',frz:0,makes:'makes 5',copies:'copies Torchy’s',cost:'$3.60',eat:'$13',sv:'$9.40',tags:[['ing','skirt steak'],['proc','grill']]},
+      {n:'Birria',frz:1,makes:'makes 8',copies:'copies the birria truck',cost:'$5.50',eat:'$16',sv:'$10.50',tags:[['ing','chuck'],['proc','braise'],['proc','freeze']]}
+    ],
+    thai:[
+      {n:'Green curry',frz:1,makes:'makes 6',copies:'copies your Thai spot',cost:'$4.00',eat:'$15',sv:'$11',tags:[['ing','coconut'],['proc','simmer'],['proc','freeze']]},
+      {n:'Pad krapow',frz:0,makes:'makes 3',copies:'copies Thai Basil',cost:'$3.10',eat:'$13',sv:'$9.90',tags:[['ing','ground chx'],['proc','stir-fry']]}
+    ]
+  };
+  function renderRegion(r){
+    document.getElementById('dishes').innerHTML=(DISHES[r]||[]).map(d=>
+      '<div class="dish"><div class="top"><div class="dn">'+d.n+'</div>'+(d.frz?'<span class="frz">❄</span>':'')+
+      '<span class="makes">'+d.makes+'</span></div><div class="copies">'+d.copies+'</div>'+
+      '<div class="stat"><span>make <b>'+d.cost+'</b></span><span>out <b>'+d.eat+'</b></span><span class="save">▼ '+d.sv+'</span></div>'+
+      '<div class="tags">'+d.tags.map(t=>'<span class="tg '+t[0]+'">'+t[1]+'</span>').join('')+'</div></div>'
+    ).join('');
+  }
+  document.getElementById('regions').addEventListener('click',e=>{const el=e.target.closest('.region');if(!el)return;
+    document.querySelectorAll('.region').forEach(x=>x.classList.remove('on'));el.classList.add('on');renderRegion(el.dataset.r);});
+  renderRegion('korean');
+</script>
+</body>
+</html>

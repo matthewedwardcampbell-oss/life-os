@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tyranids · Hive Fleet</title>
+<style>
+  :root{
+    --sky-0:#12162a; --sky-1:#1a2038; --sky-2:#232a48; --sky-3:#2e3760;
+    --purple:#8a6fd4; --purple-lt:#a487da; --amber:#e9a95c; --selenite:#84b8ca;
+    --good:#7ac9a0; --warn:#e07a7a; --ink:#eceaf4; --ink-dim:#a1a4c2; --ink-faint:#6d7199;
+    --tyr:#9bd45a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--sky-0)}
+  body{color:var(--ink);font-family:'Inter',-apple-system,system-ui,sans-serif;font-size:15px;line-height:1.5;
+    max-width:460px;margin:0 auto;min-height:100vh;background-image:radial-gradient(1200px 520px at 50% -10%,rgba(155,212,90,.1),transparent);}
+  .wrap{padding:18px 15px 70px}
+  h1{font-family:'Fraunces',Georgia,serif;font-size:23px;font-weight:600}
+  .sub{color:var(--ink-dim);font-size:12.5px;margin-top:2px;font-style:italic}
+  .top{display:flex;align-items:center;gap:11px;margin-bottom:6px}
+  .gcirc{width:52px;height:52px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:2.5px solid var(--tyr);display:flex;align-items:center;justify-content:center;font-size:26px}
+  .seclbl{font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin:4px 0 11px;display:flex;align-items:center;gap:7px}
+  .screen{display:none;animation:fade .22s ease}.screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .topbar{display:flex;align-items:center;gap:11px;padding:4px 0 12px;position:sticky;top:0;z-index:5;background:linear-gradient(var(--sky-0) 72%,transparent)}
+  .back{width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:var(--sky-1);border:1px solid var(--sky-2);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink);cursor:pointer}
+  .back:active{transform:scale(.93)}
+  .tbtitle{font-family:'Fraunces',serif;font-size:19px}.tbsub{font-size:10.5px;color:var(--ink-faint)}
+
+  .patch{display:flex;align-items:center;gap:8px;background:var(--sky-1);border:1px solid var(--sky-2);border-radius:11px;padding:9px 12px;font-size:11px;color:var(--ink-dim);margin-bottom:14px}
+  .patch b{color:var(--warn)}
+  .legend{display:flex;gap:11px;flex-wrap:wrap;margin-bottom:12px;font-size:9.5px;color:var(--ink-faint)}
+  .legend span{display:flex;align-items:center;gap:4px}.legend i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+
+  .split{display:flex;gap:11px;align-items:flex-start}
+  .col-ref{flex:0 0 33%;min-width:0}.col-flow{flex:1;min-width:0}.col-fleet{flex:0 0 27%;min-width:0}
+  .colhd{font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-bottom:10px}
+
+  .refrow{display:flex;align-items:center;gap:10px;padding:6px 3px;cursor:pointer;border-radius:12px}
+  .rcirc{width:40px;height:40px;flex:0 0 auto;border-radius:50%;background:var(--sky-1);border:2px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:18px;position:relative}
+  .rcirc.tyr{border-color:var(--tyr)}.rcirc.red{border-color:var(--warn)}.rcirc.teal{border-color:var(--selenite)}
+  .rcirc .sdot{position:absolute;bottom:-2px;right:-2px;width:11px;height:11px;border:2px solid var(--sky-0);border-radius:50%}
+  .sdot.v{background:var(--good)}.sdot.c{background:var(--amber)}.sdot.k{background:var(--ink-faint)}
+  .reflabel{font-size:12.5px;line-height:1.2;font-weight:600}
+
+  .flow{position:relative}
+  .fitem{display:flex;gap:11px;position:relative;padding-bottom:16px}
+  .fitem:not(:last-child)::before{content:'';position:absolute;left:19px;top:42px;bottom:-2px;width:2px;background:var(--sky-3)}
+  .fnode{width:40px;height:40px;flex:0 0 auto;border-radius:50%;background:var(--sky-1);border:2.5px solid var(--tyr);display:flex;align-items:center;justify-content:center;font-size:18px;z-index:1}
+  .fbody{flex:1;min-width:0;background:var(--sky-1);border:1px solid var(--sky-2);border-radius:12px;padding:10px 11px}
+  .fphase{font-family:'Fraunces',serif;font-size:14px}
+  .fstep{font-size:11px;color:var(--ink-dim);line-height:1.4;margin-top:6px;padding-left:11px;position:relative}
+  .fstep::before{content:'●';position:absolute;left:0;color:var(--tyr);font-size:7px;top:4px}
+  .fstep b{color:var(--ink)}.fstep .ref{color:var(--purple-lt);font-weight:600;cursor:pointer;border-bottom:1px dotted var(--purple-lt)}
+
+  .ship{display:flex;flex-direction:column;align-items:center;text-align:center;gap:5px;cursor:pointer;margin-bottom:14px}
+  .ship:active{transform:scale(.95)}
+  .scirc{width:46px;height:46px;border-radius:50%;background:var(--sky-1);border:2.5px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:21px;position:relative}
+  .scirc.bb{border-color:var(--warn)}.scirc.cr{border-color:var(--purple)}.scirc.esc{border-color:var(--selenite)}
+  .scirc .n{position:absolute;bottom:-5px;right:-7px;background:var(--sky-0);border:1px solid var(--sky-3);border-radius:99px;font-size:8px;font-weight:700;padding:0 5px;color:var(--ink-dim)}
+  .sname{font-size:10px;font-weight:600;line-height:1.15;max-width:78px}
+  .srole{font-size:8.5px;color:var(--ink-faint)}
+
+  .vbadge{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:600;border-radius:99px;padding:5px 11px;margin-bottom:4px}
+  .vbadge.v{color:var(--good);background:rgba(122,201,160,.1);border:1px solid rgba(122,201,160,.3)}
+  .vbadge.c{color:var(--amber);background:rgba(233,169,92,.1);border:1px solid rgba(233,169,92,.3)}
+  .vbadge.k{color:var(--ink-dim);background:var(--sky-2);border:1px solid var(--sky-3)}
+  .sdesc{font-size:12.5px;color:var(--ink-dim);line-height:1.6;margin-top:10px}.sdesc b{color:var(--ink)}.sdesc .hl{color:var(--tyr);font-weight:600}
+  .step{display:flex;gap:9px;margin-top:8px}
+  .step .k{width:20px;height:20px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:1px solid var(--sky-3);font-size:11px;display:flex;align-items:center;justify-content:center}
+  .step .t{font-size:12px;color:var(--ink-dim);line-height:1.45}.step .t b{color:var(--ink)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .chips span{font-size:10px;color:var(--ink-dim);background:var(--sky-2);border:1px solid var(--sky-3);border-radius:99px;padding:3px 9px}
+  template{display:none}
+
+  @media (min-width:640px){
+    body{max-width:1000px;font-size:16px}.wrap{padding:26px 30px 90px}
+    .col-ref{flex:0 0 28%}.col-fleet{flex:0 0 22%}
+    .rcirc{width:50px;height:50px;font-size:22px}.reflabel{font-size:15px}
+    .fstep{font-size:14px}.fnode{width:50px;height:50px;font-size:23px}.fphase{font-size:16px}
+    .scirc{width:58px;height:58px;font-size:26px}.sname{font-size:12px;max-width:100px}.srole{font-size:10px}
+    .sdesc,.step .t{font-size:15px}.tbtitle{font-size:23px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- MAIN -->
+  <div class="screen active" id="scr-main">
+    <div class="top"><div class="gcirc">🦑</div><div><h1>Tyranids · Hive Fleet</h1><div class="sub">Lunge in, latch on, devour. You herd a swarm, not a battle line.</div></div></div>
+    <div class="patch"><span>🔄</span><div>Built from BFGA2 guides (≈2019) — <b>balance may have shifted; verify ship names &amp; abilities in your current build.</b></div></div>
+    <div class="split">
+      <div class="col-ref">
+        <div class="colhd">📚 Reference</div>
+        <div class="legend"><span><i style="background:var(--good)"></i>solid</span><span><i style="background:var(--amber)"></i>my rec</span><span><i style="background:var(--ink-faint)"></i>check</span></div>
+        <div class="refrow" onclick="openRef('mind','Mentality','v')"><div class="rcirc tyr">🧠<span class="sdot v"></span></div><div class="reflabel">Mentality</div></div>
+        <div class="refrow" onclick="openRef('lunge','Lunge &amp; latch','k')"><div class="rcirc tyr">🐙<span class="sdot k"></span></div><div class="reflabel">Lunge &amp; latch</div></div>
+        <div class="refrow" onclick="openRef('board','Boarding','k')"><div class="rcirc tyr">🧫<span class="sdot k"></span></div><div class="reflabel">Boarding</div></div>
+        <div class="refrow" onclick="openRef('acid','Acid guns','k')"><div class="rcirc red">☣️<span class="sdot k"></span></div><div class="reflabel">Acid guns</div></div>
+        <div class="refrow" onclick="openRef('pos','Positioning','v')"><div class="rcirc teal">🌫️<span class="sdot v"></span></div><div class="reflabel">Positioning</div></div>
+        <div class="refrow" onclick="openRef('weak','Weaknesses','v')"><div class="rcirc red">🛡️<span class="sdot v"></span></div><div class="reflabel">Weaknesses</div></div>
+      </div>
+
+      <div class="col-flow">
+        <div class="colhd">🧭 Battle flow</div>
+        <div class="flow">
+          <div class="fitem"><div class="fnode">🌫️</div><div class="fbody"><div class="fphase">1 · Hide</div>
+            <div class="fstep">Start stealthed in an <span class="ref" onclick="openRef('pos','Positioning','v')">asteroid/nebula field</span> (no asteroid damage to you). Let them cross the map.</div></div></div>
+          <div class="fitem"><div class="fnode">🎯</div><div class="fbody"><div class="fphase">2 · Pick target</div>
+            <div class="fstep">Mark their <b>command ship</b> or an isolated straggler. Don't commit the whole swarm into their line.</div></div></div>
+          <div class="fitem"><div class="fnode">🚀</div><div class="fbody"><div class="fphase">3 · Lunge</div>
+            <div class="fstep">Pop the <span class="ref" onclick="openRef('lunge','Lunge &amp; latch','k')">speed-boost</span> to close fast; stagger ships so you don't pile up.</div></div></div>
+          <div class="fitem"><div class="fnode">🐙</div><div class="fbody"><div class="fphase">4 · Latch &amp; board</div>
+            <div class="fstep">Latch the <span class="ref" onclick="openRef('lunge','Lunge &amp; latch','k')">tentacle</span> to pin + DoT, then dump <span class="ref" onclick="openRef('board','Boarding','k')">boarding</span> while <span class="ref" onclick="openRef('acid','Acid guns','k')">acid</span> melts hull.</div></div></div>
+          <div class="fitem"><div class="fnode">🦷</div><div class="fbody"><div class="fphase">5 · Devour → next</div>
+            <div class="fstep">Break it, peel off, repeat. If you're getting <span class="ref" onclick="openRef('weak','Weaknesses','v')">kited or shelled</span>, disengage — don't chase.</div></div></div>
+        </div>
+      </div>
+
+      <div class="col-fleet">
+        <div class="colhd">🦴 Fleet · my rec</div>
+        <div class="ship" onclick="openRef('s_hive','Bio Acid Hiveship','c')"><div class="scirc bb">🛸<span class="n">×2–3</span></div><div class="sname">Bio Acid Hiveship</div><div class="srole">battleship · anchor</div></div>
+        <div class="ship" onclick="openRef('s_void','Acid Voidprowler','c')"><div class="scirc cr">🦑<span class="n">core</span></div><div class="sname">Acid Voidprowler</div><div class="srole">light cruiser</div></div>
+        <div class="ship" onclick="openRef('s_razor','Razorfiend','c')"><div class="scirc cr">🦈</div><div class="sname">Razorfiend</div><div class="srole">cruiser · line</div></div>
+        <div class="ship" onclick="openRef('s_bioinf','Bio-Infestation Razorfiend','c')"><div class="scirc cr">🪰</div><div class="sname">Bio-Infest. Razorfiend</div><div class="srole">scout fighters</div></div>
+        <div class="ship" onclick="openRef('s_vang','Corrosive Vanguard','c')"><div class="scirc esc">⚡</div><div class="sname">Corrosive Vanguard</div><div class="srole">escort · focus-fire</div></div>
+        <div class="ship" onclick="openRef('s_drone','Caustic Drone','c')"><div class="scirc esc">🐝</div><div class="sname">Caustic Drone</div><div class="srole">escort · cheap screen</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAIL -->
+  <div class="screen" id="scr-ref">
+    <div class="topbar"><div class="back" onclick="go('scr-main')">←</div>
+      <div><div class="tbtitle" id="ref-title">—</div><div class="tbsub">Tyranids · reference</div></div></div>
+    <div id="ref-badge"></div><div id="ref-content"></div>
+  </div>
+</div>
+
+<!-- TEMPLATES -->
+<template id="tpl-mind">
+  <div class="sdesc" style="margin-top:0"><b>A chaotic swarm that wants to close and devour.</b> You're herding a rush of attackers, not flying a precise line — ships charge in and start chewing.</div>
+  <div class="sdesc">Campaign-wise the hunger is literal: you gain biomass by occupying sectors and can strip one clean in ~3 turns. In battle, the plan is: hide → pick → lunge → latch → board.</div>
+</template>
+<template id="tpl-lunge">
+  <div class="sdesc" style="margin-top:0"><b>How you "get over here":</b> a <span class="hl">short speed-boost lunge</span> (~2s) to slam into a target and close the gap fast.</div>
+  <div class="sdesc"><b>The grab:</b> within a few ship-lengths, extend the <span class="hl">sucker / feeder tentacle</span> — it latches onto an enemy and ticks damage-over-time, pinning it in place.</div>
+  <div class="sdesc"><b>⚑ Honest note:</b> this is a <b>grab-and-hold</b>, not a yank-toward-you. I couldn't confirm a true "pull" ability — if your build has a named pull skill, tell me and I'll verify it. (Tyranids are also <i>poor rammers</i> — don't rely on ramming.)</div>
+</template>
+<template id="tpl-board">
+  <div class="sdesc" style="margin-top:0"><b>The win condition.</b> Get adjacent and launch <span class="hl">ravenous genestealer hordes</span> — Tyranids have huge assault strength, so a pinned ship gets eaten.</div>
+  <div class="sdesc"><b>Debated:</b> one guide calls repeated boarding "subpar," another calls rush-and-board "braindead easy." Reality: <b>latch + board + acid together</b> is the kill — boarding alone against a healthy ship is slow.</div>
+  <div class="sdesc">Note: enemies can repopulate boarded hulks (e.g., Lightning Strike), so finish what you start.</div>
+</template>
+<template id="tpl-acid">
+  <div class="sdesc" style="margin-top:0"><b>Short-range acid weapons</b> are your main guns — they shred hull once you're on top of a target. Tyranids are a <b>close-range fleet</b>; you have little to offer at range.</div>
+  <div class="sdesc">Smaller creatures spit spore bombs and some vessels self-destruct into a damaging spore cloud, but those are secondary to the bite.</div>
+</template>
+<template id="tpl-pos">
+  <div class="sdesc" style="margin-top:0"><b>Hide, then ambush.</b> You start stealthed — park in <span class="hl">asteroid fields / nebulae</span> (you take no asteroid damage) and let the enemy cross the map to you.</div>
+  <div class="sdesc"><b>Spore Fields</b> count as nebulae for a reload upgrade. Set ships to fire forward, auto-engage off, engines holding position.</div>
+  <div class="sdesc"><b>The tension:</b> the meta plays this defensively, but to practice the <i>lunge-and-bite</i> feel you'll be the one closing — just don't overextend into open space.</div>
+</template>
+<template id="tpl-weak">
+  <div class="sdesc" style="margin-top:0"><b>Squishy and slow.</b> You take heavy losses chasing, and a head-on rush into <b>artillery (Chaos) or lance fire</b> gets punished. The hardest part is closing without your ships crashing into each other or eating a volley.</div>
+  <div class="step"><div class="k">✓</div><div class="t"><b>Do:</b> ambush from cover, pick isolated targets, disengage if kited at long range.</div></div>
+  <div class="step"><div class="k">✕</div><div class="t"><b>Don't:</b> ram (you're bad at it), chase across open void, or feed the whole swarm into a line at once.</div></div>
+  <div class="sdesc"><b>Your late-game edge:</b> a high-level Tyranid ability can make the fleet nearly morale-immune — brutal once it's online.</div>
+</template>
+<template id="tpl-s_hive"><div class="sdesc" style="margin-top:0"><b>Bio Acid Hiveship — battleship.</b> Your anchor; bring 2–3 at higher points alongside the Voidprowler core. Heavy acid + the body to soak while escorts and cruisers swarm in.</div></template>
+<template id="tpl-s_void"><div class="sdesc" style="margin-top:0"><b>Acid Voidprowler — light cruiser, the core of the fleet.</b> Spam these. Cheap-ish acid platforms that do the actual work up close; everything else supports them.</div></template>
+<template id="tpl-s_razor"><div class="sdesc" style="margin-top:0"><b>Razorfiend — cruiser.</b> Line ship to add weight to the swarm once your Voidprowler core is set.</div></template>
+<template id="tpl-s_bioinf"><div class="sdesc" style="margin-top:0"><b>Bio-Infestation Razorfiend — cruiser.</b> Carries fighters for <b>scouting</b>. Bring one if you lack escorts or a probe, so you see them before they see you.</div></template>
+<template id="tpl-s_vang"><div class="sdesc" style="margin-top:0"><b>Corrosive Vanguard — escort.</b> Has a <b>focus-fire</b> skill that stacks your damage onto one target — great for melting their command ship fast.</div></template>
+<template id="tpl-s_drone"><div class="sdesc" style="margin-top:0"><b>Caustic Drone — escort.</b> Cheap screen and capture/scout body. Numbers to soak and grab objectives.</div></template>
+
+<script>
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+var BADGE={v:['v','✓ Solid — core Tyranid behavior'],c:['c','✎ My recommended pick'],k:['k','⟳ Needs current-patch check']};
+function openRef(id,title,status){
+  document.getElementById('ref-title').innerHTML=title;
+  var b=BADGE[status]||BADGE.k;
+  document.getElementById('ref-badge').innerHTML='<span class="vbadge '+b[0]+'">'+b[1]+'</span>';
+  document.getElementById('ref-content').innerHTML=document.getElementById('tpl-'+id).innerHTML;
+  go('scr-ref');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Megalomania Management</title>
+<style>
+  :root{
+    --sky-0:#12162a; --sky-1:#1a2038; --sky-2:#232a48; --sky-3:#2e3760;
+    --purple:#8a6fd4; --purple-lt:#a487da; --amber:#e9a95c; --selenite:#84b8ca;
+    --good:#7ac9a0; --warn:#e07a7a; --ink:#eceaf4; --ink-dim:#a1a4c2; --ink-faint:#6d7199;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--sky-0)}
+  body{color:var(--ink);font-family:'Inter',-apple-system,system-ui,sans-serif;font-size:15px;line-height:1.5;
+    max-width:460px;margin:0 auto;min-height:100vh;
+    background-image:radial-gradient(1200px 520px at 50% -10%,rgba(138,111,212,.13),transparent);}
+  .wrap{padding:18px 15px 70px}
+  h1{font-family:'Fraunces',Georgia,serif;font-size:25px;font-weight:600}
+  .sub{color:var(--ink-dim);font-size:12.5px;margin-top:3px;margin-bottom:16px;font-style:italic}
+  .seclbl{font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:var(--ink-faint);
+    font-weight:700;margin:20px 0 11px;display:flex;align-items:center;gap:7px}
+  .seclbl .n{margin-left:auto;font-size:10px;letter-spacing:.3px;text-transform:none;color:var(--selenite);
+    background:rgba(132,184,202,.12);border-radius:99px;padding:2px 9px;font-weight:600}
+
+  .screen{display:none;animation:fade .22s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .topbar{display:flex;align-items:center;gap:11px;padding:4px 0 12px;position:sticky;top:0;z-index:5;
+    background:linear-gradient(var(--sky-0) 72%,transparent)}
+  .back{width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:var(--sky-1);border:1px solid var(--sky-2);
+    display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink);cursor:pointer}
+  .back:active{transform:scale(.93)}
+  .tbtitle{font-family:'Fraunces',serif;font-size:19px;line-height:1.05}
+  .tbsub{font-size:10.5px;color:var(--ink-faint)}
+
+  /* patch stamp */
+  .patch{display:flex;align-items:center;gap:8px;background:rgba(122,201,160,.08);border:1px solid rgba(122,201,160,.28);
+    border-radius:11px;padding:8px 12px;font-size:11px;color:var(--ink-dim);margin-bottom:4px}
+  .patch b{color:var(--good)} .patch .sync{font-size:13px}
+
+  /* circle grids */
+  .circgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 6px;margin-top:4px}
+  .cnode{display:flex;flex-direction:column;align-items:center;text-align:center;gap:7px;cursor:pointer;transition:transform .1s}
+  .cnode:active{transform:scale(.93)}
+  .circ{width:70px;height:70px;border-radius:50%;background:var(--sky-1);border:2.5px solid var(--sky-3);
+    display:flex;align-items:center;justify-content:center;font-size:29px;position:relative}
+  .circ.sm{width:54px;height:54px;font-size:23px} .circ.xs{width:40px;height:40px;font-size:18px}
+  .circ.strong{border-color:var(--good)} .circ.dev{border-color:var(--amber)} .circ.learn{border-color:var(--purple)}
+  .circ.teal{border-color:var(--selenite)} .circ.red{border-color:var(--warn)} .circ.gold{border-color:var(--amber)} .circ.pur{border-color:var(--purple)}
+  .circ .pct{position:absolute;bottom:-5px;right:-6px;background:var(--sky-0);border:1px solid var(--sky-3);
+    border-radius:99px;font-size:9px;font-weight:700;padding:1px 6px;color:var(--ink-dim)}
+  .cname{font-size:10.5px;line-height:1.2;color:var(--ink);font-weight:600;max-width:90px}
+  .csub{font-size:9px;color:var(--ink-faint)}
+
+  .stratgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:4px}
+  .scard{display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;cursor:pointer;
+    background:var(--sky-1);border:1px solid var(--sky-2);border-radius:18px;padding:18px 12px;transition:transform .1s}
+  .scard:active{transform:scale(.97)}
+  .scard.built{border-top:3px solid var(--good)} .scard.tbd{border-top:3px solid var(--ink-faint);opacity:.82}
+  .scard .circ{width:76px;height:76px;font-size:33px}
+  .scname{font-family:'Fraunces',serif;font-size:17px}.scalias{font-size:10px;color:var(--ink-dim);margin-top:2px}
+  .scbadge{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 9px;border-radius:99px}
+  .scbadge.ok{color:var(--good);background:rgba(122,201,160,.14)} .scbadge.soon{color:var(--ink-faint);background:var(--sky-2)}
+
+  /* ===== two-column split: reference (L) / flow (R) ===== */
+  .split{display:flex;gap:11px;align-items:flex-start}
+  .col-ref{flex:0 0 46%;min-width:0} .col-flow{flex:1;min-width:0}
+  .colhd{font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-bottom:9px}
+  .search{display:flex;align-items:center;gap:7px;background:var(--sky-1);border:1px solid var(--sky-2);
+    border-radius:99px;padding:8px 11px;margin-bottom:12px}
+  .search input{flex:1;background:transparent;border:none;outline:none;color:var(--ink);font-size:12.5px;min-width:0}
+  .search input::placeholder{color:var(--ink-faint)} .search .ic{font-size:13px;color:var(--ink-faint)}
+  .railgrp{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;
+    margin:12px 0 6px;opacity:.8}
+  .railgrp:first-child{margin-top:0}
+  .refrow{display:flex;align-items:center;gap:9px;padding:6px 4px;cursor:pointer;border-radius:10px;transition:background .12s}
+  .refrow:active{background:var(--sky-1)}
+  .reflabel{font-size:12px;line-height:1.2;flex:1;min-width:0}
+  .sdot{width:8px;height:8px;flex:0 0 auto;border-radius:50%;background:var(--ink-faint)}
+  .sdot.v{background:var(--good)} .sdot.c{background:var(--amber)} .sdot.k{background:var(--ink-faint)}
+
+  /* flow (right, linear, circle nodes) */
+  .flow{position:relative}
+  .fitem{display:flex;gap:11px;position:relative;padding-bottom:16px}
+  .fitem:not(:last-child)::before{content:'';position:absolute;left:19px;top:42px;bottom:-2px;width:2px;background:var(--sky-3)}
+  .fnode{width:40px;height:40px;flex:0 0 auto;border-radius:50%;background:var(--sky-1);border:2.5px solid var(--amber);
+    display:flex;align-items:center;justify-content:center;font-size:19px;z-index:1}
+  .fitem.p2 .fnode{border-color:var(--selenite)} .fitem.p3 .fnode{border-color:var(--warn)}
+  .fbody{flex:1;min-width:0;background:var(--sky-1);border:1px solid var(--sky-2);border-radius:12px;padding:10px 11px}
+  .fphase{font-family:'Fraunces',serif;font-size:14px}.fyr{font-size:9px;color:var(--ink-faint);display:block}
+  .fstep{font-size:11px;color:var(--ink-dim);line-height:1.4;margin-top:7px;padding-left:11px;position:relative}
+  .fstep::before{content:'●';position:absolute;left:0;color:var(--amber);font-size:7px;top:4px}
+  .fitem.p2 .fstep::before{color:var(--selenite)} .fitem.p3 .fstep::before{color:var(--warn)}
+  .fstep b{color:var(--ink)} .fstep .ref{color:var(--purple-lt);font-weight:600;cursor:pointer;border-bottom:1px dotted var(--purple-lt)}
+  .fstep .fix{color:var(--amber);font-weight:600}
+
+  /* detail blocks */
+  .vbadge{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:600;border-radius:99px;padding:5px 11px;margin-bottom:4px}
+  .vbadge.v{color:var(--good);background:rgba(122,201,160,.1);border:1px solid rgba(122,201,160,.3)}
+  .vbadge.c{color:var(--amber);background:rgba(233,169,92,.1);border:1px solid rgba(233,169,92,.3)}
+  .vbadge.k{color:var(--ink-dim);background:var(--sky-2);border:1px solid var(--sky-3)}
+  .idchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .idchips span{font-size:10px;color:var(--ink-dim);background:var(--sky-2);border:1px solid var(--sky-3);border-radius:99px;padding:3px 9px}
+  .idchips .diff{color:var(--warn);border-color:rgba(224,122,122,.35);font-weight:700}
+  .sdesc{font-size:12.5px;color:var(--ink-dim);line-height:1.6;margin-top:10px}
+  .sdesc b{color:var(--ink)} .sdesc .hl{color:var(--selenite);font-weight:600} .sdesc .fx{color:var(--amber);font-weight:600}
+  .arow{display:flex;align-items:center;gap:9px;margin-top:7px}
+  .arow .pct{font-family:'Fraunces',serif;font-size:14px;font-weight:600;width:34px;flex:0 0 auto;text-align:right}
+  .arow .abar{flex:1;height:11px;border-radius:99px;background:var(--sky-2);overflow:hidden}
+  .arow .abar i{display:block;height:100%;border-radius:99px}
+  .arow .nm{font-size:10.5px;color:var(--ink-dim);width:124px;flex:0 0 auto}.arow .nm b{color:var(--ink)}
+  .step{display:flex;gap:9px;margin-top:8px}
+  .step .k{width:19px;height:19px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:1px solid var(--sky-3);
+    font-size:10px;font-weight:700;color:var(--selenite);display:flex;align-items:center;justify-content:center}
+  .step .t{font-size:12px;color:var(--ink-dim);line-height:1.45}.step .t b{color:var(--ink)}
+  .ladder{display:flex;flex-direction:column;gap:5px;margin-top:4px}
+  .lstep{display:flex;align-items:center;gap:9px;background:var(--sky-2);border:1px solid var(--sky-3);border-radius:9px;padding:7px 10px}
+  .lstep .num{width:19px;height:19px;flex:0 0 auto;border-radius:50%;background:var(--sky-0);border:1px solid var(--sky-3);
+    font-size:10px;font-weight:700;color:var(--selenite);display:flex;align-items:center;justify-content:center}
+  .lstep .lt{font-size:12px}.lstep .lt b{color:var(--ink)}.lstep .lt .note{color:var(--ink-faint);font-size:10px}
+  .lstep.key{border-color:var(--amber)}.lstep.key .num{color:var(--amber)}
+  .trap{background:var(--sky-2);border:1px solid var(--sky-3);border-left:3px solid var(--warn);border-radius:10px;padding:10px 12px;margin-top:8px}
+  .trap .tn{font-size:12.5px;font-weight:700}.trap .tl{font-size:10.5px;margin-top:5px;line-height:1.45}
+  .trap .tl .k{color:var(--warn);font-weight:700}.trap .tl .fx{color:var(--good);font-weight:700}.trap .tl b{color:var(--ink)}
+  .crisis{background:var(--sky-2);border:1px solid var(--sky-3);border-radius:11px;padding:10px 12px;margin-top:8px}
+  .crisis .cn{font-size:12.5px;font-weight:700}.crisis .cr{font-size:10.5px;margin-top:5px;line-height:1.5}
+  .crisis .cr .def{color:var(--selenite);font-weight:700}.crisis .cr .off{color:var(--warn);font-weight:700}.crisis .cr b{color:var(--ink)}
+  .noresult{text-align:center;color:var(--ink-faint);font-size:11px;padding:16px 0;display:none}
+  .tbd-note{background:var(--sky-1);border:1px solid var(--sky-2);border-radius:14px;padding:15px;margin-top:16px;
+    font-size:12px;color:var(--ink-dim);line-height:1.6}.tbd-note b{color:var(--ink)}
+  template{display:none}
+
+  /* bigger reference circles + legend + status corner dots */
+  .legend{display:flex;gap:13px;flex-wrap:wrap;margin-bottom:13px;font-size:9.5px;color:var(--ink-faint)}
+  .legend span{display:flex;align-items:center;gap:5px}
+  .legend i{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+  .refrow{display:flex;align-items:center;gap:12px;padding:7px 3px;cursor:pointer;border-radius:12px}
+  .rcirc{width:33px;height:33px;flex:0 0 auto;border-radius:50%;background:var(--sky-1);border:2px solid var(--sky-3);
+    display:flex;align-items:center;justify-content:center;font-size:16px;position:relative}
+  .rcirc.teal{border-color:var(--selenite)} .rcirc.red{border-color:var(--warn)} .rcirc.pur{border-color:var(--purple)} .rcirc.gold{border-color:var(--amber)}
+  .rcirc .sdot{position:absolute;bottom:-2px;right:-2px;width:10px;height:10px;border:2px solid var(--sky-0)}
+  .reflabel{font-size:13px;line-height:1.25;font-weight:600}
+  /* expandable ladder items */
+  .litem .lstep{cursor:pointer}
+  .lstep .lx{margin-left:auto;color:var(--ink-faint);font-size:10px;transition:transform .2s;padding-left:6px}
+  .litem.open .lstep .lx{transform:rotate(180deg)}
+  .lexp{display:none;font-size:11px;color:var(--ink-dim);line-height:1.5;padding:8px 11px 2px 40px}
+  .lexp b{color:var(--ink)}
+  .litem.open .lexp{display:block}
+
+  /* responsive: real layout on bigger screens instead of zoom-stretch */
+  @media (min-width:620px){
+    body{max-width:880px;font-size:16px}
+    .wrap{padding:28px 32px 90px}
+    h1{font-size:32px}
+    .circ{width:86px;height:86px;font-size:36px}
+    .scard .circ{width:92px;height:92px;font-size:40px}
+    .col-ref{flex:0 0 40%}
+    .rcirc{width:44px;height:44px;font-size:21px}
+    .rcirc .sdot{width:12px;height:12px}
+    .reflabel{font-size:15.5px}
+    .colhd{font-size:12px}
+    .railgrp{font-size:10.5px}
+    .fnode{width:54px;height:54px;font-size:26px}
+    .fphase{font-size:17px}
+    .fstep{font-size:13.5px}
+    .fitem:not(:last-child)::before{left:26px;top:56px}
+    .circ.sm{width:76px;height:76px;font-size:32px}
+    .sdesc,.step .t{font-size:14px}
+    .tbtitle{font-size:23px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- SCREEN 1: SHELF -->
+  <div class="screen active" id="scr-shelf">
+    <h1>Megalomania Management</h1>
+    <div class="sub">How Alexander became Great.</div>
+    <div class="seclbl">The curriculum · 6 games <span class="n">tap a circle</span></div>
+    <div class="circgrid">
+      <div class="cnode" onclick="go('scr-game')"><div class="circ dev">🌌<span class="pct">55%</span></div><div class="cname">Stellaris</div><div class="csub">2 strategies</div></div>
+      <div class="cnode"><div class="circ strong">🏛️<span class="pct">70%</span></div><div class="cname">AoM: Retold</div><div class="csub">Loki</div></div>
+      <div class="cnode"><div class="circ dev">☀️<span class="pct">45%</span></div><div class="cname">Sins II</div><div class="csub">TEC</div></div>
+      <div class="cnode"><div class="circ learn">🚀<span class="pct">30%</span></div><div class="cname">BFG: Armada 2</div><div class="csub">Imperial</div></div>
+      <div class="cnode"><div class="circ dev">⚔️<span class="pct">50%</span></div><div class="cname">TWW IV</div><div class="csub">Dwarfs</div></div>
+      <div class="cnode"><div class="circ learn">💀<span class="pct">25%</span></div><div class="cname">DoW 40k V</div><div class="csub">Marines</div></div>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: GAME -->
+  <div class="screen" id="scr-game">
+    <div class="topbar"><div class="back" onclick="go('scr-shelf')">←</div>
+      <div><div class="tbtitle">🌌 Stellaris</div><div class="tbsub">Grand Admiral · pick a discipline</div></div></div>
+    <div class="seclbl">Strategies <span class="n">1 built · 1 planned</span></div>
+    <div class="stratgrid">
+      <div class="scard built" onclick="go('scr-strategy')">
+        <div class="circ strong">🐬</div><div class="scname">United Oceans of Andari</div>
+        <div class="scalias">Ocean Alloy · Space Dolphin Anglers</div><div class="scbadge ok">built</div>
+      </div>
+      <div class="scard tbd">
+        <div class="circ learn">🐪</div><div class="scname">Nomads</div>
+        <div class="scalias">now a 4.4 expansion!</div><div class="scbadge soon">planned</div>
+      </div>
+    </div>
+    <div class="tbd-note"><b>Nomads</b> shipped as a real expansion in patch 4.4 "Pegasus" — when you're ready, feed me a build and this becomes a full second discipline.</div>
+  </div>
+
+  <!-- SCREEN 3: STRATEGY (OCEAN ALLOY) -->
+  <div class="screen" id="scr-strategy">
+    <div class="topbar"><div class="back" onclick="go('scr-game')">←</div>
+      <div><div class="tbtitle">🐬 United Oceans of Andari</div><div class="tbsub">Ocean Alloy · Space Dolphin Anglers · Grand Admiral</div></div></div>
+
+    <div class="patch"><span class="sync">🔄</span><div>Auto-verified against <b>patch 4.5.2</b> on open · green = confirmed, amber = corrected, grey = re-checking</div></div>
+
+    <div class="split">
+      <!-- LEFT: reference -->
+      <div class="col-ref">
+        <div class="colhd">📚 Reference</div>
+        <div class="search"><span class="ic">🔍</span><input id="q" placeholder="Special case…" oninput="filterLib()"></div>
+        <div class="legend">
+          <span><i style="background:var(--good)"></i>Verified vs 4.5.2</span>
+          <span><i style="background:var(--amber)"></i>Corrected</span>
+          <span><i style="background:var(--ink-faint)"></i>Re-checking</span>
+        </div>
+        <div id="lib">
+          <div class="railgrp">Progression</div>
+          <div class="refrow" data-k="tradition adaptability supremacy domination cybernetics prosperity statecraft" onclick="openRef('trad','Tradition ladder','k')"><div class="rcirc pur">📜<span class="sdot k"></span></div><div class="reflabel">Traditions</div></div>
+          <div class="refrow" data-k="ascension perks hydrocentric shared destiny galactic wonders defender" onclick="openRef('asc','Ascension perks','k')"><div class="rcirc pur">✨<span class="sdot k"></span></div><div class="reflabel">Ascension</div></div>
+          <div class="refrow" data-k="megastructure mega shipyard dyson sphere matter decompressor" onclick="openRef('mega','Megastructures','v')"><div class="rcirc pur">🪐<span class="sdot v"></span></div><div class="reflabel">Megastructures</div></div>
+          <div class="refrow" data-k="precursors archaeology relic sites zroni baol first league" onclick="openRef('prec','Precursors','k')"><div class="rcirc pur">🗿<span class="sdot k"></span></div><div class="reflabel">Precursors</div></div>
+
+          <div class="railgrp">Core build</div>
+          <div class="refrow" data-k="identity aquatic catalytic hydrocentric cybernetics hegemon" onclick="openRef('identity','Build identity','v')"><div class="rcirc teal">🐬<span class="sdot v"></span></div><div class="reflabel">Identity</div></div>
+          <div class="refrow" data-k="planetary split allocation ocean fortress admin science ratio" onclick="openRef('split','Planetary split','k')"><div class="rcirc teal">🌊<span class="sdot k"></span></div><div class="reflabel">Planetary split</div></div>
+          <div class="refrow" data-k="build order nutritional plenitude food tech hydroponics leader military missile" onclick="openRef('build','Build order','c')"><div class="rcirc teal">🛠️<span class="sdot c"></span></div><div class="reflabel">Build order</div></div>
+          <div class="refrow" data-k="economy catalytic metallurgists alloys ecumenopolis forge mercenary" onclick="openRef('econ','Economy engine','k')"><div class="rcirc teal">🍲<span class="sdot k"></span></div><div class="reflabel">Economy</div></div>
+          <div class="refrow" data-k="edicts nutritional plenitude unity upkeep" onclick="openRef('edicts','Edicts','k')"><div class="rcirc teal">📋<span class="sdot k"></span></div><div class="reflabel">Edicts</div></div>
+          <div class="refrow" data-k="resource ledger income expense balance upkeep deficit market" onclick="openRef('ledger','Resource ledger','v')"><div class="rcirc teal">📊<span class="sdot v"></span></div><div class="reflabel">Resource ledger</div></div>
+          <div class="refrow" data-k="map settings galaxy abundance minerals hyperlane size difficulty crisis strength" onclick="openRef('map','Map &amp; settings','v')"><div class="rcirc teal">🗺️<span class="sdot v"></span></div><div class="reflabel">Map &amp; settings</div></div>
+
+          <div class="railgrp">Military</div>
+          <div class="refrow" data-k="warfare vassal subjugation ground armies status quo take point" onclick="openRef('war','Warfare &amp; vassals','k')"><div class="rcirc red">⚔️<span class="sdot k"></span></div><div class="reflabel">Warfare</div></div>
+          <div class="refrow" data-k="traps bombardment cap occupation white peace divided patronage loyalty" onclick="openRef('traps','Traps to drill out','k')"><div class="rcirc red">⚠️<span class="sdot k"></span></div><div class="reflabel">Traps</div></div>
+          <div class="refrow" data-k="crisis prethoryn unbidden contingency cetana refit shields armor arc emitter" onclick="openRef('crisis','Crisis refits','v')"><div class="rcirc red">👾<span class="sdot v"></span></div><div class="reflabel">Crisis refits</div></div>
+
+          <div class="railgrp">Governance</div>
+          <div class="refrow" data-k="empire management sprawl admin capacity core sector specialist" onclick="openRef('empire','Empire management','v')"><div class="rcirc gold">🌐<span class="sdot v"></span></div><div class="reflabel">Empire mgmt</div></div>
+          <div class="refrow" data-k="sector management automation governor focus outer worlds" onclick="openRef('sector','Sector management','v')"><div class="rcirc gold">🗂️<span class="sdot v"></span></div><div class="reflabel">Sector mgmt</div></div>
+          <div class="refrow" data-k="conquered empire pops integrate vassalize slavery stratified resettle" onclick="openRef('conq','Conquered empires','k')"><div class="rcirc gold">⛓️<span class="sdot k"></span></div><div class="reflabel">Conquered mgmt</div></div>
+          <div class="refrow" data-k="diplomacy federation hegemony envoys favors defensive pact guarantee" onclick="openRef('diplo','Diplomacy','v')"><div class="rcirc gold">🤝<span class="sdot v"></span></div><div class="reflabel">Diplomacy</div></div>
+          <div class="refrow" data-k="espionage envoys infiltration operations steal tech sabotage" onclick="openRef('esp','Espionage','v')"><div class="rcirc gold">🕵️<span class="sdot v"></span></div><div class="reflabel">Espionage</div></div>
+          <div class="refrow" data-k="galactic senate hegemony restricted voting resolutions imperium armada" onclick="openRef('senate','Galactic Senate','k')"><div class="rcirc gold">🏛️<span class="sdot k"></span></div><div class="reflabel">Senate</div></div>
+        </div>
+        <div class="noresult" id="noresult">No match.</div>
+      </div>
+
+      <!-- RIGHT: flow -->
+      <div class="col-flow">
+        <div class="colhd">🧭 Game flow</div>
+        <div class="flow">
+          <div class="fitem p1"><div class="fnode">🌱</div><div class="fbody">
+            <div class="fphase">Early<span class="fyr">2200–2235</span></div>
+            <div class="fstep">Open with the <span class="ref" onclick="openRef('build','Build order','c')">build order</span> — starbase Hydroponics, mining → energy/alloys.</div>
+            <div class="fstep"><span class="fix">⚑ 4.5 fix:</span> research the 2 food techs first, <b>then</b> run Nutritional Plenitude — it's not turn-one.</div>
+            <div class="fstep">Snowball the <span class="ref" onclick="openRef('econ','Economy engine','k')">catalytic economy</span>; claim chokepoints.</div>
+            <div class="fstep">First <span class="ref" onclick="openRef('war','Warfare &amp; vassals','k')">vassal war</span> — bring armies, mind the <span class="ref" onclick="openRef('traps','Traps to drill out','k')">traps</span>.</div>
+          </div></div>
+          <div class="fitem p2"><div class="fnode">🏗️</div><div class="fbody">
+            <div class="fphase">Scaling<span class="fyr">2275–2350</span></div>
+            <div class="fstep"><span class="fix">⚑ check abundance:</span> high-mineral galaxy? Read <span class="ref" onclick="openRef('map','Map &amp; settings','v')">map &amp; settings</span> — pivot surplus, don't waste it.</div>
+            <div class="fstep">Forge switch + <span class="ref" onclick="openRef('mega','Megastructures','v')">megastructures</span>.</div>
+            <div class="fstep">Finish <span class="ref" onclick="openRef('trad','Tradition ladder','k')">traditions</span> &amp; <span class="ref" onclick="openRef('asc','Ascension perks','k')">ascension</span>.</div>
+            <div class="fstep">Take the <span class="ref" onclick="openRef('senate','Galactic Senate','k')">Senate</span> → Imperium.</div>
+          </div></div>
+          <div class="fitem p3"><div class="fnode">👾</div><div class="fbody">
+            <div class="fphase">Crisis<span class="fyr">endgame</span></div>
+            <div class="fstep">Flip <b>Take Point</b> to tether the vassal armada.</div>
+            <div class="fstep">Match the <span class="ref" onclick="openRef('crisis','Crisis refits','v')">refit</span> to the crisis.</div>
+            <div class="fstep">Collapse the full Armada onto it.</div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHIPS & PLANETS -->
+    <div class="seclbl">Ships &amp; planets <span class="n">tap a circle</span></div>
+    <div class="railgrp" style="margin-top:0">Ship designs <span style="color:var(--warn)">· meta needs re-check</span></div>
+    <div class="circgrid" style="grid-template-columns:repeat(3,1fr);gap:15px 6px">
+      <div class="cnode" onclick="openRef('s_corv','Corvette','k')"><div class="circ red sm">🛸</div><div class="cname">Corvette</div><div class="csub">missile kiter</div></div>
+      <div class="cnode" onclick="openRef('s_dest','Destroyer','k')"><div class="circ red sm">🔭</div><div class="cname">Destroyer</div><div class="csub">PD screen</div></div>
+      <div class="cnode" onclick="openRef('s_cruis','Cruiser','k')"><div class="circ red sm">🚀</div><div class="cname">Cruiser</div><div class="csub">mid line</div></div>
+      <div class="cnode" onclick="openRef('s_bb','Battleship','k')"><div class="circ red sm">🛰️</div><div class="cname">Battleship</div><div class="csub">Arc / Lance</div></div>
+      <div class="cnode" onclick="openRef('s_titan','Titan','k')"><div class="circ red sm">🌟</div><div class="cname">Titan</div><div class="csub">aura + X</div></div>
+      <div class="cnode" onclick="openRef('s_jug','Juggernaut','k')"><div class="circ red sm">🏭</div><div class="cname">Juggernaut</div><div class="csub">mobile yard</div></div>
+    </div>
+    <div class="railgrp">Planet builds <span style="color:var(--warn)">· 4.0 rework, re-check</span></div>
+    <div class="circgrid" style="grid-template-columns:repeat(3,1fr);gap:15px 6px">
+      <div class="cnode" onclick="openRef('p_ocean','Ocean agri hub','k')"><div class="circ teal sm">🌊</div><div class="cname">Ocean hub</div><div class="csub">50%</div></div>
+      <div class="cnode" onclick="openRef('p_fort','Fortress world','k')"><div class="circ teal sm">🏰</div><div class="cname">Fortress</div><div class="csub">25%</div></div>
+      <div class="cnode" onclick="openRef('p_admin','Admin / Unity','k')"><div class="circ teal sm">🏛️</div><div class="cname">Admin/Unity</div><div class="csub">15%</div></div>
+      <div class="cnode" onclick="openRef('p_sci','Science lab','k')"><div class="circ teal sm">🔬</div><div class="cname">Science</div><div class="csub">10%</div></div>
+      <div class="cnode" onclick="openRef('p_forge','Ecumenopolis forge','k')"><div class="circ teal sm">🏭</div><div class="cname">Forge</div><div class="csub">interior</div></div>
+      <div class="cnode" onclick="openRef('p_gen','Generator world','k')"><div class="circ teal sm">⚡</div><div class="cname">Generator</div><div class="csub">exception</div></div>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: REFERENCE DETAIL -->
+  <div class="screen" id="scr-ref">
+    <div class="topbar"><div class="back" onclick="go('scr-strategy')">←</div>
+      <div><div class="tbtitle" id="ref-title">—</div><div class="tbsub">United Oceans of Andari · reference</div></div></div>
+    <div id="ref-badge"></div>
+    <div id="ref-content"></div>
+  </div>
+
+</div>
+
+<!-- ===== TEMPLATES ===== -->
+<template id="tpl-identity">
+  <div class="idchips"><span class="diff">Grand Admiral</span><span>🐟 Aquatic</span><span>🍲 Catalytic Processing</span><span>🌊 Hydrocentric</span><span>🦾 Cybernetics</span><span>👑 Hegemon</span></div>
+  <div class="sdesc">Consolidate aquatic pops on wet worlds for the <span class="hl">Aquatic production bonus</span>. The empire funnels ocean food into alloys and a vassal swarm you command as the Galactic Imperium.</div>
+  <div class="sdesc"><b>Why it works:</b> food is the one resource aquatic + catalytic turns into <i>everything</i> — alloys, growth, and armies — so a single over-fed economy snowballs into galactic domination instead of juggling five resource chains.</div>
+</template>
+<template id="tpl-split">
+  <div class="arow"><span class="pct">50%</span><div class="abar"><i style="width:100%;background:var(--selenite)"></i></div><span class="nm"><b>Ocean agri</b> · anglers, bioreactors</span></div>
+  <div class="arow"><span class="pct">25%</span><div class="abar"><i style="width:50%;background:var(--warn)"></i></div><span class="nm"><b>Fortress</b> · naval cap</span></div>
+  <div class="arow"><span class="pct">15%</span><div class="abar"><i style="width:30%;background:var(--purple)"></i></div><span class="nm"><b>Admin/Unity</b></span></div>
+  <div class="arow"><span class="pct">10%</span><div class="abar"><i style="width:20%;background:var(--good)"></i></div><span class="nm"><b>Science</b></span></div>
+  <div class="sdesc"><b>Exceptions:</b> world with natural <span class="hl">+20% energy</span> → 100% generator. Conquered dry/cold worlds with pops → fortress/refinery, never angler farms.</div>
+  <div class="sdesc"><span class="fx">⚑ Re-check vs 4.0 Phoenix:</span> the planet/district/job system was overhauled — confirm these ratios and job names still hold before trusting the exact %s.</div>
+  <div class="sdesc"><b>Why the ratios:</b> 50% food feeds the catalytic alloy engine, 25% fortresses turn junk worlds into fleet cap, and the last 25% just has to bankroll traditions and tech — spend no more there than that.</div>
+</template>
+<template id="tpl-build">
+  <div class="step"><div class="k">1</div><div class="t">Mining stations → energy/alloys. <b>No manual mining districts</b> unless rare resources demand it.</div></div>
+  <div class="step"><div class="k">2</div><div class="t">Build <b>Hydroponics Bays</b> on upgraded starbases.</div></div>
+  <div class="step"><div class="k">3</div><div class="t"><span class="fx">⚑ Corrected:</span> research the <b>two early food techs</b> → <b>then</b> run Nutritional Plenitude. It is <b>not</b> a turn-one edict.</div></div>
+  <div class="step"><div class="k">4</div><div class="t"><b>Statecraft</b> leader: Planetary Unification → Colonial Centralization → Galactic Admin.</div></div>
+  <div class="step"><div class="k">5</div><div class="t"><b>New Worlds</b> leader: Terrestrial Sculpting → Ecological Adaptation.</div></div>
+  <div class="sdesc"><b>Early military:</b> missile-boat corvettes, kite at range. <span class="fx">⚑ Weapon balance shifts every patch — confirm the current meta before committing.</span></div>
+  <div class="sdesc"><b>Why this opening:</b> front-load growth and alloys so you out-expand everyone before the first war, and keeping pops off manual mining leaves them on high-value jobs that compound.</div>
+</template>
+<template id="tpl-econ">
+  <div class="sdesc" style="margin-top:0">Route ocean food surplus through <span class="hl">Catalytic Metallurgists</span> → alloys at zero mineral cost.</div>
+  <div class="sdesc"><b>Mid-game:</b> convert 2–3 interior planets to Foundry Arcologies (ecumenopolis forge).</div>
+  <div class="sdesc"><b>Over cap in peace?</b> 1,500 alloys + 1,000 energy → <span class="hl">Mercenary Enclave</span>, removes upkeep.</div>
+  <div class="sdesc"><span class="fx">⚑ Re-check vs 4.0:</span> pop growth, job output and catalytic ratios changed in Phoenix — validate the throughput numbers.</div>
+  <div class="sdesc"><b>Why catalytic:</b> it converts your single biggest surplus — food — straight into alloys, so one over-fed economy pays for the entire war machine instead of splitting focus across minerals.</div>
+</template>
+<template id="tpl-edicts">
+  <div class="sdesc" style="margin-top:0"><b>Nutritional Plenitude</b> — growth/happiness. <span class="fx">Gated behind two early food techs</span>, not available turn one.</div>
+  <div class="sdesc">Keep a couple of edicts always running, funded by Unity from your Admin worlds. Prioritize growth early, then production/naval edicts as Unity allows.</div>
+  <div class="sdesc"><span class="fx">⚑ Needs check:</span> edict list, costs and unlocks shift between patches — confirm against 4.5.2.</div>
+  <div class="sdesc"><b>Why bother:</b> edicts are cheap percentage boosts funded by Unity you're already generating — leaving a slot empty is just free output left on the table.</div>
+</template>
+<template id="tpl-ledger">
+  <div class="sdesc" style="margin-top:0"><b>The ledger = your empire's bank statement.</b> Two things it shows, don't mix them up:</div>
+  <div class="step"><div class="k">1</div><div class="t"><b>Stockpile</b> — how much you have banked right now (top bar).</div></div>
+  <div class="step"><div class="k">2</div><div class="t"><b>Monthly balance</b> — income minus upkeep. <span class="hl">Green = surplus, red = deficit</span>.</div></div>
+  <div class="sdesc"><b>Hover any resource</b> to open its breakdown: every <b>+source</b> (jobs, trade, deals) and every <b>−drain</b> (building/ship/pop upkeep). A deficit = find the biggest red line and fix that first.</div>
+  <div class="sdesc"><b>Reading a deficit fast:</b> alloys red → too many ships for your economy; energy red → too many districts/buildings; consumer goods red → too many specialists. Chase the top drain, not every line.</div>
+</template>
+<template id="tpl-map">
+  <div class="sdesc" style="margin-top:0"><b>The galaxy setup rewrites your plan.</b> Check these at game start and adjust:</div>
+  <div class="step"><div class="k">💎</div><div class="t"><b>Resource abundance</b> high? Expect a <b>mineral overflow</b> mid-game. Don't let it sit — add mineral-fed alloy foundries <i>alongside</i> catalytic, or sell the surplus on the market for energy. Abundance <i>low</i> → lean harder on catalytic + trade.</div></div>
+  <div class="step"><div class="k">🗺️</div><div class="t"><b>Hyperlane density / shape</b> — sparse or spiral = strong chokepoints → fortress worlds pay off big. Dense/ring = fewer chokes → fewer fortresses, more fleet.</div></div>
+  <div class="step"><div class="k">🌍</div><div class="t"><b>Habitable worlds</b> high → faster wide expansion. Low → tall/anglers matter more.</div></div>
+  <div class="step"><div class="k">💥</div><div class="t"><b>Crisis strength</b> (x1–x25) sets how hard the endgame refit has to be — plan Defender of the Galaxy accordingly.</div></div>
+</template>
+<template id="tpl-war">
+  <div class="step"><div class="k">1</div><div class="t">Pair every battlefleet with <b>15–20 Ground Assault Armies</b>.</div></div>
+  <div class="step"><div class="k">2</div><div class="t">Land troops on <b>every colony</b> — stations don't hold territory under white peace.</div></div>
+  <div class="step"><div class="k">3</div><div class="t">Subjugation + Status Quo = invaded systems <b>split into a vassal</b>.</div></div>
+  <div class="step"><div class="k">4</div><div class="t">Flip <span class="hl">Take Point</span> so vassal fleets tether into one armada.</div></div>
+  <div class="sdesc"><span class="fx">⚑ Needs check:</span> occupation/army mechanics were touched post-4.0 — confirm the vassal-on-status-quo flow still works as written.</div>
+  <div class="sdesc"><b>Why ground troops:</b> a subjugation war makes a vassal out of <i>invaded planets</i>, not destroyed fleets — boots on the ground are what actually completes the war goal and grows the swarm.</div>
+</template>
+<template id="tpl-traps">
+  <div class="trap"><div class="tn">⚠ Incomplete occupation</div><div class="tl"><span class="k">Trap:</span> Status Quo, no vassal. <span class="fx">Fix:</span> land troops on every colony.</div></div>
+  <div class="trap"><div class="tn">⚠ Orbital bombardment cap</div><div class="tl"><span class="k">Trap:</span> stacking cap on one world. <span class="fx">Fix:</span> ~<b>200 naval cap/planet</b> ceiling — split fleets. <span style="color:var(--amber)">(verify number vs 4.5)</span></div></div>
+  <div class="trap"><div class="tn">⚠ Multi-enemy war acceptance</div><div class="tl"><span class="k">Trap:</span> ally makes acceptance impossible. <span class="fx">Fix:</span> ground-occupy the primary 100%, take the forced white peace.</div></div>
+  <div class="trap"><div class="tn">⚠ Divided patronage</div><div class="tl"><span class="k">Trap:</span> 2+ subjects = loyalty drain. <span class="fx">Fix:</span> Shared Destiny or Feudal Society.</div></div>
+</template>
+<template id="tpl-trad">
+  <div class="ladder">
+    <div class="litem"><div class="lstep" onclick="toggleExp(this)"><span class="num">1</span><span class="lt"><b>Adaptability</b></span><span class="lx">▾</span></div><div class="lexp">Cheaper, faster expansion and better habitability. <b>Why first:</b> grabs the wide empire everything else is built on, while the map is still open.</div></div>
+    <div class="litem"><div class="lstep" onclick="toggleExp(this)"><span class="num">2</span><span class="lt"><b>Supremacy</b></span><span class="lx">▾</span></div><div class="lexp">Naval cap, fire rate, cheaper/faster ships. <b>Why:</b> your early war muscle — lets the first vassal wars happen on schedule.</div></div>
+    <div class="litem"><div class="lstep" onclick="toggleExp(this)"><span class="num">3</span><span class="lt"><b>Domination</b></span><span class="lx">▾</span></div><div class="lexp">Edict fund + subject/vassal bonuses and Unity from subjects. <b>Why:</b> the tree that powers the Hegemon subject engine.</div></div>
+    <div class="litem"><div class="lstep key" onclick="toggleExp(this)"><span class="num">4</span><span class="lt"><b>Cybernetics</b> <span class="note">— max fully</span></span><span class="lx">▾</span></div><div class="lexp">The cyborg ascension tree: integrated species traits, assembly speed, council bonuses. <b>Why max it:</b> half-finished it does almost nothing — fully done it's your mid-game power spike.</div></div>
+    <div class="litem"><div class="lstep" onclick="toggleExp(this)"><span class="num">5</span><span class="lt"><b>Prosperity</b></span><span class="lx">▾</span></div><div class="lexp">−10% ship &amp; building upkeep, +5% specialist output. <b>Why:</b> makes the whole economy cheaper to run right as it gets big.</div></div>
+    <div class="litem"><div class="lstep" onclick="toggleExp(this)"><span class="num">6</span><span class="lt"><b>Statecraft / Unyielding</b></span><span class="lx">▾</span></div><div class="lexp"><b>Statecraft</b> → council agenda power + envoys. <b>Unyielding</b> → fortress/border defense. Pick by what the game is threatening you with.</div></div>
+  </div>
+  <div class="sdesc"><b>Why this order:</b> grab the land/war trees first while the map is open, take Cybernetics fully for the species + council spike (half-finished it does little), then the economy trees once you're already wide.</div>
+  <div class="sdesc"><span class="fx">⚑ Needs check:</span> tradition trees &amp; order shift with patches/DLC — confirm availability in 4.5.2.</div>
+</template>
+<template id="tpl-asc">
+  <div class="ladder">
+    <div class="litem"><div class="lstep" onclick="toggleExp(this)"><span class="num">1</span><span class="lt"><b>Technological Ascendancy</b></span><span class="lx">▾</span></div><div class="lexp">+research speed, +rare-tech roll weight. <b>Why first:</b> research compounds — earlier is always better.</div></div>
+    <div class="litem"><div class="lstep key" onclick="toggleExp(this)"><span class="num">2</span><span class="lt"><b>Hydrocentric</b></span><span class="lx">▾</span></div><div class="lexp">+50% aquatic yields, unlocks Expand Planetary Sea. <b>Why early:</b> it multiplies your entire core economy — the single biggest power perk for this build.</div></div>
+    <div class="litem"><div class="lstep" onclick="toggleExp(this)"><span class="num">3</span><span class="lt"><b>Shared Destiny</b></span><span class="lx">▾</span></div><div class="lexp">Kills the Divided Patronage loyalty penalty. <b>Why:</b> lets you hold a big stable stack of vassals instead of 1–2.</div></div>
+    <div class="litem"><div class="lstep" onclick="toggleExp(this)"><span class="num">4</span><span class="lt"><b>Cybernetics completion</b></span><span class="lx">▾</span></div><div class="lexp">Finishes the cyborg path's species + council power. <b>Why:</b> locks in the mid-game spike you started in traditions.</div></div>
+    <div class="litem"><div class="lstep" onclick="toggleExp(this)"><span class="num">5</span><span class="lt"><b>Arcology Project</b></span><span class="lx">▾</span></div><div class="lexp">Unlocks ecumenopolis conversions. <b>Why:</b> this is what turns interior planets into your Foundry forge-worlds.</div></div>
+    <div class="litem"><div class="lstep" onclick="toggleExp(this)"><span class="num">6</span><span class="lt"><b>Galactic Wonders</b></span><span class="lx">▾</span></div><div class="lexp">Unlocks Dyson Sphere, Matter Decompressor, Mega Shipyard. <b>Why:</b> the megastructure power tier that scales you past the AI.</div></div>
+    <div class="litem"><div class="lstep" onclick="toggleExp(this)"><span class="num">7</span><span class="lt"><b>Master Builders / Colossus</b></span><span class="lx">▾</span></div><div class="lexp"><b>Master Builders</b> → faster megastructures. <b>Colossus</b> → total-war planet-killer casus belli. Pick by whether you're building or conquering.</div></div>
+    <div class="litem"><div class="lstep key" onclick="toggleExp(this)"><span class="num">8</span><span class="lt"><b>Defender of the Galaxy</b></span><span class="lx">▾</span></div><div class="lexp">+50% damage vs the endgame crisis. <b>Why last:</b> the payoff perk — slot it before the crisis arrives.</div></div>
+  </div>
+  <div class="sdesc"><b>Why this order:</b> research speed compounds first, Hydrocentric then multiplies your whole ocean economy, and the crisis/mega perks come last once there's an empire big enough to use them.</div>
+</template>
+<template id="tpl-mega">
+  <div class="ladder">
+    <div class="litem"><div class="lstep" onclick="toggleExp(this)"><span class="num">1</span><span class="lt"><b>Mega Shipyard</b></span><span class="lx">▾</span></div><div class="lexp">+20 build queues, +100% build speed. <b>Why first:</b> lets you replace a lost armada almost instantly — the fleet never stays dead.</div></div>
+    <div class="litem"><div class="lstep" onclick="toggleExp(this)"><span class="num">2</span><span class="lt"><b>Dyson Sphere</b></span><span class="lx">▾</span></div><div class="lexp">Massive permanent energy. <b>Why next:</b> erases the energy deficit a huge fleet creates, so you can field well past your soft cap.</div></div>
+    <div class="litem"><div class="lstep" onclick="toggleExp(this)"><span class="num">3</span><span class="lt"><b>Matter Decompressor</b></span><span class="lx">▾</span></div><div class="lexp">Huge raw minerals. <b>Why last:</b> feeds refineries and planet expansion once energy and shipbuilding are already solved.</div></div>
+  </div>
+  <div class="sdesc">Run <span class="hl">Expand Planetary Sea</span> 2–3× per core world to raise district ceilings.</div>
+  <div class="sdesc"><b>Why this order:</b> Shipyard first to pump the fleet, Dyson Sphere next to erase the energy ceiling that fleet creates, then Matter Decompressor for the raw minerals to keep building.</div>
+</template>
+<template id="tpl-prec">
+  <div class="sdesc" style="margin-top:0">Early <b>archaeology sites</b> chain into a precursor relic + bonus. Chase the chain when it's cheap — not build-critical, but free power.</div>
+  <div class="sdesc">For an aquatic build, any ocean-/growth-flavored precursor is a nice fit; otherwise take whatever your start rolls.</div>
+  <div class="sdesc"><span class="fx">⚑ Needs check:</span> precursor roster &amp; rewards change with DLC — confirm which are in 4.5.2.</div>
+</template>
+<template id="tpl-empire">
+  <div class="sdesc" style="margin-top:0">Watch <b>sprawl vs admin capacity</b> — over-cap taxes everything. Core worlds hand-built and specialized; outer worlds to sectors.</div>
+  <div class="sdesc">Keep a healthy <b>worker ↔ specialist</b> balance; Unity funds traditions, so your Admin/Unity worlds pay for the whole snowball.</div>
+</template>
+<template id="tpl-sector">
+  <div class="sdesc" style="margin-top:0"><b>Offload the micro.</b> Let sectors auto-manage outer worlds; set each sector a focus and a governor with economy traits.</div>
+  <div class="sdesc">Hand-build only your core worlds — this is the single biggest cut to mid-game click-load.</div>
+</template>
+<template id="tpl-conq">
+  <div class="sdesc" style="margin-top:0">As a Hegemon you mostly <b>vassalize, not integrate</b> — keeps your core pops clean and your subjects paying tribute.</div>
+  <div class="sdesc">If you do take alien pops, route them to <b>fortress/refinery</b> worlds under stratified/slave labor — never force them into angler farms (tanks food).</div>
+  <div class="sdesc"><span class="fx">⚑ Needs check:</span> slavery/pop mechanics changed in Phoenix — confirm the labor setup.</div>
+</template>
+<template id="tpl-diplo">
+  <div class="sdesc" style="margin-top:0">Form a <b>Hegemony federation</b> early for cohesion and a loyal power bloc. Envoys → improve relations or harmonize the federation.</div>
+  <div class="sdesc">Guarantees / defensive pacts early to avoid a dogpile while you're small. Later, your <b>vassals</b> are your diplomacy — keep them loyal (power + Shared Destiny).</div>
+</template>
+<template id="tpl-esp">
+  <div class="sdesc" style="margin-top:0">Plant an <b>envoy</b> on a rival to build infiltration, then run operations: <b>steal tech</b>, sabotage a starbase, acquire an asset.</div>
+  <div class="sdesc">Keep one envoy on <b>counter-intel</b> at home. Low priority for this build, but great against a tech-leading neighbor.</div>
+</template>
+<template id="tpl-senate">
+  <div class="sdesc" style="margin-top:0"><b>Pass:</b> Industrial Development (T1–3), Military Readiness. <b>Vote down:</b> Ecological Protection, The Greater Good.</div>
+  <div class="sdesc">Enforce <span class="hl">Restricted Voting</span> on vassals to vote their weight. Declare the <span class="hl">Galactic Imperium</span> → 800-cap zero-upkeep Imperial Armada.</div>
+  <div class="sdesc"><span class="fx">⚑ Needs check:</span> resolution names/effects shift — confirm vs 4.5.2.</div>
+</template>
+<!-- ships -->
+<template id="tpl-s_corv"><div class="sdesc" style="margin-top:0"><b>Corvette — missile kiter.</b> S-slot missiles, Afterburner aux, Swarm/Artillery computer. Early-game harass &amp; range control.</div><div class="sdesc"><span class="fx">⚑ Confirm the current corvette meta in 4.5.2 before committing.</span></div></template>
+<template id="tpl-s_dest"><div class="sdesc" style="margin-top:0"><b>Destroyer — PD/Flak screen.</b> Escort role vs strike craft &amp; missiles (big vs Prethoryn/Cetana).</div></template>
+<template id="tpl-s_cruis"><div class="sdesc" style="margin-top:0"><b>Cruiser — mid-game line.</b> Torpedo variant punches hull (good vs Unbidden shields-bypass).</div></template>
+<template id="tpl-s_bb"><div class="sdesc" style="margin-top:0"><b>Battleship — the workhorse.</b> X-slot swaps per crisis: Tachyon Lance (Prethoryn), Focused Arc Emitter (Contingency/Unbidden/Cetana), Giga/Kinetic to break shields.</div></template>
+<template id="tpl-s_titan"><div class="sdesc" style="margin-top:0"><b>Titan — anchor.</b> Aura debuff + X-slot. One or two per fleet, never the bulk.</div></template>
+<template id="tpl-s_jug"><div class="sdesc" style="margin-top:0"><b>Juggernaut — mobile shipyard.</b> Builds/repairs in the field. Late-game logistics for the Armada.</div></template>
+<!-- planets -->
+<template id="tpl-p_ocean"><div class="sdesc" style="margin-top:0"><b>Ocean agri hub (50%).</b> Agri districts, Angler/Pearl Diver jobs, Hydroponics, Bioreactors. Feeds the whole alloy engine.</div></template>
+<template id="tpl-p_fort"><div class="sdesc" style="margin-top:0"><b>Fortress (25%).</b> Size 10–14 / poor-hab worlds → Strongholds + Planetary Shields = naval cap &amp; FTL-inhibiting bastions.</div></template>
+<template id="tpl-p_admin"><div class="sdesc" style="margin-top:0"><b>Admin / Unity (15%).</b> Monuments, Admin Complexes, Holo-Theatres. Pays for traditions, ascensions, edicts.</div></template>
+<template id="tpl-p_sci"><div class="sdesc" style="margin-top:0"><b>Science (10%).</b> Research Labs on neutral/ocean worlds. Rushes society + engineering.</div></template>
+<template id="tpl-p_forge"><div class="sdesc" style="margin-top:0"><b>Ecumenopolis forge.</b> Interior planets → Foundry Arcologies fed by ocean food via Catalytic Metallurgists. Thousands of alloys/mo.</div></template>
+<template id="tpl-p_gen"><div class="sdesc" style="margin-top:0"><b>Generator (exception).</b> Any world rolling natural +20% energy → 100% generator + Energy Grid hub, override the agri rule.</div></template>
+
+<script>
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function toggleExp(el){el.parentElement.classList.toggle('open');}
+var BADGE={v:['v','✓ Verified vs 4.5.2'],c:['c','✎ Corrected for 4.5.2'],k:['k','⟳ Re-checking vs 4.5.2 — auto-verifies on open']};
+function openRef(id,title,status){
+  document.getElementById('ref-title').innerHTML=title;
+  var b=BADGE[status]||BADGE.k;
+  document.getElementById('ref-badge').innerHTML='<span class="vbadge '+b[0]+'">'+b[1]+'</span>';
+  document.getElementById('ref-content').innerHTML=document.getElementById('tpl-'+id).innerHTML;
+  go('scr-ref');
+}
+function filterLib(){
+  var q=document.getElementById('q').value.trim().toLowerCase(),any=false;
+  document.querySelectorAll('#lib .refrow').forEach(function(n){
+    var hit=!q||(n.dataset.k+' '+n.textContent).toLowerCase().indexOf(q)>-1;
+    n.style.display=hit?'':'none'; if(hit)any=true;
+  });
+  document.querySelectorAll('#lib .railgrp').forEach(function(g){ if(q)g.style.display='none'; else g.style.display=''; });
+  document.getElementById('noresult').style.display=any?'none':'block';
+}
+</script>
+</body>
+</html>

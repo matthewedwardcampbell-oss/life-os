@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Quartermaster · Smart Wish List</title>
+<style>
+  :root{
+    --sky-0:#12162a; --sky-1:#1a2038; --sky-2:#232a48; --sky-3:#2e3760;
+    --purple:#8a6fd4; --purple-lt:#a487da; --amber:#e9a95c; --selenite:#84b8ca;
+    --good:#7ac9a0; --warn:#e07a7a; --ink:#eceaf4; --ink-dim:#a1a4c2; --ink-faint:#6d7199;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--sky-0);color:var(--ink);font-family:'Inter',-apple-system,system-ui,sans-serif;
+    font-size:15px;line-height:1.5;padding:18px 16px 60px;max-width:460px;margin:0 auto;
+    background-image:radial-gradient(1200px 500px at 50% -10%,rgba(138,111,212,.10),transparent);}
+  h1{font-family:'Fraunces',Georgia,serif;font-size:25px;font-weight:600;letter-spacing:.2px}
+  .sub{color:var(--ink-dim);font-size:12.5px;margin-top:2px;margin-bottom:16px}
+  .seclbl{font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:var(--ink-faint);
+    font-weight:700;margin:22px 0 9px;display:flex;align-items:center;gap:7px}
+  .seclbl .n{margin-left:auto;font-size:10px;letter-spacing:.3px;text-transform:none;color:var(--selenite);
+    background:rgba(132,184,202,.12);border-radius:99px;padding:2px 9px;font-weight:600}
+
+  /* sale radar */
+  .radar{display:flex;gap:9px;overflow-x:auto;padding-bottom:4px;margin:0 -2px}
+  .radar::-webkit-scrollbar{display:none}
+  .sale{flex:0 0 auto;min-width:138px;background:var(--sky-1);border:1px solid var(--sky-2);
+    border-radius:13px;padding:11px 12px}
+  .sale.hot{border-color:var(--amber)}
+  .sale .nm{font-family:'Fraunces',serif;font-size:14px;display:flex;align-items:center;gap:6px}
+  .sale .dt{font-size:11px;color:var(--ink-dim);margin-top:3px}
+  .sale .cd{font-size:10px;font-weight:700;margin-top:7px;color:var(--amber)}
+  .sale .for{font-size:10px;color:var(--ink-faint);margin-top:5px;line-height:1.4}
+
+  /* wish item card */
+  .wish{background:var(--sky-1);border:1px solid var(--sky-2);border-radius:16px;padding:14px;margin-top:11px}
+  .wtop{display:flex;align-items:flex-start;gap:10px}
+  .wic{width:38px;height:38px;flex:0 0 auto;border-radius:11px;background:var(--sky-2);
+    display:flex;align-items:center;justify-content:center;font-size:19px}
+  .wname{font-family:'Fraunces',serif;font-size:16.5px;line-height:1.2}
+  .wcat{font-size:10.5px;color:var(--ink-faint);margin-top:2px}
+  .wtarget{margin-left:auto;text-align:right}
+  .wtarget .lbl{font-size:9px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.5px}
+  .wtarget .v{font-size:15px;font-weight:700;color:var(--selenite);font-family:'Fraunces',serif}
+
+  /* min / max gauge */
+  .mm{margin-top:13px;background:var(--sky-2);border-radius:12px;padding:11px 12px}
+  .mm-row{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--ink-dim)}
+  .mm-row b{color:var(--ink);font-size:12px}
+  .bar{height:9px;border-radius:99px;background:var(--sky-0);margin:9px 0 4px;position:relative;overflow:visible}
+  .bar .fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--purple),var(--purple-lt))}
+  .bar .tick{position:absolute;top:-3px;width:2px;height:15px;background:var(--ink-faint);border-radius:2px}
+  .bar .tick.min{background:var(--warn)} .bar .tick.max{background:var(--good)}
+  .mm-scale{display:flex;justify-content:space-between;font-size:9px;color:var(--ink-faint);margin-top:2px}
+  .mm-sugg{font-size:10.5px;color:var(--selenite);margin-top:9px;line-height:1.45}
+  .mm-sugg b{color:var(--ink)}
+
+  /* compare block */
+  .cmp-lbl{font-size:10.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.6px;
+    font-weight:700;margin:14px 0 2px}
+  .rlcard{background:var(--sky-2);border:1px solid var(--sky-3);border-radius:13px;padding:11px 12px;margin-top:8px}
+  .rlcard.best{border-color:var(--good)}
+  .rl-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .rl-top .src{font-family:'Fraunces',serif;font-size:14px}
+  .rl-top .via{font-size:10px;color:var(--ink-faint)}
+  .rl-top .pick{margin-left:auto;font-size:9px;font-weight:700;color:var(--good);
+    background:rgba(122,201,160,.14);border-radius:99px;padding:2px 8px}
+  .rl-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+  .rl-meta span{font-size:9.5px;color:var(--ink-dim);background:var(--sky-1);border:1px solid var(--sky-3);
+    border-radius:99px;padding:2px 8px}
+  .rl-meta .pr{color:var(--amber);font-weight:700;border-color:rgba(233,169,92,.35)}
+  .pc{font-size:11px;line-height:1.55;margin-top:8px}
+  .pc .p{color:var(--good)} .pc .c{color:var(--warn)}
+
+  /* price-by-store */
+  .stores{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+  .st{flex:1 1 30%;background:var(--sky-2);border:1px solid var(--sky-3);border-radius:11px;
+    padding:9px 10px;text-align:center}
+  .st.low{border-color:var(--good);background:rgba(122,201,160,.08)}
+  .st .snm{font-size:10px;color:var(--ink-dim)}
+  .st .sp{font-family:'Fraunces',serif;font-size:15px;font-weight:600;margin-top:3px}
+  .st.low .sp{color:var(--good)}
+  .st .stag{font-size:8.5px;color:var(--good);font-weight:700;margin-top:2px}
+
+  .watch{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:11px;color:var(--ink-dim);
+    background:var(--sky-2);border:1px dashed var(--sky-3);border-radius:11px;padding:9px 11px}
+  .watch .b{color:var(--amber);font-weight:700}
+  .verdict{text-align:center;font-size:11px;color:var(--purple-lt);font-weight:600;margin-top:11px}
+
+  .note{background:var(--sky-1);border:1px solid var(--sky-2);border-radius:14px;padding:14px;
+    margin-top:22px;font-size:12px;color:var(--ink-dim);line-height:1.6}
+  .note b{color:var(--ink)}
+
+  /* labor-savers compact rows */
+  .lsrow{display:flex;align-items:center;gap:11px;background:var(--sky-1);border:1px solid var(--sky-2);
+    border-radius:13px;padding:11px 12px;margin-top:9px}
+  .lsic{width:34px;height:34px;flex:0 0 auto;border-radius:10px;background:var(--sky-2);
+    display:flex;align-items:center;justify-content:center;font-size:17px}
+  .lsname{font-family:'Fraunces',serif;font-size:14.5px;line-height:1.15}
+  .lswhy{font-size:10.5px;color:var(--ink-faint);margin-top:2px}
+  .lsright{margin-left:auto;text-align:right;flex:0 0 auto}
+  .lstgt{font-family:'Fraunces',serif;font-size:14px;font-weight:600;color:var(--selenite)}
+  .lstag{font-size:9px;font-weight:700;margin-top:3px;padding:2px 7px;border-radius:99px;display:inline-block}
+  .lstag.wait{color:var(--amber);background:rgba(233,169,92,.13)}
+  .lstag.now{color:var(--good);background:rgba(122,201,160,.13)}
+</style>
+</head>
+<body>
+  <h1>Smart Wish List</h1>
+  <div class="sub">Quartermaster · what to buy, which version, and <i>when</i> it's cheapest</div>
+
+  <!-- SALE RADAR -->
+  <div class="seclbl">Sale radar · don't pay full price <span class="n">next 60 days</span></div>
+  <div class="radar">
+    <div class="sale hot">
+      <div class="nm">🛍️ Black Friday</div>
+      <div class="dt">Fri Nov 27</div>
+      <div class="cd">in 32 days</div>
+      <div class="for">Best for: gym gear, electronics, kitchen appliances</div>
+    </div>
+    <div class="sale hot">
+      <div class="nm">💻 Cyber Monday</div>
+      <div class="dt">Mon Nov 30</div>
+      <div class="cd">in 35 days</div>
+      <div class="for">Best for: anything online-only, Amazon stock-ups</div>
+    </div>
+    <div class="sale">
+      <div class="nm">🎄 December sales</div>
+      <div class="dt">all month</div>
+      <div class="cd">in ~40 days</div>
+      <div class="for">Best for: bulk pantry, gift-adjacent goods</div>
+    </div>
+    <div class="sale">
+      <div class="nm">🏋️ New Year</div>
+      <div class="dt">early Jan</div>
+      <div class="cd">in ~67 days</div>
+      <div class="for">Best for: fitness gear hits rock-bottom</div>
+    </div>
+  </div>
+
+  <!-- ITEM 1: foam roller — VARIANT compare -->
+  <div class="seclbl">Wish items · 5 open <span class="n">tap to compare</span></div>
+
+  <div class="wish">
+    <div class="wtop">
+      <div class="wic">🧘</div>
+      <div>
+        <div class="wname">Foam roller</div>
+        <div class="wcat">Recovery · The Apothecarion</div>
+      </div>
+      <div class="wtarget"><div class="lbl">target</div><div class="v">≤ $15</div></div>
+    </div>
+
+    <div class="mm">
+      <div class="mm-row"><span>Keep on hand</span><span><b>1</b> now</span></div>
+      <div class="bar">
+        <div class="fill" style="width:50%"></div>
+        <div class="tick min" style="left:25%"></div>
+        <div class="tick max" style="left:75%"></div>
+      </div>
+      <div class="mm-scale"><span>0</span><span style="margin-left:-30px;color:var(--warn)">min 1</span><span style="color:var(--good)">max 2</span></div>
+      <div class="mm-sugg">💡 Suggested <b>min 1 · max 2</b> — a durable good, you only replace if it wears or you want a 2nd density. No reorder pressure.</div>
+    </div>
+
+    <div class="cmp-lbl">High vs low density — which to buy</div>
+    <div class="rlcard best">
+      <div class="rl-top"><span class="src">High density</span><span class="via">· ProsourceFit EPP</span><span class="pick">★ for you</span></div>
+      <div class="rl-meta"><span class="pr">$12–25</span><span>deep pressure</span><span>lasts years</span></div>
+      <div class="pc">
+        <span class="p">✓ Digs into glutes/quads/back — matches your heavy booty days</span><br>
+        <span class="p">✓ Holds shape, won't compress · and it's the <b>cheaper</b> one</span><br>
+        <span class="c">✗ Intense at first — can be too much on calves/IT band</span>
+      </div>
+    </div>
+    <div class="rlcard">
+      <div class="rl-top"><span class="src">Low density</span><span class="via">· 321 STRONG / soft</span></div>
+      <div class="rl-meta"><span class="pr">$25–30</span><span>gentle</span><span>nice-to-have</span></div>
+      <div class="pc">
+        <span class="p">✓ Forgiving — good for a warm-up or sore days</span><br>
+        <span class="c">✗ Oddly <b>pricier</b> than high-density — smaller market</span><br>
+        <span class="c">✗ Not essential; a medium covers warm-up days</span>
+      </div>
+    </div>
+
+    <div class="stores">
+      <div class="st low"><div class="snm">Walmart</div><div class="sp">$12</div><div class="stag">lowest</div></div>
+      <div class="st"><div class="snm">Amazon</div><div class="sp">$20</div></div>
+      <div class="st"><div class="snm">Target</div><div class="sp">$17</div></div>
+    </div>
+    <div class="watch"><span>🔔</span><span>Walmart ProsourceFit already under target — <b class="b">buy now</b> with your order. Black Friday won't beat $12 on a budget roller.</span></div>
+  </div>
+
+  <!-- ITEM 2: food processor — BRAND compare -->
+  <div class="wish">
+    <div class="wtop">
+      <div class="wic">🫕</div>
+      <div>
+        <div class="wname">Food processor</div>
+        <div class="wcat">Bulk cook · Chez Matthew</div>
+      </div>
+      <div class="wtarget"><div class="lbl">target</div><div class="v">≤ $90</div></div>
+    </div>
+
+    <div class="mm">
+      <div class="mm-row"><span>Keep on hand</span><span><b>0</b> now</span></div>
+      <div class="bar">
+        <div class="fill" style="width:0%"></div>
+        <div class="tick min" style="left:33%"></div>
+        <div class="tick max" style="left:33%"></div>
+      </div>
+      <div class="mm-scale"><span>0</span><span style="color:var(--warn)">min/max 1</span><span>&nbsp;</span></div>
+      <div class="mm-sugg">💡 Suggested <b>min 1 · max 1</b> — one-and-done tool. Below min now, so it stays on the wish list until bought.</div>
+    </div>
+
+    <div class="cmp-lbl">Cuisinart vs Ninja — which brand</div>
+    <div class="rlcard best">
+      <div class="rl-top"><span class="src">Cuisinart 14-cup</span><span class="pick">★ for you</span></div>
+      <div class="rl-meta"><span class="pr">~$100–130</span><span>14 cup</span><span>metal gears</span></div>
+      <div class="pc">
+        <span class="p">✓ Big bowl = fewer batches on orchestrator days</span><br>
+        <span class="p">✓ Workhorse — handles dough, nut butter, big marinade batches</span><br>
+        <span class="c">✗ Pricier, bulkier to store</span>
+      </div>
+    </div>
+    <div class="rlcard">
+      <div class="rl-top"><span class="src">Ninja Professional</span></div>
+      <div class="rl-meta"><span class="pr">~$70–90</span><span>9 cup</span><span>also blends</span></div>
+      <div class="pc">
+        <span class="p">✓ Cheaper, doubles as a blender (nut milk!)</span><br>
+        <span class="c">✗ Smaller bowl — more batches for bulk cook</span><br>
+        <span class="c">✗ Plastic drive, shorter lifespan under heavy use</span>
+      </div>
+    </div>
+
+    <div class="stores">
+      <div class="st low"><div class="snm">Costco</div><div class="sp">$89</div><div class="stag">lowest</div></div>
+      <div class="st"><div class="snm">Amazon</div><div class="sp">$99</div></div>
+      <div class="st"><div class="snm">Target</div><div class="sp">$109</div></div>
+    </div>
+    <div class="watch"><span>🔔</span><span>Costco already under target · <b class="b">Black Friday</b> may drop Cuisinart to ~$79 → <b>borderline, your call</b></span></div>
+  </div>
+
+  <!-- ITEM 3: massage oil — CONSUMABLE min/max -->
+  <div class="wish">
+    <div class="wtop">
+      <div class="wic">💧</div>
+      <div>
+        <div class="wname">Massage oil — bulk</div>
+        <div class="wcat">Business consumable · reorders often</div>
+      </div>
+      <div class="wtarget"><div class="lbl">target</div><div class="v">≤ $0.40/oz</div></div>
+    </div>
+
+    <div class="mm">
+      <div class="mm-row"><span>In stock</span><span><b>2</b> bottles · <span style="color:var(--warn)">at min</span></span></div>
+      <div class="bar">
+        <div class="fill" style="width:25%"></div>
+        <div class="tick min" style="left:25%"></div>
+        <div class="tick max" style="left:75%"></div>
+      </div>
+      <div class="mm-scale"><span>0</span><span style="color:var(--warn)">min 2</span><span style="color:var(--good)">max 6</span></div>
+      <div class="mm-sugg">💡 You use <b>~1 bottle / week</b> → suggested <b>min 2 · max 6</b> (a ~4-week buffer). <b style="color:var(--warn)">At min now — reorder.</b> Buy to max = <b>4 bottles</b>.</div>
+    </div>
+
+    <div class="cmp-lbl">Best price per ounce</div>
+    <div class="stores">
+      <div class="st low"><div class="snm">Costco gal</div><div class="sp">$0.31/oz</div><div class="stag">bulk winner</div></div>
+      <div class="st"><div class="snm">Amazon</div><div class="sp">$0.44/oz</div></div>
+      <div class="st"><div class="snm">Massage Wh.</div><div class="sp">$0.52/oz</div></div>
+    </div>
+    <div class="watch"><span>🔔</span><span>Consumable — <b class="b">buy the bulk gallon now</b>, don't wait on a sale. Refill your own bottles.</span></div>
+  </div>
+
+  <!-- ITEM 4: salt lamp -->
+  <div class="wish">
+    <div class="wtop">
+      <div class="wic">🧂</div>
+      <div>
+        <div class="wname">Himalayan salt lamp</div>
+        <div class="wcat">Ambiance · small 4–5.5 lb</div>
+      </div>
+      <div class="wtarget"><div class="lbl">target</div><div class="v">≤ $20</div></div>
+    </div>
+
+    <div class="mm">
+      <div class="mm-row"><span>Keep on hand</span><span><b>0</b> now</span></div>
+      <div class="bar">
+        <div class="fill" style="width:0%"></div>
+        <div class="tick min" style="left:33%"></div>
+        <div class="tick max" style="left:33%"></div>
+      </div>
+      <div class="mm-scale"><span>0</span><span style="color:var(--warn)">min/max 1</span><span>&nbsp;</span></div>
+      <div class="mm-sugg">💡 Suggested <b>min 1 · max 1</b> — one-off decor piece. Below min, stays on the list until bought.</div>
+    </div>
+
+    <div class="cmp-lbl">Watch the weight, not just the price</div>
+    <div class="rlcard best">
+      <div class="rl-top"><span class="src">Walmart · Himalayan Shop</span><span class="pick">★ for you</span></div>
+      <div class="rl-meta"><span class="pr">$19.94</span><span>4–5.5 lb, stated</span><span>known dimmer</span></div>
+      <div class="pc">
+        <span class="p">✓ Weight is listed and honest — you know what arrives</span><br>
+        <span class="p">✓ Bundles into the order you're already placing</span>
+      </div>
+    </div>
+    <div class="rlcard">
+      <div class="rl-top"><span class="src">Amazon · generic sellers</span></div>
+      <div class="rl-meta"><span class="pr">$15–25</span><span>weight varies</span><span>cord quality varies</span></div>
+      <div class="pc">
+        <span class="p">✓ Occasionally cheaper on a deal</span><br>
+        <span class="c">✗ "Small" can mean 3 lb — size/dimmer inconsistent by seller</span>
+      </div>
+    </div>
+
+    <div class="stores">
+      <div class="st low"><div class="snm">Walmart</div><div class="sp">$19.94</div><div class="stag">lowest + known</div></div>
+      <div class="st"><div class="snm">Amazon</div><div class="sp">~$22</div></div>
+    </div>
+    <div class="watch"><span>🔔</span><span>Durable, not a sale item — <b class="b">buy with your order</b>. On Amazon, filter by stated weight ≥ 4 lb.</span></div>
+  </div>
+
+  <!-- ITEM 5: USB-C touch desk lamp -->
+  <div class="wish">
+    <div class="wtop">
+      <div class="wic">💡</div>
+      <div>
+        <div class="wname">USB-C touch desk lamp</div>
+        <div class="wcat">Desk · warm, rechargeable, cordless</div>
+      </div>
+      <div class="wtarget"><div class="lbl">target</div><div class="v">≤ $25</div></div>
+    </div>
+
+    <div class="mm">
+      <div class="mm-row"><span>Keep on hand</span><span><b>0</b> now</span></div>
+      <div class="bar">
+        <div class="fill" style="width:0%"></div>
+        <div class="tick min" style="left:25%"></div>
+        <div class="tick max" style="left:50%"></div>
+      </div>
+      <div class="mm-scale"><span>0</span><span style="color:var(--warn)">min 1</span><span style="color:var(--good)">max 2</span></div>
+      <div class="mm-sugg">💡 Suggested <b>min 1 · max 2</b> — in case you want one for the desk and one bedside.</div>
+    </div>
+
+    <div class="cmp-lbl">The spec that actually matters: the cable</div>
+    <div class="rlcard best">
+      <div class="rl-top"><span class="src">USB-C + warm mode</span><span class="pick">★ for you</span></div>
+      <div class="rl-meta"><span class="pr">$20–25</span><span>USB-C</span><span>2700K warm + dim</span></div>
+      <div class="pc">
+        <span class="p">✓ Same cable as your Pixel — one charger for everything</span><br>
+        <span class="p">✓ True warm/amber mode, not just brightness dimming</span><br>
+        <span class="c">✗ A few dollars more than the micro-USB crowd</span>
+      </div>
+    </div>
+    <div class="rlcard">
+      <div class="rl-top"><span class="src">Micro-USB budget</span><span class="via">· the default trap</span></div>
+      <div class="rl-meta"><span class="pr">$13–18</span><span>micro-USB</span><span>often cool-only</span></div>
+      <div class="pc">
+        <span class="p">✓ Cheapest sticker price</span><br>
+        <span class="c">✗ Old cable standard — the reason most budget ones are cheap</span><br>
+        <span class="c">✗ Many only dim brightness, no real warm setting</span>
+      </div>
+    </div>
+
+    <div class="stores">
+      <div class="st"><div class="snm">Walmart</div><div class="sp">~$18</div></div>
+      <div class="st low"><div class="snm">Amazon</div><div class="sp">~$22</div><div class="stag">more USB-C</div></div>
+    </div>
+    <div class="watch"><span>🔔</span><span>Filter: <b class="b">USB-C</b> + <b class="b">2700–3000K</b> warm mode. Want me to pull 2–3 confirmed models to compare?</span></div>
+  </div>
+
+  <!-- HOME, REST & BODY -->
+  <div class="seclbl">Home, rest &amp; body <span class="n">3 open</span></div>
+
+  <div class="lsrow">
+    <div class="lsic">🌱</div>
+    <div><div class="lsname">Horticultural heat mat + thermostat</div><div class="lswhy">Pick: AC Infinity SUNCORE H3 · IP67 waterproof, far-infrared, inline probe · 17–25W (one LED bulb). Budget: BN-LINK combo. Always use a saucer + insulate underneath.</div></div>
+    <div class="lsright"><div class="lstgt">≤ $40</div><div class="lstag now">buy now</div></div>
+  </div>
+
+  <div class="lsrow">
+    <div class="lsic">😴</div>
+    <div><div class="lsname">Packable blackout sleep mask</div><div class="lswhy">EDC, packs flat. Pick: FACEMOON weighted 3D (nose baffle, seals light) or Trtl Glimpse (removable cups). Molded 3D foam &gt; flat silk — silk leaks at the nose.</div></div>
+    <div class="lsright"><div class="lstgt">≤ $20</div><div class="lstag now">buy now</div></div>
+  </div>
+
+  <div class="lsrow">
+    <div class="lsic">🦷</div>
+    <div><div class="lsname">Non-toxic night guard</div><div class="lswhy">Pick: Natural Fiber Guard (hemp/cotton, zero EVA/BPA) ~$25, lasts 1–12 mo by clench. Alts: natural rubber ~$30 (softer, wears faster) or medical-grade silicone ~$15–30 (durable — confirm no EVA laminate).</div></div>
+    <div class="lsright"><div class="lstgt">~$25</div><div class="lstag now">buy now</div></div>
+  </div>
+
+  <!-- LABOR-SAVERS -->
+  <div class="seclbl">Labor-savers · buy back your time <span class="n">tap to compare</span></div>
+
+  <div class="lsrow">
+    <div class="lsic">🔪</div>
+    <div><div class="lsname">Veggie chopper</div><div class="lswhy">Dices onions/kimchi veg in seconds — the worst prep step, gone</div></div>
+    <div class="lsright"><div class="lstgt">≤ $25</div><div class="lstag now">buy now · cheap</div></div>
+  </div>
+
+  <div class="lsrow">
+    <div class="lsic">🥘</div>
+    <div><div class="lsname">Auto stir-fry machine</div><div class="lswhy">Self-stirring wok — walk away during bulk cook, no babysitting the pan</div></div>
+    <div class="lsright"><div class="lstgt">≤ $120</div><div class="lstag wait">wait · Black Fri</div></div>
+  </div>
+
+  <div class="lsrow">
+    <div class="lsic">🤖</div>
+    <div><div class="lsname">Robot vacuum + mop</div><div class="lswhy">Floors handle themselves — offloads a recurring chore entirely</div></div>
+    <div class="lsright"><div class="lstgt">≤ $250</div><div class="lstag wait">wait · Black Fri</div></div>
+  </div>
+
+  <div class="lsrow">
+    <div class="lsic">🍚</div>
+    <div><div class="lsname">Rice cooker — Zojirushi</div><div class="lswhy">Set-and-forget rice for every Korean meal · keeps warm all day</div></div>
+    <div class="lsright"><div class="lstgt">≤ $150</div><div class="lstag wait">wait · Black Fri</div></div>
+  </div>
+
+  <div class="lsrow">
+    <div class="lsic">🌀</div>
+    <div><div class="lsname">Immersion blender</div><div class="lswhy">Blends sauces/broth right in the pot — no transfer, no cleanup</div></div>
+    <div class="lsright"><div class="lstgt">≤ $40</div><div class="lstag now">buy now · cheap</div></div>
+  </div>
+
+  <div class="verdict">Rule of thumb the app applies: <b style="color:var(--ink)">durable goods → wait for the sale window · consumables → buy to max at best $/unit when you hit min.</b></div>
+
+  <div class="note">
+    <b>How the min/max help works.</b> You don't have to guess the numbers. For anything you buy repeatedly, the app watches how fast you go through it and proposes a <b>min</b> (reorder point — hit this, it nudges you) and a <b>max</b> (how much to stock up to). For one-off durable goods it sets min/max to 1 so they just sit on the wish list until bought.<br><br>
+    <b>Compare</b> handles two cases with the same card you already know from the Recipe Lab: different <b>brands</b> of the same thing (Cuisinart vs Ninja) and different <b>versions</b> of the same product (high vs low density roller) — pros, cons, and price side by side, with one marked “for you” based on how you'll use it.<br><br>
+    <b>Sale radar</b> + the 🔔 watch line tell you whether to pounce or hold: it knows the big sale windows coming up and roughly what each item tends to drop to, so a $27 roller today waits 32 days for a likely $19.
+  </div>
+</body>
+</html>

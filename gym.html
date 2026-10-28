@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Gym — The Apothecarion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-0:#12162a;--sky-1:#1a2038;--sky-2:#232a48;--sky-3:#2e3760;
+    --purple:#8a6fd4;--purple-lt:#a487da;--amber:#e9a95c;--selenite:#84b8ca;
+    --good:#7ac9a0;--warn:#e07a7a;--pink:#d983bb;
+    --ink:#eceaf4;--ink-dim:#a1a4c2;--ink-faint:#6d7199;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{background:radial-gradient(130% 70% at 50% -10%,#2a2246 0%,rgba(42,34,70,0) 55%),var(--sky-0);
+    background-attachment:fixed;color:var(--ink);font-family:'Inter',system-ui,sans-serif;min-height:100vh;padding:18px 15px 50px}
+  .wrap{max-width:460px;margin:0 auto}
+  .mocklbl{font-size:10.5px;color:var(--ink-faint);letter-spacing:.07em;text-transform:uppercase;font-weight:600;margin:0 2px 10px}
+
+  .ghead{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:12px}
+  .ghead .big{font-family:'Fraunces',serif;font-size:24px}
+  .ghead .sub{font-size:11.5px;color:var(--ink-dim);margin-top:2px}
+
+  .goals{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .gt{background:var(--sky-1);border:1px solid var(--sky-3);border-radius:13px;padding:11px 8px;text-align:center}
+  .gt b{font-family:'Fraunces',serif;font-size:20px;display:block;line-height:1}
+  .gt .u{font-size:11px;color:var(--ink-faint);font-weight:400}
+  .gt span{font-size:9px;color:var(--ink-faint);font-weight:600;display:block;margin-top:5px;line-height:1.25}
+  .gt.cyc b{color:var(--pink)} .gt.wt b{color:var(--good)} .gt.ev b{color:var(--amber)}
+  .goalnote{font-size:10px;color:var(--ink-faint);text-align:center;margin-top:8px;line-height:1.5}
+
+  .seclbl{font-size:10.5px;color:var(--ink-faint);letter-spacing:.06em;text-transform:uppercase;font-weight:700;margin:20px 2px 11px}
+
+  /* 14-day cycle as circles */
+  .cycle{display:flex;flex-wrap:wrap;gap:12px 7px;justify-content:center}
+  .dcirc{width:58px;text-align:center;cursor:pointer;transition:.1s}
+  .dcirc:active{transform:scale(.94)}
+  .dbub{width:50px;height:50px;border-radius:50%;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 38% 30%,#242b4e,#181d35);border:2px solid var(--sky-3);position:relative}
+  .dbub .dd{font-family:'Fraunces',serif;font-size:17px;line-height:1}
+  .dbub .de{font-size:13px;line-height:1;margin-top:1px}
+  .dbub.booty{border-color:var(--pink)} .dbub.push{border-color:var(--selenite)}
+  .dbub.pull{border-color:var(--amber)} .dbub.full{border-color:var(--good)}
+  .dbub.legs{border-color:var(--sky-3);border-style:dashed} .dbub.rest{border-color:var(--sky-3);background:radial-gradient(circle at 38% 30%,#1c2138,#141829);opacity:.82}
+  .dbub.today{box-shadow:0 0 0 3px rgba(217,131,187,.35);border-width:2.5px}
+  .dbub.sel{outline:2px solid var(--ink);outline-offset:2px}
+  .dcirc .dl{font-size:8.5px;color:var(--ink-faint);margin-top:4px;line-height:1.1}
+  .dcirc.on .dl{color:var(--ink-dim)}
+  .chk{position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:var(--good);color:#0d1c22;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:800}
+
+  /* session detail */
+  .sess{background:var(--sky-1);border:1px solid var(--sky-3);border-radius:16px;padding:14px 15px;margin-top:16px}
+  .sess .sh{display:flex;align-items:baseline;gap:9px;margin-bottom:3px}
+  .sess .sday{font-family:'Fraunces',serif;font-size:18px}
+  .sess .stag{font-size:9.5px;font-weight:700;letter-spacing:.04em;padding:2px 8px;border-radius:99px;background:rgba(217,131,187,.16);color:var(--pink)}
+  .sess .srest{margin-left:auto;font-size:10px;color:var(--ink-faint)}
+  .sess .sfocus{font-size:11.5px;color:var(--ink-dim);line-height:1.4;margin-bottom:12px}
+
+  .ss{border-top:1px solid var(--sky-2);padding:11px 0}
+  .ss:first-of-type{border-top:none}
+  .ss .sslab{font-size:9px;color:var(--ink-faint);font-weight:700;letter-spacing:.05em;margin-bottom:6px;text-transform:uppercase}
+  .ex{display:flex;align-items:center;gap:9px;margin:5px 0}
+  .ex .en{flex:1;min-width:0;font-size:12.5px;font-weight:500}
+  .ex .et{font-size:10px;color:var(--ink-faint);white-space:nowrap}
+  .sets{display:flex;gap:5px;margin-top:4px;margin-left:0;flex-wrap:wrap}
+  .setc{font-size:10px;color:var(--ink-dim);background:var(--sky-0);border:1px solid var(--sky-3);border-radius:7px;padding:4px 8px;min-width:46px;text-align:center}
+  .setc .ghost{color:var(--ink-faint)}
+  .pair{display:flex;align-items:center;gap:7px;color:var(--ink-faint);font-size:9px;margin:2px 0 2px 2px;letter-spacing:.04em}
+  .plog{width:100%;margin-top:11px;background:var(--purple);border:none;color:#fff;font-family:inherit;font-weight:600;font-size:13px;padding:11px;border-radius:11px;cursor:pointer}
+  .openrow{background:rgba(233,169,92,.1);border:1px dashed var(--amber);border-radius:11px;padding:12px;font-size:12px;color:var(--amber);text-align:center}
+
+  .restcard{background:radial-gradient(circle at 15% 20%,#223a30,#161a30 75%);border:1px solid rgba(132,184,202,.4)}
+  .restcard .sday{color:var(--selenite)}
+  .restlink{display:block;width:100%;margin-top:11px;background:var(--selenite);border:none;color:#0d1c22;font-family:inherit;font-weight:600;font-size:13px;padding:11px;border-radius:11px;cursor:pointer;text-align:center}
+
+  .note{font-size:11.5px;color:var(--ink-faint);line-height:1.6;margin-top:24px;padding:13px 15px;background:var(--sky-1);border:1px solid var(--sky-3);border-radius:12px}
+  .note b{color:var(--ink-dim)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="mocklbl">Gym tab — mock (not in the app yet)</div>
+
+  <div class="ghead">
+    <div><div class="big">The Apothecarion</div><div class="sub">8 on / 6 off · one training fortnight</div></div>
+  </div>
+
+  <div class="goals">
+    <div class="gt cyc"><b>3<span class="u">/14</span></b><span>Cycle day</span></div>
+    <div class="gt wt"><b>192<span class="u">lb</span></b><span>→ 200 recomp</span></div>
+    <div class="gt ev"><b>Aug 28</b><span>Telluride goal</span></div>
+  </div>
+  <div class="goalnote">Days 1–8 = the full rotation · days 9–14 = off: mostly meal-prep, with total-rest bundled at the end (2 this fortnight, 3 next) · glutes priority, legs refine</div>
+
+  <div class="seclbl">The 14-day cycle · tap a day</div>
+  <div class="cycle" id="cycle"></div>
+
+  <div id="detail"></div>
+
+  <div class="note"><b>The insight baked in:</b> your 8-day Apothecarion rotation + 6 recovery days = a 14-day cycle, same shape as your Fortnight. Training days are circles colored by focus (💗 booty = priority, push = teal, pull = amber, full-body = green, legs = dashed/open). Tap one to see the supersets and log your sets (with last-time ghosts for progressive overload). The 6 <b>recovery days double as meal-prep days</b> — they link straight to a Chez Matthew bulk cook, so the off-week fills your food store. Day 6 (legs) is still open per your notes. Tell me what to change before I wire it in.</div>
+</div>
+
+<script>
+  const CYCLE=[
+    {n:1,type:'train',day:'1',lbl:'Push',grp:'push',done:true,focus:'Chest & shoulders + biceps & abs.',built:false},
+    {n:2,type:'train',day:'2',lbl:'Pull',grp:'pull',done:true,focus:'Back width + triceps. Vertical pulling, lat sweep.',built:true,rest:'60–90s',ss:[
+      ['Lat pulldown (wide grip)','Overhead EZ-bar ext','3'],
+      ['Assisted pull-up','Assisted dip','3'],
+      ['Super-ROM reverse cable fly','Tate press','3']]},
+    {n:3,type:'train',day:'3',lbl:'Booty',tag:'HEAVY',grp:'booty',focus:'Max mechanical tension, full hip extension, posterior chain + core.',built:true,rest:'60–90s',ss:[
+      ['Glute bridge','Ball crunch','3','8–12','15–20'],
+      ['Sumo squat · full depth','Ball pass','3','8–12','12–15'],
+      ['Lying/seated leg curl','Cable oblique twist','3','8–12','12–15']]},
+    {n:4,type:'train',day:'4',lbl:'Push',tag:'4A·4B',grp:'push',focus:'Shoulders — front/side (A), rear/side (B) + biceps. Alternates each cycle.',built:false},
+    {n:5,type:'train',day:'5',lbl:'Pull',grp:'pull',focus:'Back thickness + triceps. Scapular retraction, 3-head tri.',built:true,rest:'60–90s',ss:[
+      ['Chest-supported DB row','Incline DB French press','3','8–10','10–12'],
+      ['Lean-back dual cable row','Dual rope OH ext','3','10–12','12–15'],
+      ['Super-ROM reverse cable fly','Close-grip pushups','3','12–15','AMRAP']]},
+    {n:6,type:'train',day:'6',lbl:'Legs',tag:'open',grp:'legs',focus:'Quad / unilateral refinement + conditioning. Not built yet — earmarked.',built:false,open:true},
+    {n:7,type:'train',day:'7',lbl:'Full',grp:'full',focus:'Full-body antagonist, no arms. Postural realignment, kinetic chain.',built:false},
+    {n:8,type:'train',day:'8',lbl:'Booty',tag:'PUMP',grp:'booty',focus:'High-rep metabolic glute pump, continuous flow.',built:true,rest:'short, continuous',straight:[
+      ['Frog pumps','3','20–30'],['Cable glute kickback (deep stretch)','3','16'],['Cable donkey kicks','3','16'],
+      ['Banded hip abductors','3','20'],['SL hip thrust + abduction','3','16'],['Banded glute bridges','3','20–30']]},
+    {n:9,type:'rest',sub:'prep'},{n:10,type:'rest',sub:'prep'},{n:11,type:'rest',sub:'prep'},
+    {n:12,type:'rest',sub:'prep'},{n:13,type:'rest',sub:'off'},{n:14,type:'rest',sub:'off'}
+  ];
+  const EMO={push:'🙌',pull:'🪢',booty:'🍑',full:'🧍',legs:'🦵',prep:'🍳',off:'🛌'};
+  const TODAY=3; let sel=3;
+
+  function renderCycle(){
+    document.getElementById('cycle').innerHTML=CYCLE.map(d=>{
+      const key=d.type==='rest'?d.sub:d.grp;
+      const grpClass=d.type==='rest'?'rest':d.grp;
+      const em=EMO[key];
+      const label=d.type==='rest'?(d.sub==='off'?'Total rest':'Prep'):(d.lbl+(d.tag?' '+d.tag:''));
+      return '<div class="dcirc'+(d.n===sel?' on':'')+'" data-n="'+d.n+'">'+
+        '<div class="dbub '+grpClass+(d.n===TODAY?' today':'')+(d.n===sel?' sel':'')+'">'+
+        (d.done?'<span class="chk">✓</span>':'')+
+        '<span class="dd">'+d.n+'</span><span class="de">'+em+'</span></div>'+
+        '<div class="dl">'+label+'</div></div>';
+    }).join('');
+  }
+  function renderDetail(){
+    const d=CYCLE.find(x=>x.n===sel), box=document.getElementById('detail');
+    if(d.type==='rest'){
+      if(d.sub==='off'){
+        box.innerHTML='<div class="sess restcard" style="background:radial-gradient(circle at 15% 20%,#2a2340,#161a30 75%);border-color:var(--purple)"><div class="sh"><span class="sday" style="color:var(--purple-lt)">Day '+d.n+' · Total rest</span><span class="srest">🛌 full off</span></div>'+
+          '<div class="sfocus">Complete rest — no training, no prep. Recover. These are bundled at the end: <b>2 this fortnight, 3 next</b> (alternating).</div></div>';
+        return;
+      }
+      box.innerHTML='<div class="sess restcard"><div class="sh"><span class="sday">Day '+d.n+' · Prep day</span><span class="srest">off training</span></div>'+
+        '<div class="sfocus">No lifting — batch instead. Use it to bulk-cook so the training week stays easy.</div>'+
+        '<button class="restlink">🍳 Open a Chez Matthew bulk cook →</button></div>';
+      return;
+    }
+    let h='<div class="sess"><div class="sh"><span class="sday">Day '+d.day+' · '+d.lbl+'</span>'+
+      (d.tag?'<span class="stag">'+d.tag+'</span>':'')+(d.rest?'<span class="srest">rest '+d.rest+'</span>':'')+'</div>'+
+      '<div class="sfocus">'+d.focus+'</div>';
+    if(d.open){ h+='<div class="openrow">Legs day is open — tap to plan it (quad / unilateral + cardio).</div></div>'; box.innerHTML=h; return; }
+    if(!d.built){ h+='<div class="openrow" style="border-color:var(--sky-3);color:var(--ink-dim);background:var(--sky-0)">Full exercise list not logged yet — tap to build this day from your tithe.</div></div>'; box.innerHTML=h; return; }
+    const setChips=(target)=> '<div class="sets">'+[1,2,3].map(()=>'<span class="setc"><span class="ghost">—×'+(target||'—')+'</span></span>').join('')+'</div>';
+    if(d.ss){ d.ss.forEach((s,i)=>{ h+='<div class="ss"><div class="sslab">Superset '+(i+1)+' · '+s[2]+'×</div>'+
+        '<div class="ex"><span class="en">A · '+s[0]+'</span><span class="et">'+(s[3]||'')+'</span></div>'+setChips(s[3])+
+        '<div class="pair">↕ 1:1</div>'+
+        '<div class="ex"><span class="en">B · '+s[1]+'</span><span class="et">'+(s[4]||'')+'</span></div>'+setChips(s[4])+'</div>'; }); }
+    if(d.straight){ h+='<div class="ss"><div class="sslab">Straight sets</div>'; d.straight.forEach(s=>{ h+=
+        '<div class="ex"><span class="en">'+s[0]+'</span><span class="et">'+s[1]+'×'+s[2]+'</span></div>'+setChips(s[2]); }); h+='</div>'; }
+    h+='<button class="plog">✓ Log this session</button></div>';
+    box.innerHTML=h;
+  }
+  document.getElementById('cycle').addEventListener('click',e=>{const el=e.target.closest('.dcirc');if(!el)return;
+    sel=+el.dataset.n; renderCycle(); renderDetail();});
+  renderCycle(); renderDetail();
+</script>
+</body>
+</html>
