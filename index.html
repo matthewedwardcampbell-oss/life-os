@@ -1137,6 +1137,23 @@ if(!S.lists) S.lists={trips:[],goals:[],todo:[],buy:[]};  // migrate older saves
   S._v30=true; persist();
 })();
 
+// migration v31: Wish list — custom lab night guard options (non-shedding, long-term)
+(function(){
+  if(S._v31) return;
+  const buy=(S.lists&&S.lists.buy)||[];
+  const wish=buy.find(x=>(x.t||'').toLowerCase()==='wish list');
+  if(wish){
+    wish.kids=wish.kids||[];
+    const add=[
+      {t:'Night guard — Clear Guard (value pick)',link:'',qty:'',note:'~$79 mail-order kit · biocompatible resin, no BPA/PVC/phthalate/acrylic · 1.3–2mm rigid, snaps into undercuts · lasts 2–3+ yrs'},
+      {t:'Night guard — Sweet-Guards Hard 1.5mm',link:'',qty:'',note:'~$129 · medical PETG copolyester, FDA-cleared, no BPA/latex/MMA · 1.5mm lab-molded, resists flaking · 2–4 yrs'},
+      {t:'Night guard — JS Dental Lab 3D Hard',link:'',qty:'',note:'~$140–160 · German medical polymer, hypoallergenic/non-leaching · digital occlusion balance · best for heavy grinding · 3–5 yrs'}
+    ];
+    add.forEach(function(it){ if(!wish.kids.some(k=>(k.t||'')===it.t)) wish.kids.push(it); });
+  }
+  S._v31=true; persist();
+})();
+
 /* ---------- date helpers ---------- */
 const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 function ymd(d){return d.toISOString().slice(0,10);}
