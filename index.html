@@ -1122,6 +1122,21 @@ if(!S.lists) S.lists={trips:[],goals:[],todo:[],buy:[]};  // migrate older saves
   S._v29=true; persist();
 })();
 
+// migration v30: T-shirt / merch ideas — section under The Paracosm
+(function(){
+  if(S._v30) return;
+  const para=(S.projects||[]).find(p=>p.id==='paracosm');
+  if(para){
+    para.nodes=para.nodes||[];
+    if(!para.nodes.some(n=>/t-?shirt|merch/i.test(n.t||''))){
+      para.nodes.push({t:'👕 T-shirt ideas', note:'Merch/design concepts — tees to print-on-demand or produce.', nodes:[
+        {t:'“Woe to the Republic” — Wednesday’s face, stylized', note:'Design: stylized Wednesday (Addams) face + the phrase “Woe to the Republic”. First tee concept.'}
+      ]});
+    }
+  }
+  S._v30=true; persist();
+})();
+
 /* ---------- date helpers ---------- */
 const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 function ymd(d){return d.toISOString().slice(0,10);}
