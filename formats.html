@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mind-Map Formats</title>
+<style>
+  :root{
+    --sky-0:#12162a;--sky-1:#1a2038;--sky-2:#232a48;--sky-3:#2e3760;
+    --purple:#8a6fd4;--purple-lt:#a487da;--amber:#e9a95c;--selenite:#84b8ca;--good:#7ac9a0;--warn:#e07a7a;
+    --ink:#eceaf4;--ink-dim:#a1a4c2;--ink-faint:#6d7199;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--sky-0)}
+  body{color:var(--ink);font-family:'Inter',-apple-system,system-ui,sans-serif;font-size:15px;line-height:1.5;max-width:640px;margin:0 auto;min-height:100vh;background-image:radial-gradient(1200px 520px at 50% -10%,rgba(138,111,212,.13),transparent)}
+  .wrap{padding:20px 16px 70px}
+  .top{display:flex;align-items:center;gap:11px}
+  .gcirc{width:52px;height:52px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:2.5px solid var(--selenite);display:flex;align-items:center;justify-content:center;font-size:25px}
+  h1{font-family:'Fraunces',Georgia,serif;font-size:23px;font-weight:600}
+  .sub{color:var(--ink-dim);font-size:12.5px;margin-top:2px}
+  .intro{background:var(--sky-1);border:1px solid var(--sky-2);border-radius:13px;padding:12px 14px;font-size:12.5px;color:var(--ink-dim);line-height:1.6;margin:16px 0 8px}
+  .intro b{color:var(--ink)}.intro code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:var(--selenite);background:var(--sky-2);border-radius:5px;padding:1px 5px}
+  .seclbl{font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin:18px 0 12px}
+
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 6px}
+  @media(max-width:460px){.grid{grid-template-columns:repeat(3,1fr)}}
+  .fmt{display:flex;flex-direction:column;align-items:center;text-align:center;gap:7px;cursor:pointer}
+  .fmt:active{transform:scale(.94)}
+  .fc{width:58px;height:58px;border-radius:50%;background:var(--sky-1);border:2.5px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:24px;transition:border-color .15s,box-shadow .15s}
+  .fmt.sel .fc{border-color:var(--amber);box-shadow:0 0 0 4px rgba(233,169,92,.16)}
+  .fn{font-size:11px;font-weight:600;line-height:1.15}.fe{font-size:9px;color:var(--ink-faint)}
+
+  .detail{display:none;background:var(--sky-1);border:1px solid var(--sky-2);border-left:3px solid var(--amber);border-radius:14px;padding:14px;margin-top:14px;animation:fade .2s ease}
+  .detail.show{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+  .dh{font-family:'Fraunces',serif;font-size:17px}.dext{font-size:11px;color:var(--ink-faint);margin-left:6px}
+  .drow{font-size:12.5px;color:var(--ink-dim);line-height:1.6;margin-top:8px}.drow b{color:var(--ink)}
+  .drow .best{color:var(--good);font-weight:600}.drow .map{color:var(--selenite);font-weight:600}
+  pre{background:var(--sky-0);border:1px solid var(--sky-3);border-radius:9px;padding:10px 11px;margin-top:9px;overflow-x:auto;font-family:ui-monospace,Menlo,monospace;font-size:11px;line-height:1.5;color:var(--ink-dim)}
+  pre b{color:var(--amber)}
+  .note{background:var(--sky-1);border:1px solid var(--sky-2);border-radius:13px;padding:13px;margin-top:20px;font-size:12px;color:var(--ink-dim);line-height:1.6}.note b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div class="gcirc">🗺️</div><div><h1>Mind-Map Formats</h1><div class="sub">Interchange formats for Life OS builds — import, export, interop.</div></div></div>
+
+  <div class="intro">Life OS nodes are already a tree: <code>{t, note, nodes:[…]}</code>. Every format below maps onto that — so any of these can be imported into (or exported from) a Life OS build. Tap a format for its shape, a sample, and how it maps.</div>
+
+  <div class="seclbl">Formats · tap to open</div>
+  <div class="grid" id="grid">
+    <div class="fmt" data-d="d-json" onclick="pick(this)"><div class="fc">🧩</div><div class="fn">Nested JSON</div><div class="fe">.json</div></div>
+    <div class="fmt" data-d="d-md" onclick="pick(this)"><div class="fc">📝</div><div class="fn">Markdown / Markmap</div><div class="fe">.md</div></div>
+    <div class="fmt" data-d="d-opml" onclick="pick(this)"><div class="fc">📑</div><div class="fn">OPML</div><div class="fe">.opml</div></div>
+    <div class="fmt" data-d="d-mm" onclick="pick(this)"><div class="fc">🧠</div><div class="fn">FreeMind / Freeplane</div><div class="fe">.mm</div></div>
+    <div class="fmt" data-d="d-mermaid" onclick="pick(this)"><div class="fc">🧜</div><div class="fn">Mermaid mindmap</div><div class="fe">text</div></div>
+    <div class="fmt" data-d="d-xmind" onclick="pick(this)"><div class="fc">🗂️</div><div class="fn">XMind</div><div class="fe">.xmind</div></div>
+    <div class="fmt" data-d="d-dot" onclick="pick(this)"><div class="fc">🕸️</div><div class="fn">GraphViz DOT</div><div class="fe">.dot</div></div>
+    <div class="fmt" data-d="d-indent" onclick="pick(this)"><div class="fc">↳</div><div class="fn">Indent / CSV</div><div class="fe">.txt</div></div>
+  </div>
+
+  <div id="dwrap">
+    <div class="detail" id="d-json"><div class="dh">Nested JSON <span class="dext">.json</span></div>
+      <div class="drow">The web lingua franca — a node with children. Trivial to read/write in JS.</div>
+      <pre>{"text":"Root","children":[
+  {"text":"Child A"},
+  {"text":"Child B","children":[{"text":"leaf"}]}
+]}</pre>
+      <div class="drow"><span class="best">Best for:</span> anything built in the browser (Life OS itself). <span class="map">Maps:</span> text→<b>t</b>, children→<b>nodes</b> — basically already Life OS's shape.</div>
+    </div>
+
+    <div class="detail" id="d-md"><div class="dh">Markdown / Markmap <span class="dext">.md</span></div>
+      <div class="drow">Indented headings &amp; lists = a tree. Git-friendly, hand-writable, renders to a live mind map with <b>markmap.js</b>. (Your Paracosm mind map is this.)</div>
+      <pre># Root
+## Child A
+- point 1
+## Child B
+  - nested leaf</pre>
+      <div class="drow"><span class="best">Best for:</span> text-first capture, version control, docs. <span class="map">Maps:</span> heading/bullet depth→nesting, line text→<b>t</b>.</div>
+    </div>
+
+    <div class="detail" id="d-opml"><div class="dh">OPML <span class="dext">.opml · XML</span></div>
+      <div class="drow">The near-universal outline interchange — almost every outliner/mind-mapper reads it.</div>
+      <pre>&lt;opml version="2.0"&gt;&lt;body&gt;
+  &lt;outline text="Root"&gt;
+    &lt;outline text="Child A"/&gt;
+    &lt;outline text="Child B"/&gt;
+  &lt;/outline&gt;
+&lt;/body&gt;&lt;/opml&gt;</pre>
+      <div class="drow"><span class="best">Best for:</span> moving outlines between apps. <span class="map">Maps:</span> <b>text</b> attr→t, nested <b>&lt;outline&gt;</b>→nodes.</div>
+    </div>
+
+    <div class="detail" id="d-mm"><div class="dh">FreeMind / Freeplane <span class="dext">.mm · XML</span></div>
+      <div class="drow">The classic desktop mind-map format. Rich: icons, links, notes, folding.</div>
+      <pre>&lt;map version="1.0.1"&gt;
+  &lt;node TEXT="Root"&gt;
+    &lt;node TEXT="Child A"/&gt;
+    &lt;node TEXT="Child B"/&gt;
+  &lt;/node&gt;
+&lt;/map&gt;</pre>
+      <div class="drow"><span class="best">Best for:</span> heavyweight mind mapping, importing legacy maps. <span class="map">Maps:</span> <b>TEXT</b> attr→t, nested <b>&lt;node&gt;</b>→nodes.</div>
+    </div>
+
+    <div class="detail" id="d-mermaid"><div class="dh">Mermaid mindmap <span class="dext">text</span></div>
+      <div class="drow">Code-driven diagram you can drop in any markdown/doc; indentation = hierarchy.</div>
+      <pre>mindmap
+  root((Root))
+    Child A
+    Child B
+      leaf</pre>
+      <div class="drow"><span class="best">Best for:</span> embedding a map inside docs/README, code-first. <span class="map">Maps:</span> indent depth→nesting, label→<b>t</b>.</div>
+    </div>
+
+    <div class="detail" id="d-xmind"><div class="dh">XMind <span class="dext">.xmind · ZIP</span></div>
+      <div class="drow">Full-featured desktop app. The file is a <b>ZIP</b> — modern XMind stores <code>content.json</code> (older: <code>content.xml</code>) of topics + children. Not hand-editable, but exports to OPML/Markdown/FreeMind.</div>
+      <pre>// inside the .xmind zip: content.json
+[{"rootTopic":{"title":"Root",
+  "children":{"attached":[
+    {"title":"Child A"},{"title":"Child B"}]}}}]</pre>
+      <div class="drow"><span class="best">Best for:</span> polished desktop maps. <span class="map">Tip:</span> export to OPML/MD first, then import — easier than parsing the zip.</div>
+    </div>
+
+    <div class="detail" id="d-dot"><div class="dh">GraphViz DOT <span class="dext">.dot / .gv</span></div>
+      <div class="drow">For <b>graphs</b>, not just trees — nodes can link to many nodes (great for faction webs, tech trees, relationships).</div>
+      <pre>digraph {
+  Root -&gt; "Child A";
+  Root -&gt; "Child B";
+  "Child A" -&gt; "Child B";  // cross-link
+}</pre>
+      <div class="drow"><span class="best">Best for:</span> non-tree relationships, your Paracosm faction/tech webs. <span class="map">Maps:</span> edges→links (beyond strict parent/child).</div>
+    </div>
+
+    <div class="detail" id="d-indent"><div class="dh">Indent / CSV <span class="dext">.txt / .csv</span></div>
+      <div class="drow">The simplest capture — tabs (or commas for level) define depth. Great for a quick brain-dump or a spreadsheet.</div>
+      <pre>Root
+	Child A
+	Child B
+		leaf</pre>
+      <div class="drow"><span class="best">Best for:</span> fast capture, importing from Sheets/Notes. <span class="map">Maps:</span> tab depth→nesting, line→<b>t</b>.</div>
+    </div>
+  </div>
+
+  <div class="note"><b>For Life OS builds:</b> the three that import/export cleanest with the least code are <b>Nested JSON</b> (native), <b>Markdown/Markmap</b> (what you already use for Paracosm), and <b>OPML</b> (universal). <b>DOT</b> is the one to reach for when a build needs real cross-links, not just a tree. XMind files are best converted to OPML/MD before import.</div>
+</div>
+
+<script>
+function pick(el){
+  document.querySelectorAll('.fmt').forEach(function(f){f.classList.remove('sel');});
+  el.classList.add('sel');
+  document.querySelectorAll('.detail').forEach(function(d){d.classList.remove('show');});
+  var d=document.getElementById(el.dataset.d); d.classList.add('show');
+  d.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+</script>
+</body>
+</html>
