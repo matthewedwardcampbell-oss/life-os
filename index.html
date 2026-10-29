@@ -39,8 +39,9 @@
   .sync .pip{width:7px;height:7px;border-radius:99px;background:var(--amber);flex:0 0 auto}
   .sync b{color:var(--ink)}
 
-  nav{display:flex;gap:5px;padding:0 16px;margin-top:10px}
-  nav button{flex:1;background:transparent;border:1px solid var(--sky-3);color:var(--ink-dim);font-family:inherit;font-size:11px;font-weight:500;padding:7px 4px;border-radius:99px;cursor:pointer;transition:.15s}
+  nav{display:flex;gap:6px;padding:0 14px;margin-top:10px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  nav::-webkit-scrollbar{display:none}
+  nav button{flex:0 0 auto;background:transparent;border:1px solid var(--sky-3);color:var(--ink-dim);font-family:inherit;font-size:12.5px;font-weight:500;padding:9px 15px;border-radius:99px;cursor:pointer;transition:.15s;white-space:nowrap;scroll-snap-align:start}
   nav button.on{background:var(--purple);border-color:var(--purple);color:#fff;font-weight:600}
 
   .view{display:none;animation:f .25s ease}
@@ -3394,6 +3395,7 @@ document.getElementById('instabs').addEventListener('click',e=>{ const b=e.targe
 document.getElementById('nav').addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b)return;
   document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+  b.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id===b.dataset.v));
   document.getElementById('addbtn').style.display=(b.dataset.v==='fn'||b.dataset.v==='chat'||b.dataset.v==='lab')?'none':'flex';
   if(b.dataset.v==='fn'){ renderFortnight(); if(gcalState!=='loading' && (!S.gcalAt || Date.now()-S.gcalAt>120000)) syncGcal(); }
