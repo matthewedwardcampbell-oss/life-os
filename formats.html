@@ -47,8 +47,32 @@
 
   <div class="intro">Life OS nodes are already a tree: <code>{t, note, nodes:[…]}</code>. Every format below maps onto that — so any of these can be imported into (or exported from) a Life OS build. Tap a format for its shape, a sample, and how it maps.</div>
 
+  <div class="seclbl">The circular map · the shape Life OS thinks in</div>
+  <div style="background:var(--sky-1);border:1px solid var(--sky-2);border-radius:16px;padding:12px 10px 14px">
+    <svg viewBox="0 0 400 400" style="width:100%;max-width:440px;display:block;margin:0 auto">
+      <g stroke="#2e3760" stroke-width="2.5">
+        <line x1="200" y1="200" x2="200" y2="55"/><line x1="200" y1="200" x2="328" y2="128"/>
+        <line x1="200" y1="200" x2="328" y2="272"/><line x1="200" y1="200" x2="200" y2="345"/>
+        <line x1="200" y1="200" x2="72" y2="272"/><line x1="200" y1="200" x2="72" y2="128"/>
+      </g>
+      <g font-family="Inter,system-ui,sans-serif" font-size="11" font-weight="600" fill="#eceaf4" text-anchor="middle">
+        <circle cx="200" cy="55" r="31" fill="#1a2038" stroke="#e9a95c" stroke-width="2.5"/><text x="200" y="59">Fortnight</text>
+        <circle cx="328" cy="128" r="31" fill="#1a2038" stroke="#7ac9a0" stroke-width="2.5"/><text x="328" y="132">Food</text>
+        <circle cx="328" cy="272" r="31" fill="#1a2038" stroke="#84b8ca" stroke-width="2.5"/><text x="328" y="276">Gym</text>
+        <circle cx="200" cy="345" r="31" fill="#1a2038" stroke="#a487da" stroke-width="2.5"/><text x="200" y="349">Paracosm</text>
+        <circle cx="72" cy="272" r="31" fill="#1a2038" stroke="#e07a7a" stroke-width="2.5"/><text x="72" y="269" font-size="9.5">Quarter-</text><text x="72" y="281" font-size="9.5">master</text>
+        <circle cx="72" cy="128" r="31" fill="#1a2038" stroke="#8a6fd4" stroke-width="2.5"/><text x="72" y="132">Circle</text>
+        <circle cx="200" cy="200" r="43" fill="#232a48" stroke="#8a6fd4" stroke-width="3"/>
+        <text x="200" y="196" font-family="Fraunces,Georgia,serif" font-size="15" fill="#eceaf4">Life</text>
+        <text x="200" y="213" font-family="Fraunces,Georgia,serif" font-size="15" fill="#eceaf4">OS</text>
+      </g>
+    </svg>
+    <div style="font-size:12px;color:var(--ink-dim);line-height:1.6;margin-top:6px;text-align:center">A <b style="color:var(--ink)">radial / circular</b> layout — root at the center, branches radiating out. Same <code style="font-family:ui-monospace,monospace;font-size:11px;color:var(--selenite)">{t,note,nodes}</code> tree underneath; this is just how Life OS draws it.</div>
+  </div>
+
   <div class="seclbl">Formats · tap to open</div>
   <div class="grid" id="grid">
+    <div class="fmt" data-d="d-radial" onclick="pick(this)"><div class="fc" style="border-color:var(--amber)">🎯</div><div class="fn">Radial / Circular</div><div class="fe">layout ★</div></div>
     <div class="fmt" data-d="d-json" onclick="pick(this)"><div class="fc">🧩</div><div class="fn">Nested JSON</div><div class="fe">.json</div></div>
     <div class="fmt" data-d="d-md" onclick="pick(this)"><div class="fc">📝</div><div class="fn">Markdown / Markmap</div><div class="fe">.md</div></div>
     <div class="fmt" data-d="d-opml" onclick="pick(this)"><div class="fc">📑</div><div class="fn">OPML</div><div class="fe">.opml</div></div>
@@ -60,6 +84,10 @@
   </div>
 
   <div id="dwrap">
+    <div class="detail" id="d-radial"><div class="dh">Radial / Circular <span class="dext">layout ★</span></div>
+      <div class="drow">Not a file format — a <b>layout</b>, and the one Life OS leans on. Root at the center, branches fan out in a ring (like the map up top). Most legible at a glance, and the most on-brand (everything circle-centered).</div>
+      <div class="drow"><span class="best">Best for:</span> at-a-glance overviews, the home shape, radial navigation. <span class="map">Renders from:</span> <i>any</i> tree below — JSON/Markdown/OPML — same data, just drawn in a circle. Build it with d3's radial tree, markmap, or hand-rolled SVG like the hero above.</div>
+    </div>
     <div class="detail" id="d-json"><div class="dh">Nested JSON <span class="dext">.json</span></div>
       <div class="drow">The web lingua franca — a node with children. Trivial to read/write in JS.</div>
       <pre>{"text":"Root","children":[
