@@ -3438,5 +3438,13 @@ document.getElementById('addbtn').style.display='none';  // fortnight is home; n
 document.getElementById('today').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
 syncGcal();  // pull the live calendar mirror on open
 </script>
+<script>
+/* offline support: register the service worker (runs only over https / on the deployed site) */
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
 </body>
 </html>
