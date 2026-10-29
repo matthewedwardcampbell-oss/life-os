@@ -44,7 +44,8 @@
   .orole{font-size:9.5px;color:var(--ink-faint);text-align:center;line-height:1.2}
   .opt.sel .ocirc{border-color:var(--amber);box-shadow:0 0 0 4px rgba(233,169,92,.18)}
   .opt.sel .olbl{color:var(--amber)}
-  .age.chosen .opt:not(.sel){opacity:.32}
+  .age.chosen .opt:not(.sel){display:none}
+  .age.chosen .opt.sel::after{content:"↺ tap to change";display:block;font-size:8.5px;letter-spacing:.3px;color:var(--amber);margin-top:3px;opacity:.85}
   .opt .rec{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--good);background:rgba(122,201,160,.14);border-radius:99px;padding:1px 6px;margin-top:-2px}
 
   /* shared archaic node */
@@ -63,6 +64,20 @@
   .dchips span{font-size:10px;color:var(--ink-dim);background:var(--sky-2);border:1px solid var(--sky-3);border-radius:99px;padding:3px 9px}
   .econ{font-size:11px;color:var(--ink-faint);margin-top:9px}
   .econ b.f{color:var(--pink)}.econ b.w{color:var(--wood)}.econ b.g{color:var(--gold)}
+  /* gatherer econ block + final readout circles */
+  .econblock{margin-top:11px;padding:10px 11px;border:1px solid var(--sky-3);border-radius:12px;background:rgba(18,22,42,.4)}
+  .eclbl{font-size:10px;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-faint);margin-bottom:7px}
+  .ecord{font-size:11px;color:var(--ink-dim);line-height:1.55;margin-bottom:9px}
+  .ecord b{color:var(--ink)}
+  .ecfinal{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .ecfl{font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);margin-right:2px}
+  .ecc{width:38px;height:38px;border-radius:50%;border:2px solid var(--sky-3);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+  .ecc b{font-size:14px;font-weight:800}
+  .ecc span{font-size:8px;letter-spacing:.4px;opacity:.8;margin-top:1px}
+  .ecc.f{border-color:var(--pink)}.ecc.f b{color:var(--pink)}
+  .ecc.w{border-color:var(--wood)}.ecc.w b{color:var(--wood)}
+  .ecc.g{border-color:var(--gold)}.ecc.g b{color:var(--gold)}
+  .ecnote{font-size:10px;color:var(--good);margin-top:7px}
 
   /* archaic build order (shared detail) */
   #d-archaic{border-left-color:var(--selenite)}
@@ -123,7 +138,17 @@
       <div class="odetail" id="d-forseti"><div class="dh">🧌 Forseti</div><div class="drole">The Troll Hegemony line</div>
         <div class="dchips"><span>GP: Healing Spring</span><span>Myth: Troll</span><span>Hall of Thanes</span></div>
         <div class="dline"><b>Trolls</b> zone the map (ranged AoE); <b>Hall of Thanes</b> Hersirs own the map; <b>Healing Spring</b> for zero-downtime raids. Boom into the late game.</div>
-        <div class="econ">Econ: <b>transition to wood earlier</b> this age — ~<b class="f">10F</b> · <b class="w">12W</b> · <b class="g">8G</b>; wood funds the Longhouses/Great Halls to pump Trolls + Hersirs. Take a 2nd gold. <span style="color:var(--good)">(from play)</span></div>
+        <div class="econblock">
+          <div class="eclbl">Classical econ — the troll boom</div>
+          <div class="ecord">Off the Archaic readout, <b>transition to wood earlier</b> than the blitz line. New gatherers go: <b>+2 wood → +1 food → +1 gold → +1 wood</b>. Wood funds the Longhouses / Great Halls that pump Trolls + Hersirs; the 2nd gold keeps god-powers and myth units flowing.</div>
+          <div class="ecfinal">
+            <span class="ecfl">Age-up at</span>
+            <div class="ecc f"><b>10</b><span>FOOD</span></div>
+            <div class="ecc w"><b>12</b><span>WOOD</span></div>
+            <div class="ecc g"><b>8</b><span>GOLD</span></div>
+          </div>
+          <div class="ecnote">◆ from play — tune as you boom</div>
+        </div>
       </div>
     </div>
   </div>
@@ -186,12 +211,21 @@
 <script>
 function toggleArch(){document.getElementById('d-archaic').classList.toggle('show');}
 function pick(opt){
-  var age=opt.closest('.age'); age.classList.add('chosen');
+  var age=opt.closest('.age');
+  var pid='p-'+age.dataset.age, pill=document.getElementById(pid);
+  // tapping the already-selected god re-opens the age (siblings reappear)
+  if(age.classList.contains('chosen') && opt.classList.contains('sel')){
+    age.classList.remove('chosen');
+    opt.classList.remove('sel');
+    age.querySelectorAll('.odetail').forEach(function(d){d.classList.remove('show');});
+    if(pill){pill.textContent=age.dataset.age.charAt(0).toUpperCase()+age.dataset.age.slice(1)+'?';pill.classList.remove('on');}
+    return;
+  }
+  age.classList.add('chosen');
   age.querySelectorAll('.opt').forEach(function(o){o.classList.remove('sel');});
   opt.classList.add('sel');
   age.querySelectorAll('.odetail').forEach(function(d){d.classList.remove('show');});
   document.getElementById(opt.dataset.d).classList.add('show');
-  var pid='p-'+age.dataset.age, pill=document.getElementById(pid);
   if(pill){pill.textContent=opt.dataset.name;pill.classList.add('on');}
 }
 function resetTree(){
