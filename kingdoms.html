@@ -33,14 +33,16 @@
   .legend{display:flex;gap:11px;flex-wrap:wrap;margin-bottom:12px;font-size:9.5px;color:var(--ink-faint)}
   .legend span{display:flex;align-items:center;gap:4px}.legend i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
 
-  /* faction picker (landing) */
-  .facpick{display:flex;flex-wrap:wrap;gap:16px 14px;justify-content:center;margin-top:20px}
-  .faccard{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;cursor:pointer;width:92px}
-  .faccard:active{transform:scale(.94)}
-  .faccirc{width:72px;height:72px;border-radius:50%;background:var(--sky-1);border:3px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:33px;transition:box-shadow .15s}
+  /* faction picker (landing) — radial ring */
+  .ring{position:relative;width:100%;max-width:330px;margin:18px auto 10px;aspect-ratio:1/1}
+  .ringhub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:78px;height:78px;border-radius:50%;background:var(--sky-2);border:2px solid var(--acc);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:30px;box-shadow:0 0 0 6px rgba(230,184,74,.07)}
+  .ringhub small{font-size:7.5px;color:var(--ink-faint);letter-spacing:.6px;margin-top:2px;text-transform:uppercase;font-weight:700}
+  .faccard{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;cursor:pointer;width:82px}
+  .faccard:active{transform:translate(-50%,-50%) scale(.92)}
+  .faccirc{width:62px;height:62px;border-radius:50%;background:var(--sky-1);border:3px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:29px;transition:box-shadow .15s}
   .faccard:active .faccirc{box-shadow:0 0 0 5px rgba(255,255,255,.05)}
-  .facname{font-size:13px;font-weight:700;line-height:1.1}
-  .facbonus{font-size:9.5px;color:var(--ink-faint);line-height:1.25}
+  .facname{font-size:12.5px;font-weight:700;line-height:1.1}
+  .facbonus{font-size:9px;color:var(--ink-faint);line-height:1.2}
 
   /* faction banner on city screen */
   .banner{background:var(--sky-1);border:1px solid var(--sky-2);border-radius:14px;padding:13px 14px;margin-bottom:16px}
@@ -87,7 +89,7 @@
   @media (min-width:640px){
     body{max-width:1000px;font-size:16px}.wrap{padding:26px 30px 90px}
     .col-ref{flex:0 0 28%}.col-fleet{flex:0 0 22%}
-    .faccirc{width:88px;height:88px;font-size:40px}.facname{font-size:15px}.faccard{width:112px}
+    .ring{max-width:430px}.ringhub{width:100px;height:100px;font-size:40px}.faccirc{width:80px;height:80px;font-size:37px}.facname{font-size:15px}.faccard{width:108px}
     .rcirc{width:50px;height:50px;font-size:22px}.reflabel{font-size:15px}
     .fstep{font-size:14px}.fnode{width:50px;height:50px;font-size:23px}.fphase{font-size:16px}
     .scirc{width:58px;height:58px;font-size:26px}.sname{font-size:12px;max-width:100px}.srole{font-size:10px}
@@ -104,12 +106,13 @@
     <div class="top"><div class="gcirc">🏰</div><div><h1>Kingdoms Reborn</h1><div class="sub">Pick your nation — each one wants a different map.</div></div></div>
     <div class="patch"><span>🧩</span><div>Faction bonuses verified; <b>best-landmass picks are my strategy call</b> — tune as you play.</div></div>
     <div class="seclbl">Choose a nation <span class="n" style="text-transform:none;letter-spacing:0;color:var(--ink-faint)">tap for its city plan →</span></div>
-    <div class="facpick">
-      <div class="faccard" onclick="openCity('duchies')"><div class="faccirc" style="border-color:#84b8ca">⚜️</div><div class="facname">Duchies</div><div class="facbonus">research +5%</div></div>
-      <div class="faccard" onclick="openCity('emirates')"><div class="faccirc" style="border-color:#e6b84a">☪️</div><div class="facname">Emirates</div><div class="facbonus">cheap trade</div></div>
-      <div class="faccard" onclick="openCity('norse')"><div class="faccirc" style="border-color:#a9c7d6">🪓</div><div class="facname">Norsemen</div><div class="facbonus">cold + wood</div></div>
-      <div class="faccard" onclick="openCity('shogun')"><div class="faccirc" style="border-color:#e07a7a">⛩️</div><div class="facname">Shogunates</div><div class="facbonus">luxuries</div></div>
-      <div class="faccard" onclick="openCity('tlatoa')"><div class="faccirc" style="border-color:#7ac9a0">🌋</div><div class="facname">Tlatoa</div><div class="facbonus">food-efficient</div></div>
+    <div class="ring">
+      <div class="ringhub">🏰<small>Nations</small></div>
+      <div class="faccard" style="left:50%;top:11%" onclick="openCity('duchies')"><div class="faccirc" style="border-color:#84b8ca">⚜️</div><div class="facname">Duchies</div><div class="facbonus">research +5%</div></div>
+      <div class="faccard" style="left:86%;top:38%" onclick="openCity('emirates')"><div class="faccirc" style="border-color:#e6b84a">☪️</div><div class="facname">Emirates</div><div class="facbonus">cheap trade</div></div>
+      <div class="faccard" style="left:72%;top:82%" onclick="openCity('norse')"><div class="faccirc" style="border-color:#a9c7d6">🪓</div><div class="facname">Norsemen</div><div class="facbonus">cold + wood</div></div>
+      <div class="faccard" style="left:28%;top:82%" onclick="openCity('shogun')"><div class="faccirc" style="border-color:#e07a7a">⛩️</div><div class="facname">Shogunates</div><div class="facbonus">luxuries</div></div>
+      <div class="faccard" style="left:14%;top:38%" onclick="openCity('tlatoa')"><div class="faccirc" style="border-color:#7ac9a0">🌋</div><div class="facname">Tlatoa</div><div class="facbonus">food-efficient</div></div>
     </div>
   </div>
 
