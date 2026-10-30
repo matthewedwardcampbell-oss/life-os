@@ -33,6 +33,20 @@
   .legend{display:flex;gap:11px;flex-wrap:wrap;margin-bottom:12px;font-size:9.5px;color:var(--ink-faint)}
   .legend span{display:flex;align-items:center;gap:4px}.legend i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
 
+  /* faction picker (landing) */
+  .facpick{display:flex;flex-wrap:wrap;gap:16px 14px;justify-content:center;margin-top:20px}
+  .faccard{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;cursor:pointer;width:92px}
+  .faccard:active{transform:scale(.94)}
+  .faccirc{width:72px;height:72px;border-radius:50%;background:var(--sky-1);border:3px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:33px;transition:box-shadow .15s}
+  .faccard:active .faccirc{box-shadow:0 0 0 5px rgba(255,255,255,.05)}
+  .facname{font-size:13px;font-weight:700;line-height:1.1}
+  .facbonus{font-size:9.5px;color:var(--ink-faint);line-height:1.25}
+
+  /* faction banner on city screen */
+  .banner{background:var(--sky-1);border:1px solid var(--sky-2);border-radius:14px;padding:13px 14px;margin-bottom:16px}
+  .bnrrow{font-size:12px;color:var(--ink-dim);line-height:1.6;margin-top:7px}.bnrrow:first-child{margin-top:0}.bnrrow b{color:var(--ink)}
+  .bnrmap{border-radius:10px;padding:9px 11px;margin-top:11px;font-size:11.5px;color:var(--ink-dim);line-height:1.6;background:rgba(230,184,74,.1);border:1px solid rgba(230,184,74,.35)}
+
   .split{display:flex;gap:11px;align-items:flex-start}
   .col-ref{flex:0 0 33%;min-width:0}.col-flow{flex:1;min-width:0}.col-fleet{flex:0 0 27%;min-width:0}
   .colhd{font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-bottom:10px}
@@ -68,13 +82,12 @@
   .vbadge.k{color:var(--ink-dim);background:var(--sky-2);border:1px solid var(--sky-3)}
   .sdesc{font-size:12.5px;color:var(--ink-dim);line-height:1.6;margin-top:10px}.sdesc b{color:var(--ink)}.sdesc .hl{color:var(--acc);font-weight:600}
   .fillnote{font-size:11px;color:var(--purple-lt);background:rgba(138,111,212,.1);border:1px dashed rgba(138,111,212,.4);border-radius:10px;padding:8px 10px;margin-top:12px}
-  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-  .chips span{font-size:10px;color:var(--ink-dim);background:var(--sky-2);border:1px solid var(--sky-3);border-radius:99px;padding:3px 9px}
   template{display:none}
 
   @media (min-width:640px){
     body{max-width:1000px;font-size:16px}.wrap{padding:26px 30px 90px}
     .col-ref{flex:0 0 28%}.col-fleet{flex:0 0 22%}
+    .faccirc{width:88px;height:88px;font-size:40px}.facname{font-size:15px}.faccard{width:112px}
     .rcirc{width:50px;height:50px;font-size:22px}.reflabel{font-size:15px}
     .fstep{font-size:14px}.fnode{width:50px;height:50px;font-size:23px}.fphase{font-size:16px}
     .scirc{width:58px;height:58px;font-size:26px}.sname{font-size:12px;max-width:100px}.srole{font-size:10px}
@@ -85,11 +98,26 @@
 <body>
 <div class="wrap">
 
-  <!-- MAIN -->
+  <!-- SCREEN 1 · FACTION PICKER (landing) -->
   <div class="screen active" id="scr-main">
     <a href="games.html" style="display:inline-block;color:var(--ink-faint);font-size:12.5px;text-decoration:none;margin-bottom:8px">← Games</a>
-    <div class="top"><div class="gcirc">🏰</div><div><h1>Kingdoms Reborn · City</h1><div class="sub">Survive the winter, chain the economy, grow the realm. Scaffold — fill as you play.</div></div></div>
-    <div class="patch"><span>🧩</span><div>Scaffold only — <b>seed notes, not verified strategy yet.</b> We fill each circle as you play and learn the current build.</div></div>
+    <div class="top"><div class="gcirc">🏰</div><div><h1>Kingdoms Reborn</h1><div class="sub">Pick your nation — each one wants a different map.</div></div></div>
+    <div class="patch"><span>🧩</span><div>Faction bonuses verified; <b>best-landmass picks are my strategy call</b> — tune as you play.</div></div>
+    <div class="seclbl">Choose a nation <span class="n" style="text-transform:none;letter-spacing:0;color:var(--ink-faint)">tap for its city plan →</span></div>
+    <div class="facpick">
+      <div class="faccard" onclick="openCity('duchies')"><div class="faccirc" style="border-color:#84b8ca">⚜️</div><div class="facname">Duchies</div><div class="facbonus">research +5%</div></div>
+      <div class="faccard" onclick="openCity('emirates')"><div class="faccirc" style="border-color:#e6b84a">☪️</div><div class="facname">Emirates</div><div class="facbonus">cheap trade</div></div>
+      <div class="faccard" onclick="openCity('norse')"><div class="faccirc" style="border-color:#a9c7d6">🪓</div><div class="facname">Norsemen</div><div class="facbonus">cold + wood</div></div>
+      <div class="faccard" onclick="openCity('shogun')"><div class="faccirc" style="border-color:#e07a7a">⛩️</div><div class="facname">Shogunates</div><div class="facbonus">luxuries</div></div>
+      <div class="faccard" onclick="openCity('tlatoa')"><div class="faccirc" style="border-color:#7ac9a0">🌋</div><div class="facname">Tlatoa</div><div class="facbonus">food-efficient</div></div>
+    </div>
+  </div>
+
+  <!-- SCREEN 2 · CITY PLAN (per faction) -->
+  <div class="screen" id="scr-city">
+    <div class="topbar"><div class="back" onclick="go('scr-main')">←</div>
+      <div><div class="tbtitle" id="city-title">—</div><div class="tbsub">Kingdoms Reborn · city plan</div></div></div>
+    <div id="fac-banner"></div>
     <div class="split">
       <div class="col-ref">
         <div class="colhd">📚 Reference</div>
@@ -108,9 +136,9 @@
           <div class="fitem"><div class="fnode">⛺</div><div class="fbody"><div class="fphase">1 · Settle</div>
             <div class="fstep">Drop the town center near <b>fresh water + forest + fertile land</b>. First workers to <span class="ref" onclick="openRef('chains','Production chains','k')">food &amp; wood</span>.</div></div></div>
           <div class="fitem"><div class="fnode">❄️</div><div class="fbody"><div class="fphase">2 · Beat winter</div>
-            <div class="fstep">Before the first <span class="ref" onclick="openRef('seasons','Seasons / winter','k')">winter</span>: enough <b>food stockpile + firewood/coats</b>. This is the make-or-break early wall.</div></div></div>
+            <div class="fstep">Before the first <span class="ref" onclick="openRef('seasons','Seasons / winter','k')">winter</span>: enough <b>food stockpile + firewood/coats</b>. The make-or-break early wall.</div></div></div>
           <div class="fitem"><div class="fnode">⚙️</div><div class="fbody"><div class="fphase">3 · Chains</div>
-            <div class="fstep">Stand up first <span class="ref" onclick="openRef('chains','Production chains','k')">production chain</span> (e.g. wheat→flour→bread) to raise <span class="ref" onclick="openRef('needs','Happiness &amp; needs','k')">happiness</span>.</div></div></div>
+            <div class="fstep">Stand up first <span class="ref" onclick="openRef('chains','Production chains','k')">production chain</span> to raise <span class="ref" onclick="openRef('needs','Happiness &amp; needs','k')">happiness</span>.</div></div></div>
           <div class="fitem"><div class="fnode">⚖️</div><div class="fbody"><div class="fphase">4 · Trade</div>
             <div class="fstep">Turn surplus into coin at the <span class="ref" onclick="openRef('trade','Trade &amp; market','k')">market</span>; buy what your land can't make.</div></div></div>
           <div class="fitem"><div class="fnode">🗺️</div><div class="fbody"><div class="fphase">5 · Expand &amp; era up</div>
@@ -127,30 +155,21 @@
         <div class="ship" onclick="openRef('b_market','Market','c')"><div class="scirc c">⚖️<span class="n">5</span></div><div class="sname">Market</div><div class="srole">coin engine</div></div>
       </div>
     </div>
-
-    <div class="seclbl" style="margin-top:20px">🏳️ Factions · tap to compare · best landmass each</div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
-      <div class="ship" onclick="openRef('f_duchies','Duchies','v')"><div class="scirc" style="border-color:#84b8ca">⚜️</div><div class="sname">Duchies</div><div class="srole">research +5%</div></div>
-      <div class="ship" onclick="openRef('f_emirates','Emirates','v')"><div class="scirc" style="border-color:#e6b84a">☪️</div><div class="sname">Emirates</div><div class="srole">cheap trade</div></div>
-      <div class="ship" onclick="openRef('f_norse','Norsemen','v')"><div class="scirc" style="border-color:#a9c7d6">🪓</div><div class="sname">Norsemen</div><div class="srole">cold + wood</div></div>
-      <div class="ship" onclick="openRef('f_shogun','Shogunates','v')"><div class="scirc" style="border-color:#e07a7a">⛩️</div><div class="sname">Shogunates</div><div class="srole">luxuries</div></div>
-      <div class="ship" onclick="openRef('f_tlatoa','Tlatoa','v')"><div class="scirc" style="border-color:#7ac9a0">🌋</div><div class="sname">Tlatoa</div><div class="srole">food-efficient</div></div>
-    </div>
   </div>
 
-  <!-- DETAIL -->
+  <!-- SCREEN 3 · CONCEPT DETAIL -->
   <div class="screen" id="scr-ref">
-    <div class="topbar"><div class="back" onclick="go('scr-main')">←</div>
+    <div class="topbar"><div class="back" onclick="go('scr-city')">←</div>
       <div><div class="tbtitle" id="ref-title">—</div><div class="tbsub">Kingdoms Reborn · reference</div></div></div>
     <div id="ref-badge"></div><div id="ref-content"></div>
   </div>
 </div>
 
-<!-- TEMPLATES -->
-<template id="tpl-seasons"><div class="sdesc" style="margin-top:0"><b>Winter is the early game's boss fight.</b> Food production drops and heating demand spikes; an unprepared town starves or freezes.</div><div class="fillnote">✎ Fill as you play: note how many food/firewood turns of buffer you actually needed, and which season the wall hit.</div></template>
-<template id="tpl-needs"><div class="sdesc" style="margin-top:0"><b>Citizens climb tiers as their needs are met</b> (food variety, goods, services). Higher tiers = more tax and better workers, but harder demands.</div><div class="fillnote">✎ Fill as you play: list the need thresholds that unlocked each population tier.</div></template>
+<!-- TEMPLATES · shared city concepts -->
+<template id="tpl-seasons"><div class="sdesc" style="margin-top:0"><b>Winter is the early game's boss fight.</b> Food production drops and heating demand spikes; an unprepared town starves or freezes.</div><div class="fillnote">✎ Fill as you play: note how many food/firewood turns of buffer you actually needed.</div></template>
+<template id="tpl-needs"><div class="sdesc" style="margin-top:0"><b>Citizens climb tiers as their needs are met</b> (food variety, goods, services). Higher tiers = more tax and better workers, but harder demands.</div><div class="fillnote">✎ Fill as you play: list the need thresholds that unlocked each tier.</div></template>
 <template id="tpl-chains"><div class="sdesc" style="margin-top:0"><b>Nothing is one building.</b> Goods come from multi-step chains (raw → processed → finished). Bottlenecks are usually a missing middle step.</div><div class="fillnote">✎ Fill as you play: map your go-to chains and the worker ratio each step needs.</div></template>
-<template id="tpl-trade"><div class="sdesc" style="margin-top:0"><b>Trade covers what your tiles can't grow.</b> Sell surplus, import scarcities. On the shared map, neighbors matter.</div><div class="fillnote">✎ Fill as you play: note reliable sell goods and what's worth importing vs making.</div></template>
+<template id="tpl-trade"><div class="sdesc" style="margin-top:0"><b>Trade covers what your tiles can't grow.</b> Sell surplus, import scarcities. On the shared map, neighbors matter.</div><div class="fillnote">✎ Fill as you play: note reliable sell goods and what's worth importing.</div></template>
 <template id="tpl-expand"><div class="sdesc" style="margin-top:0"><b>Expansion = new resource tiles.</b> Claim land for ore, specific crops, or luxuries you're missing.</div><div class="fillnote">✎ Fill as you play: which resource forced your first expansion?</div></template>
 <template id="tpl-era"><div class="sdesc" style="margin-top:0"><b>Research unlocks eras, buildings, and better chains.</b> Order it around your current bottleneck, not a fixed path.</div><div class="fillnote">✎ Fill as you play: log the research order that felt smoothest.</div></template>
 <template id="tpl-b_food"><div class="sdesc" style="margin-top:0"><b>Step 1 — food first.</b> Foragers/fishers/farms before anything. No food, no town.</div></template>
@@ -159,39 +178,49 @@
 <template id="tpl-b_chain"><div class="sdesc" style="margin-top:0"><b>Step 4 — first production chain.</b> A happiness good (bread or cloth) to start climbing tiers.</div></template>
 <template id="tpl-b_market"><div class="sdesc" style="margin-top:0"><b>Step 5 — market.</b> Convert surplus to coin and import gaps; the economy flywheel starts here.</div></template>
 
-<template id="tpl-f_duchies">
-  <div class="sdesc" style="margin-top:0"><b>Bonus:</b> research the tech tree <span class="hl">+5% faster</span>. Western-European generalist.</div>
-  <div class="sdesc"><b>Playstyle:</b> the flexible pick — no economic weakness, you out-build through a steady tech lead. Great first faction to learn the game on.</div>
-  <div style="background:rgba(132,184,202,.12);border:1px solid rgba(132,184,202,.4);border-radius:10px;padding:9px 11px;margin-top:11px;font-size:11.5px;color:var(--ink-dim);line-height:1.6">🗺️ <b style="color:var(--ink)">Best landmass:</b> <b>temperate</b> climate, <b>medium moisture</b> (reliable farms), <b>medium mountains</b> (local ore), balanced sea. A forgiving map lets the research edge shine without fighting terrain.</div>
-  <div class="sdesc"><b>⚑ Watch:</b> no econ bonus — your win is tech <i>timing</i>, so keep science flowing.</div>
-</template>
-<template id="tpl-f_emirates">
-  <div class="sdesc" style="margin-top:0"><b>Bonus:</b> cheaper imports &amp; exports — <b style="color:var(--warn)">but gather wood at half speed.</b> Arabic-styled trade power.</div>
-  <div class="sdesc"><b>Playstyle:</b> trade-reliant and wood-poor. Don't try to be self-sufficient in wood — <span class="hl">import fuel/wood cheaply and export high-value goods.</span></div>
-  <div style="background:rgba(230,184,74,.12);border:1px solid rgba(230,184,74,.4);border-radius:10px;padding:9px 11px;margin-top:11px;font-size:11.5px;color:var(--ink-dim);line-height:1.6">🗺️ <b style="color:var(--ink)">Best landmass:</b> <b>warm / hot</b> temperature (low heating demand sidesteps your wood weakness), <b>coastal / higher sea level</b> for trade ports, medium moisture. Sparse forest is fine — you'll buy wood.</div>
-  <div class="sdesc"><b>⚑ Watch:</b> cold maps punish you hardest — high fuel burn <i>and</i> half-speed wood. Avoid cold starts.</div>
-</template>
-<template id="tpl-f_norse">
-  <div class="sdesc" style="margin-top:0"><b>Bonus:</b> <span class="hl">cold-resistant</span> and gather <span class="hl">more wood per tree.</span></div>
-  <div class="sdesc"><b>Playstyle:</b> thrive exactly where every other faction suffers. Your cold resistance turns brutal winters into a non-issue while rivals bleed fuel.</div>
-  <div style="background:rgba(169,199,214,.14);border:1px solid rgba(169,199,214,.45);border-radius:10px;padding:9px 11px;margin-top:11px;font-size:11.5px;color:var(--ink-dim);line-height:1.6">🗺️ <b style="color:var(--ink)">Best landmass:</b> <b>cold</b> temperature (your free edge), <b>high moisture / dense forest</b> (more-wood-per-tree compounds hard), medium mountains. The colder and more wooded, the better.</div>
-  <div class="sdesc"><b>⚑ Watch:</b> a hot, treeless map wastes both bonuses — pick cold and forested.</div>
-</template>
-<template id="tpl-f_shogun">
-  <div class="sdesc" style="margin-top:0"><b>Bonus:</b> produce <span class="hl">luxuries faster</span> — Sake, Green Tea, Sushi, Ramen (Sake Brewery, Tea Plantation, Sushi Bar). Late unit is a mech.</div>
-  <div class="sdesc"><b>Playstyle:</b> luxury + trade snowball. Faster luxuries → faster house upgrades → more population capacity and happiness → more science and labor. Sell surplus to fund imports.</div>
-  <div style="background:rgba(224,122,122,.12);border:1px solid rgba(224,122,122,.4);border-radius:10px;padding:9px 11px;margin-top:11px;font-size:11.5px;color:var(--ink-dim);line-height:1.6">🗺️ <b style="color:var(--ink)">Best landmass:</b> <b>temperate–warm</b>, <b>high moisture</b> (rice for sake, tea), <b>higher sea level</b> (fish for sushi + trade ports). Wet and coastal maxes your luxury chains.</div>
-  <div class="sdesc"><b>⚑ Watch:</b> don't let the luxury focus starve your Needs chain — winter still has to be solved normally.</div>
-</template>
-<template id="tpl-f_tlatoa">
-  <div class="sdesc" style="margin-top:0"><b>Bonus:</b> citizens consume <span class="hl">less food</span> — <b style="color:var(--warn)">but trade fees are higher.</b> Aztec-styled.</div>
-  <div class="sdesc"><b>Playstyle:</b> tall and self-sufficient. Lower food use means a bigger population on less farmland and easy winters. Because trading is taxed, <span class="hl">vertically integrate</span> — make your own inputs instead of importing.</div>
-  <div style="background:rgba(122,201,160,.12);border:1px solid rgba(122,201,160,.4);border-radius:10px;padding:9px 11px;margin-top:11px;font-size:11.5px;color:var(--ink-dim);line-height:1.6">🗺️ <b style="color:var(--ink)">Best landmass:</b> <b>warm</b> (low fuel), <b>medium–high moisture</b> (farms), <b>higher mountains</b> for on-site ore/stone so you never import. Pick a resource-rich, self-contained province; inland is fine.</div>
-  <div class="sdesc"><b>⚑ Watch:</b> trade fees punish constant buy/sell loops — batch big, rare trades only.</div>
-</template>
-
 <script>
 function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+
+var FACTIONS={
+  duchies:{e:'⚜️',n:'Duchies',c:'#84b8ca',
+    bonus:'Research the tech tree <b>+5% faster</b>. Western-European generalist.',
+    play:'The flexible pick — no economic weakness; you out-build through a steady tech lead. Best faction to learn the game on.',
+    map:'<b>Temperate</b> climate, <b>medium moisture</b> (reliable farms), <b>medium mountains</b> (local ore), balanced sea. A forgiving map lets the research edge shine.',
+    tip:'Bank science and keep it flowing — your win is tech timing.'},
+  emirates:{e:'☪️',n:'Emirates',c:'#e6b84a',
+    bonus:'Cheaper imports &amp; exports — but gather wood at <b style="color:var(--warn)">half speed</b>. Arabic-styled trade power.',
+    play:'Trade-reliant and wood-poor. Don’t try to self-supply wood — import fuel cheaply and export high-value goods.',
+    map:'<b>Warm / hot</b> (low heating demand hides your wood weakness), <b>coastal / higher sea</b> for trade ports, medium moisture. Sparse forest is fine.',
+    tip:'Avoid cold maps — high fuel burn + half wood is your worst case.'},
+  norse:{e:'🪓',n:'Norsemen',c:'#a9c7d6',
+    bonus:'<b>Cold-resistant</b> and gather <b>more wood per tree</b>.',
+    play:'Thrive exactly where every other faction suffers — winters barely touch you while rivals bleed fuel.',
+    map:'<b>Cold</b> temperature (your free edge), <b>high moisture / dense forest</b> (more-wood-per-tree compounds), medium mountains. Colder and greener = stronger.',
+    tip:'Settle the cold on purpose — a hot, treeless map wastes both bonuses.'},
+  shogun:{e:'⛩️',n:'Shogunates',c:'#e07a7a',
+    bonus:'Produce <b>luxuries faster</b> — Sake, Green Tea, Sushi, Ramen. Late unit is a mech.',
+    play:'Luxury + trade snowball: faster luxuries → faster house upgrades → more population capacity, happiness and science. Sell surplus to fund imports.',
+    map:'<b>Temperate–warm</b>, <b>high moisture</b> (rice for sake, tea), <b>higher sea level</b> (fish for sushi + trade ports). Wet and coastal maxes your chains.',
+    tip:'Rush luxuries early — but don’t let it starve your Needs chain.'},
+  tlatoa:{e:'🌋',n:'Tlatoa',c:'#7ac9a0',
+    bonus:'Citizens consume <b>less food</b> — but trade fees are <b style="color:var(--warn)">higher</b>. Aztec-styled.',
+    play:'Tall and self-sufficient. Less food = bigger population on less farmland + easy winters. Because trade is taxed, vertically integrate instead of importing.',
+    map:'<b>Warm</b> (low fuel), <b>medium–high moisture</b> (farms), <b>higher mountains</b> for on-site ore/stone so you never import. Pick a resource-rich, self-contained province; inland is fine.',
+    tip:'Skip the market — batch big, rare trades only; make your own inputs.'}
+};
+function openCity(fid){
+  var f=FACTIONS[fid];
+  document.getElementById('city-title').innerHTML=f.e+' '+f.n;
+  document.getElementById('fac-banner').innerHTML=
+    '<div class="banner" style="border-color:'+f.c+'55">'
+    +'<div class="bnrrow"><b>Bonus:</b> '+f.bonus+'</div>'
+    +'<div class="bnrrow"><b>Playstyle:</b> '+f.play+'</div>'
+    +'<div class="bnrmap" style="border-color:'+f.c+'66;background:'+f.c+'18">🗺️ <b style="color:var(--ink)">Best landmass:</b> '+f.map+'</div>'
+    +'<div class="bnrrow" style="margin-top:10px"><b style="color:'+f.c+'">▶ Opening:</b> '+f.tip+'</div>'
+    +'</div>';
+  go('scr-city');
+}
+
 var BADGE={v:['v','✓ Solid'],c:['c','✎ My suggested order'],k:['k','⟳ Fill in as you play']};
 function openRef(id,title,status){
   document.getElementById('ref-title').innerHTML=title;
