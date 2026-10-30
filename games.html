@@ -54,7 +54,9 @@
   .csub{font-size:9px;color:var(--ink-faint)}
   /* radial game ring */
   .gring{position:relative;width:100%;max-width:340px;margin:10px auto 6px;aspect-ratio:1/1}
-  .ghub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:84px;height:84px;border-radius:50%;background:var(--sky-2);border:2px solid var(--purple);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:29px;box-shadow:0 0 0 6px rgba(138,111,212,.08)}
+  .ghub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:84px;height:84px;border-radius:50%;background:var(--sky-2);border:2px solid var(--purple);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 0 0 6px rgba(138,111,212,.08)}
+  .ghub .mono{font-family:'Fraunces',Georgia,serif;font-size:23px;font-weight:600;line-height:.9;letter-spacing:.5px;color:var(--purple-lt)}
+  .ghub .mono sup{font-size:.5em;letter-spacing:0;margin-left:1px}
   .ghub small{font-size:7px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-top:2px}
   .gring .cnode{position:absolute;transform:translate(-50%,-50%);width:74px;gap:6px}
   .gring .cnode:active{transform:translate(-50%,-50%) scale(.92)}
@@ -189,7 +191,7 @@
     <div class="sub">How Alexander became Great.</div>
     <div class="seclbl">The curriculum · 8 games <span class="n">tap a circle</span></div>
     <div class="gring">
-      <div class="ghub">🎮<small>8 games</small></div>
+      <div class="ghub"><span class="mono">MEC<sup>III</sup></span><small>Matthew</small></div>
       <div class="cnode" style="left:50%;top:12%" onclick="go('scr-game')"><div class="circ dev">🌌<span class="pct">55%</span></div><div class="cname">Stellaris</div><div class="csub">2 strategies</div></div>
       <div class="cnode" style="left:77%;top:23%" onclick="location.href='loki.html'"><div class="circ strong">🏛️<span class="pct">70%</span></div><div class="cname">AoM: Retold</div><div class="csub">Loki build tree</div></div>
       <div class="cnode" style="left:88%;top:50%"><div class="circ dev">☀️<span class="pct">45%</span></div><div class="cname">Sins II</div><div class="csub">TEC</div></div>
