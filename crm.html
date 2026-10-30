@@ -195,7 +195,8 @@ var ROSTER=[
  ["Sean House","Dallas","",1],["John","Dallas","",1],["Bob","Dallas","",1],["Gil","Dallas","",1],["Jerry","Dallas","",1],
  ["Jon","Dallas","",1],["Matt","Dallas","",1],["Benjamin","Dallas","",1],["Richard","Dallas","",1],
  ["Rob Townsend","Dallas","",1],["Rob Sullins","Dallas","",1],["Jeff","Virginia","",1],["Chad","Florida","",1],
- ["Joseph Palacios","Other","",1]
+ ["Joseph Palacios","Other","",1],
+ ["Jonathan","Denver","2026-10-30",1]
 ];
 var REGULARS=["Aaron Swift","George Gramer","Sam Irvin","Paul Sablich"]; // standing weekly-ish
 
@@ -203,12 +204,15 @@ var REGULARS=["Aaron Swift","George Gramer","Sam Irvin","Paul Sablich"]; // stan
 function load(k){try{return JSON.parse(localStorage.getItem(k)||"{}")}catch(e){return{}}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 var CAD=load("crm-cadence"), LOG=load("crm-contacted"); // LOG[key]="YYYY-MM-DD" last CRM contact
+var DEFCAD={jonathan:4}; Object.keys(DEFCAD).forEach(function(k){ if(CAD[k]==null) CAD[k]=DEFCAD[k]; }); // baked-in cadences from contact convention
 var NOW=new Date();
 function daysSince(d){ if(!d)return null; var p=d.split("-"); var dt=new Date(+p[0],+p[1]-1,+p[2]); return Math.round((NOW-dt)/86400000); }
 function todayStr(){ return NOW.getFullYear()+"-"+String(NOW.getMonth()+1).padStart(2,"0")+"-"+String(NOW.getDate()).padStart(2,"0"); }
 function keyOf(n){return n.toLowerCase();}
 function contactedOn(c){ return LOG[keyOf(c.name)]||""; }
-function nextDue(c){ var k=keyOf(c.name), cad=CAD[k]; if(!LOG[k]||!cad) return null; return daysSince(LOG[k])>=cad*7 ? 0 : (cad*7-daysSince(LOG[k])); }
+var LEAD=7; // reach out ~1 week early so the booking lands on the cadence mark
+function lastTouch(c){ var k=keyOf(c.name), l=LOG[k]; if(l&&(!c.last||l>c.last)) return l; return c.last; }
+function nextReach(c){ var k=keyOf(c.name), cad=CAD[k], lt=lastTouch(c); if(!cad||!lt) return null; var d=(cad*7-LEAD)-daysSince(lt); return d<=0?0:d; }
 function statusOf(c){ if(!c.last) return "new"; var dl=daysSince(c.last); if(dl<45)return"active"; if(dl<90)return"cooling"; if(dl<270)return"dormant"; return"lost"; }
 function whenLabel(c){ if(!c.last) return "one-timer · "+c.city; var dl=daysSince(c.last); if(dl<31)return dl+"d ago"; if(dl<365)return Math.round(dl/30)+"mo ago"; return (dl/365).toFixed(1)+"y ago"; }
 function stratOf(st,c){
@@ -218,16 +222,12 @@ function stratOf(st,c){
   if(st==="lost") return "Reactivate — “I'm back in Denver, would love to get you on the table,” offer a specific slot.";
   return "Came once, never rebooked. Biggest conversion pool — one warm text can make them a regular.";
 }
-/* is this client "due" to contact? */
-function isDue(c){ var k=keyOf(c.name), cad=CAD[k];
-  if(LOG[k]){ // already run through the CRM process once
-    if(!cad) return false;            // contacted, no cadence yet → cleared until you set one
-    return daysSince(LOG[k])>=cad*7;  // comes back around after their cadence
-  }
+/* is this client "due" to reach out? fires a LEAD week before the cadence mark so booking lands on time */
+function isDue(c){ var k=keyOf(c.name), cad=CAD[k], lt=lastTouch(c);
+  if(cad){ if(!lt) return true; return daysSince(lt) >= (cad*7 - LEAD); } // e.g. 4wk → due at 21 days
+  if(LOG[k]) return false;            // contacted, no cadence yet → cleared until you set one
   if(!c.last) return true;            // never-contacted one-timer → convert target
-  var dl=daysSince(c.last);
-  if(cad) return dl>=cad*7;
-  return statusOf(c)!=="active";      // no cadence set: cooling/dormant/lost are due; active waits
+  return statusOf(c)!=="active";      // no cadence: cooling/dormant/lost are due; active waits for a cadence
 }
 function clients(){ return ROSTER.map(r=>({name:r[0],city:r[1],last:r[2],count:r[3]})); }
 
@@ -242,8 +242,9 @@ function reachList(){ // sorted: warm first (fewest days), one-timers, then win-
 }
 function cadLabel(n){ var cad=CAD[keyOf(n)]; return cad?("every "+cad+" wk"):"set cadence"; }
 
-function clientRow(c,idx){ var st=statusOf(c), k=keyOf(c.name), con=contactedOn(c), done=!!con && !isDue(c);
-  var nd=nextDue(c), nextTxt = con ? (CAD[k] ? (nd===0?'due again now':'next in '+nd+'d') : 'set a cadence to schedule the next') : '';
+function clientRow(c,idx){ var st=statusOf(c), k=keyOf(c.name), con=contactedOn(c), done=!!CAD[k] && !isDue(c) && lastTouch(c);
+  var nr=nextReach(c);
+  var schedLine = CAD[k] ? ('<div style="margin-top:9px;font-size:11.5px;color:var(--acc)">🗓 '+(isDue(c)?'Reach out now':'Reach out in '+nr+'d')+' — to book the '+CAD[k]+'-wk mark</div>') : '';
   return '<div class="cli'+(done?' reached':'')+'" data-k="'+k+'">'+
     '<div class="clih" onclick="toggleCli(this)">'+
       '<span class="cdot '+st+'"></span>'+
@@ -252,7 +253,8 @@ function clientRow(c,idx){ var st=statusOf(c), k=keyOf(c.name), con=contactedOn(
     '</div>'+
     '<div class="clibody" style="display:none">'+
       '<div class="strat">'+stratOf(st,c)+'</div>'+
-      (con?'<div style="margin-top:9px;font-size:11.5px;color:var(--good)">✓ Last contacted '+(daysSince(con)===0?'today':daysSince(con)+'d ago')+(nextTxt?' · <span style="color:var(--ink-dim)">'+nextTxt+'</span>':'')+'</div>':'')+
+      schedLine+
+      (con?'<div style="margin-top:7px;font-size:11.5px;color:var(--good)">✓ Last contacted '+(daysSince(con)===0?'today':daysSince(con)+'d ago')+'</div>':'')+
       '<div class="cadrow"><span class="lb">Cadence</span><div class="step">'+
         '<button onclick="bumpCad(\''+k+'\',-1)">−</button>'+
         '<span class="val'+(CAD[k]?'':' unset')+'">'+cadLabel(c.name)+'</span>'+
