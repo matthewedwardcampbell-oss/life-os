@@ -127,6 +127,15 @@
         <div class="ship" onclick="openRef('b_market','Market','c')"><div class="scirc c">⚖️<span class="n">5</span></div><div class="sname">Market</div><div class="srole">coin engine</div></div>
       </div>
     </div>
+
+    <div class="seclbl" style="margin-top:20px">🏳️ Factions · tap to compare · best landmass each</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
+      <div class="ship" onclick="openRef('f_duchies','Duchies','v')"><div class="scirc" style="border-color:#84b8ca">⚜️</div><div class="sname">Duchies</div><div class="srole">research +5%</div></div>
+      <div class="ship" onclick="openRef('f_emirates','Emirates','v')"><div class="scirc" style="border-color:#e6b84a">☪️</div><div class="sname">Emirates</div><div class="srole">cheap trade</div></div>
+      <div class="ship" onclick="openRef('f_norse','Norsemen','v')"><div class="scirc" style="border-color:#a9c7d6">🪓</div><div class="sname">Norsemen</div><div class="srole">cold + wood</div></div>
+      <div class="ship" onclick="openRef('f_shogun','Shogunates','v')"><div class="scirc" style="border-color:#e07a7a">⛩️</div><div class="sname">Shogunates</div><div class="srole">luxuries</div></div>
+      <div class="ship" onclick="openRef('f_tlatoa','Tlatoa','v')"><div class="scirc" style="border-color:#7ac9a0">🌋</div><div class="sname">Tlatoa</div><div class="srole">food-efficient</div></div>
+    </div>
   </div>
 
   <!-- DETAIL -->
@@ -149,6 +158,37 @@
 <template id="tpl-b_house"><div class="sdesc" style="margin-top:0"><b>Step 3 — housing.</b> Only once food + warmth are safe; more pop = more labor.</div></template>
 <template id="tpl-b_chain"><div class="sdesc" style="margin-top:0"><b>Step 4 — first production chain.</b> A happiness good (bread or cloth) to start climbing tiers.</div></template>
 <template id="tpl-b_market"><div class="sdesc" style="margin-top:0"><b>Step 5 — market.</b> Convert surplus to coin and import gaps; the economy flywheel starts here.</div></template>
+
+<template id="tpl-f_duchies">
+  <div class="sdesc" style="margin-top:0"><b>Bonus:</b> research the tech tree <span class="hl">+5% faster</span>. Western-European generalist.</div>
+  <div class="sdesc"><b>Playstyle:</b> the flexible pick — no economic weakness, you out-build through a steady tech lead. Great first faction to learn the game on.</div>
+  <div style="background:rgba(132,184,202,.12);border:1px solid rgba(132,184,202,.4);border-radius:10px;padding:9px 11px;margin-top:11px;font-size:11.5px;color:var(--ink-dim);line-height:1.6">🗺️ <b style="color:var(--ink)">Best landmass:</b> <b>temperate</b> climate, <b>medium moisture</b> (reliable farms), <b>medium mountains</b> (local ore), balanced sea. A forgiving map lets the research edge shine without fighting terrain.</div>
+  <div class="sdesc"><b>⚑ Watch:</b> no econ bonus — your win is tech <i>timing</i>, so keep science flowing.</div>
+</template>
+<template id="tpl-f_emirates">
+  <div class="sdesc" style="margin-top:0"><b>Bonus:</b> cheaper imports &amp; exports — <b style="color:var(--warn)">but gather wood at half speed.</b> Arabic-styled trade power.</div>
+  <div class="sdesc"><b>Playstyle:</b> trade-reliant and wood-poor. Don't try to be self-sufficient in wood — <span class="hl">import fuel/wood cheaply and export high-value goods.</span></div>
+  <div style="background:rgba(230,184,74,.12);border:1px solid rgba(230,184,74,.4);border-radius:10px;padding:9px 11px;margin-top:11px;font-size:11.5px;color:var(--ink-dim);line-height:1.6">🗺️ <b style="color:var(--ink)">Best landmass:</b> <b>warm / hot</b> temperature (low heating demand sidesteps your wood weakness), <b>coastal / higher sea level</b> for trade ports, medium moisture. Sparse forest is fine — you'll buy wood.</div>
+  <div class="sdesc"><b>⚑ Watch:</b> cold maps punish you hardest — high fuel burn <i>and</i> half-speed wood. Avoid cold starts.</div>
+</template>
+<template id="tpl-f_norse">
+  <div class="sdesc" style="margin-top:0"><b>Bonus:</b> <span class="hl">cold-resistant</span> and gather <span class="hl">more wood per tree.</span></div>
+  <div class="sdesc"><b>Playstyle:</b> thrive exactly where every other faction suffers. Your cold resistance turns brutal winters into a non-issue while rivals bleed fuel.</div>
+  <div style="background:rgba(169,199,214,.14);border:1px solid rgba(169,199,214,.45);border-radius:10px;padding:9px 11px;margin-top:11px;font-size:11.5px;color:var(--ink-dim);line-height:1.6">🗺️ <b style="color:var(--ink)">Best landmass:</b> <b>cold</b> temperature (your free edge), <b>high moisture / dense forest</b> (more-wood-per-tree compounds hard), medium mountains. The colder and more wooded, the better.</div>
+  <div class="sdesc"><b>⚑ Watch:</b> a hot, treeless map wastes both bonuses — pick cold and forested.</div>
+</template>
+<template id="tpl-f_shogun">
+  <div class="sdesc" style="margin-top:0"><b>Bonus:</b> produce <span class="hl">luxuries faster</span> — Sake, Green Tea, Sushi, Ramen (Sake Brewery, Tea Plantation, Sushi Bar). Late unit is a mech.</div>
+  <div class="sdesc"><b>Playstyle:</b> luxury + trade snowball. Faster luxuries → faster house upgrades → more population capacity and happiness → more science and labor. Sell surplus to fund imports.</div>
+  <div style="background:rgba(224,122,122,.12);border:1px solid rgba(224,122,122,.4);border-radius:10px;padding:9px 11px;margin-top:11px;font-size:11.5px;color:var(--ink-dim);line-height:1.6">🗺️ <b style="color:var(--ink)">Best landmass:</b> <b>temperate–warm</b>, <b>high moisture</b> (rice for sake, tea), <b>higher sea level</b> (fish for sushi + trade ports). Wet and coastal maxes your luxury chains.</div>
+  <div class="sdesc"><b>⚑ Watch:</b> don't let the luxury focus starve your Needs chain — winter still has to be solved normally.</div>
+</template>
+<template id="tpl-f_tlatoa">
+  <div class="sdesc" style="margin-top:0"><b>Bonus:</b> citizens consume <span class="hl">less food</span> — <b style="color:var(--warn)">but trade fees are higher.</b> Aztec-styled.</div>
+  <div class="sdesc"><b>Playstyle:</b> tall and self-sufficient. Lower food use means a bigger population on less farmland and easy winters. Because trading is taxed, <span class="hl">vertically integrate</span> — make your own inputs instead of importing.</div>
+  <div style="background:rgba(122,201,160,.12);border:1px solid rgba(122,201,160,.4);border-radius:10px;padding:9px 11px;margin-top:11px;font-size:11.5px;color:var(--ink-dim);line-height:1.6">🗺️ <b style="color:var(--ink)">Best landmass:</b> <b>warm</b> (low fuel), <b>medium–high moisture</b> (farms), <b>higher mountains</b> for on-site ore/stone so you never import. Pick a resource-rich, self-contained province; inland is fine.</div>
+  <div class="sdesc"><b>⚑ Watch:</b> trade fees punish constant buy/sell loops — batch big, rare trades only.</div>
+</template>
 
 <script>
 function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
