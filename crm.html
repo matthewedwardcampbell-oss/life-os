@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CRM · Stone Therapy</title>
+<style>
+  :root{
+    --sky-0:#12162a; --sky-1:#1a2038; --sky-2:#232a48; --sky-3:#2e3760;
+    --purple:#8a6fd4; --purple-lt:#a487da; --amber:#e9a95c; --selenite:#84b8ca;
+    --good:#7ac9a0; --warn:#e07a7a; --ink:#eceaf4; --ink-dim:#a1a4c2; --ink-faint:#6d7199;
+    --acc:#7ac9a0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--sky-0)}
+  body{color:var(--ink);font-family:'Inter',-apple-system,system-ui,sans-serif;font-size:15px;line-height:1.5;
+    max-width:460px;margin:0 auto;min-height:100vh;background-image:radial-gradient(1200px 520px at 50% -10%,rgba(122,201,160,.1),transparent);}
+  .wrap{padding:18px 15px 70px}
+  h1{font-family:'Fraunces',Georgia,serif;font-size:23px;font-weight:600}
+  .sub{color:var(--ink-dim);font-size:12.5px;margin-top:2px;font-style:italic}
+  .top{display:flex;align-items:center;gap:11px;margin-bottom:10px}
+  .gcirc{width:52px;height:52px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:2.5px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:26px}
+  .seclbl{font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin:4px 0 11px}
+  .screen{display:none;animation:fade .22s ease}.screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .topbar{display:flex;align-items:center;gap:11px;padding:4px 0 12px;position:sticky;top:0;z-index:5;background:linear-gradient(var(--sky-0) 72%,transparent)}
+  .back{width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:var(--sky-1);border:1px solid var(--sky-2);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink);cursor:pointer}
+  .back:active{transform:scale(.93)}
+  .tbtitle{font-family:'Fraunces',serif;font-size:19px}.tbsub{font-size:10.5px;color:var(--ink-faint)}
+
+  .patch{display:flex;align-items:center;gap:8px;background:var(--sky-1);border:1px solid var(--sky-2);border-radius:11px;padding:9px 12px;font-size:11px;color:var(--ink-dim);margin-bottom:12px}
+  .patch b{color:var(--ink)}
+
+  /* KPI glance band */
+  .glance{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:4px}
+  .gt{background:var(--sky-1);border:1px solid var(--sky-3);border-radius:13px;padding:11px 8px;text-align:center}
+  .gt b{font-family:'Fraunces',serif;font-size:21px;display:block;line-height:1}
+  .gt span{font-size:8.5px;color:var(--ink-faint);font-weight:600;display:block;margin-top:5px;line-height:1.2}
+  .gt.due b{color:var(--amber)}.gt.win b{color:var(--warn)}.gt.act b{color:var(--good)}.gt.wk b{color:var(--purple-lt)}
+
+  /* radial ring */
+  .ring{position:relative;width:100%;max-width:330px;margin:14px auto 8px;aspect-ratio:1/1}
+  .ringhub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:80px;height:80px;border-radius:50%;background:var(--sky-2);border:2px solid var(--purple);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 0 0 6px rgba(138,111,212,.1)}
+  .ringhub .mono{font-family:'Fraunces',Georgia,serif;font-size:23px;font-weight:600;line-height:.9;letter-spacing:.5px;color:var(--purple-lt)}
+  .ringhub .mono sup{font-size:.5em;letter-spacing:0;margin-left:1px}
+  .ringhub small{font-size:7.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-top:2px}
+  .fcard{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;cursor:pointer;width:88px}
+  .fcard:active{transform:translate(-50%,-50%) scale(.92)}
+  .fcirc{width:64px;height:64px;border-radius:50%;background:var(--sky-1);border:3px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:27px;position:relative}
+  .fcirc .cnt{position:absolute;bottom:-4px;right:-6px;background:var(--sky-0);border:1px solid var(--sky-3);border-radius:99px;font-size:9px;font-weight:700;padding:1px 6px;color:var(--ink-dim)}
+  .fname{font-size:12px;font-weight:700;line-height:1.1}
+  .fdesc{font-size:9px;color:var(--ink-faint);line-height:1.2}
+
+  .card{background:var(--sky-1);border:1px solid var(--sky-2);border-radius:14px;padding:13px 14px;margin-bottom:12px}
+  .card h3{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .card p{font-size:12px;color:var(--ink-dim);line-height:1.6;margin-top:6px}.card p b{color:var(--ink)}
+  .trow{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--sky-2)}
+  .trow:last-child{border-bottom:none}
+  .tcirc{width:44px;height:44px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:2.5px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:20px;position:relative}
+  .tcirc .dot{position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;border:2px solid var(--sky-1);border-radius:50%}
+  .dot.g{background:var(--good)}.dot.a{background:var(--amber)}.dot.r{background:var(--warn)}.dot.s{background:var(--selenite)}.dot.k{background:var(--ink-faint)}
+  .tbody{flex:1;min-width:0}
+  .tname{font-size:13px;font-weight:600}
+  .tmeta{font-size:11px;color:var(--ink-dim);line-height:1.45;margin-top:2px}.tmeta b{color:var(--ink)}
+  .tmove{font-size:11px;color:var(--acc);margin-top:3px}
+  .legend{display:flex;gap:11px;flex-wrap:wrap;margin:2px 0 12px;font-size:9.5px;color:var(--ink-faint)}
+  .legend span{display:flex;align-items:center;gap:4px}.legend i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+  .pill{display:inline-block;font-size:10px;font-weight:600;border-radius:99px;padding:3px 9px;margin-top:4px}
+  .pill.now{color:var(--good);background:rgba(122,201,160,.1);border:1px solid rgba(122,201,160,.3)}
+  .step{display:flex;gap:9px;margin-top:9px}
+  .step .k{width:22px;height:22px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:1px solid var(--sky-3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--acc)}
+  .step .t{font-size:12px;color:var(--ink-dim);line-height:1.5}.step .t b{color:var(--ink)}
+  .tmpl{background:var(--sky-0);border:1px dashed var(--sky-3);border-radius:10px;padding:10px 11px;font-size:11.5px;color:var(--ink-dim);line-height:1.6;margin-top:10px;font-style:italic}
+  .fillnote{font-size:11px;color:var(--purple-lt);background:rgba(138,111,212,.1);border:1px dashed rgba(138,111,212,.4);border-radius:10px;padding:8px 10px;margin-top:10px}
+
+  @media (min-width:640px){
+    body{max-width:720px;font-size:16px}.wrap{padding:26px 30px 90px}
+    .ring{max-width:420px}.ringhub{width:96px;height:96px}.ringhub .mono{font-size:27px}
+    .fcirc{width:78px;height:78px;font-size:33px}.fname{font-size:14px}.fcard{width:108px}
+    .tbtitle{font-size:23px}.gt b{font-size:25px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- MAIN · radial -->
+  <div class="screen active" id="scr-main">
+    <a href="index.html" style="display:inline-block;color:var(--ink-faint);font-size:12.5px;text-decoration:none;margin-bottom:8px">← Life OS</a>
+    <div class="top"><div class="gcirc">📇</div><div><h1>CRM · Stone Therapy</h1><div class="sub">Keep the table full. Clients, follow-ups, and the partners who send them.</div></div></div>
+    <div class="patch"><span>🎯</span><div>Target: <b>3 massages/day · 5 days/week.</b> This is the engine that feeds it.</div></div>
+    <div class="glance">
+      <div class="gt due"><b>0</b><span>rebooks due</span></div>
+      <div class="gt win"><b>0</b><span>win-back</span></div>
+      <div class="gt act"><b>0</b><span>active clients</span></div>
+      <div class="gt wk"><b>0</b><span>booked this wk</span></div>
+    </div>
+    <div class="ring">
+      <div class="ringhub"><span class="mono">MEC<sup>III</sup></span><small>Matthew</small></div>
+      <div class="fcard" style="left:50%;top:11%" onclick="go('scr-pipeline')"><div class="fcirc" style="border-color:var(--good)">📋<span class="cnt">0</span></div><div class="fname">Pipeline</div><div class="fdesc">who's in play</div></div>
+      <div class="fcard" style="left:86%;top:38%" onclick="go('scr-followup')"><div class="fcirc" style="border-color:var(--amber)">🔔<span class="cnt">0</span></div><div class="fname">Follow-ups</div><div class="fdesc">today's outreach</div></div>
+      <div class="fcard" style="left:72%;top:82%" onclick="go('scr-insurance')"><div class="fcirc" style="border-color:var(--selenite)">🏥</div><div class="fname">Insurance / HSA</div><div class="fdesc">covered care</div></div>
+      <div class="fcard" style="left:28%;top:82%" onclick="go('scr-partners')"><div class="fcirc" style="border-color:var(--purple)">🤝</div><div class="fname">Partnerships</div><div class="fdesc">referral sources</div></div>
+      <div class="fcard" style="left:14%;top:38%" onclick="go('scr-outreach')"><div class="fcirc" style="border-color:var(--warn)">📣</div><div class="fname">Get in front</div><div class="fdesc">outreach plays</div></div>
+    </div>
+  </div>
+
+  <!-- PIPELINE -->
+  <div class="screen" id="scr-pipeline">
+    <div class="topbar"><div class="back" onclick="go('scr-main')">←</div><div><div class="tbtitle">📋 Pipeline</div><div class="tbsub">every client, by status</div></div></div>
+    <div class="legend"><span><i style="background:var(--good)"></i>landed</span><span><i style="background:var(--amber)"></i>warm</span><span><i style="background:var(--warn)"></i>lapsed</span><span><i style="background:var(--ink-faint)"></i>new lead</span></div>
+    <div class="card">
+      <div class="trow"><div class="tcirc">🟢<span class="dot g"></span></div><div class="tbody"><div class="tname">Landed · repeat</div><div class="tmeta">Booked &amp; rebooking. <b>Protect these</b> — they're the base.</div></div></div>
+      <div class="trow"><div class="tcirc">🟡<span class="dot a"></span></div><div class="tbody"><div class="tname">Warm · rebook target</div><div class="tmeta">Interested or one-and-done. <b>Highest-ROI follow-up.</b></div></div></div>
+      <div class="trow"><div class="tcirc">🔴<span class="dot r"></span></div><div class="tbody"><div class="tname">Lapsed · win-back</div><div class="tmeta">Haven't seen in a while. One warm text can revive them.</div></div></div>
+      <div class="trow"><div class="tcirc">✨<span class="dot k"></span></div><div class="tbody"><div class="tname">New leads</div><div class="tmeta">Inbound that hasn't booked yet. Convert fast.</div></div></div>
+    </div>
+    <div class="fillnote">✎ Fills from your Google Voice + Gmail export. Drop the zips and I'll sort every thread into these buckets — and flag the screen-out ones separately, off this board.</div>
+  </div>
+
+  <!-- FOLLOW-UPS -->
+  <div class="screen" id="scr-followup">
+    <div class="topbar"><div class="back" onclick="go('scr-main')">←</div><div><div class="tbtitle">🔔 Follow-ups</div><div class="tbsub">the daily outreach queue</div></div></div>
+    <div class="card">
+      <h3>🎯 The rule</h3>
+      <p>Your morning CRM block has one job: send a handful of warm, specific messages. <b>Rebook targets first, win-backs second, new leads same-day.</b></p>
+    </div>
+    <div class="card">
+      <h3>📅 Rebook cadence</h3>
+      <p>Repeat clients: a light check-in <b>~3–4 weeks</b> after their last session, before they drift. Lapsed: a no-pressure note at <b>~8–10 weeks</b>.</p>
+      <div class="fillnote">✎ Once the export's in, this becomes a dated list: who's due this week, pulled from last-seen.</div>
+    </div>
+    <div class="card">
+      <h3>💬 Rebook text — steal this</h3>
+      <div class="tmpl">"Hey [name] — it's Matthew with Stone Therapy. You're about due for a reset on that [shoulder / low back]. I've got a couple mornings open this week if you want me to come to you. Want me to hold one?"</div>
+      <div class="tmpl">Win-back: "Hey [name], been a minute! I'm back in the Denver area full-time and booking mobile sessions again. Want to get you back on the table?"</div>
+    </div>
+  </div>
+
+  <!-- INSURANCE / HSA -->
+  <div class="screen" id="scr-insurance">
+    <div class="topbar"><div class="back" onclick="go('scr-main')">←</div><div><div class="tbtitle">🏥 Insurance / HSA</div><div class="tbsub">covered care = higher ticket</div></div></div>
+    <div class="card">
+      <h3>⚡ Fastest win · HSA / FSA</h3>
+      <p>Massage is HSA/FSA-eligible with a <b>Letter of Medical Necessity</b> from a doctor. Their card runs like a normal Visa through your processor — you just hand them a <b>superbill</b>. Many current clients have an HSA and don't know they can use it on you.</p>
+      <span class="pill now">low lift · do first</span>
+    </div>
+    <div class="card">
+      <h3>🧾 Setup checklist</h3>
+      <div class="step"><div class="k">1</div><div class="t"><b>Get an NPI</b> — free at nppes.cms.gov. Nothing bills without it.</div></div>
+      <div class="step"><div class="k">2</div><div class="t"><b>Accept HSA/FSA cards</b> — usually already works through Square/Stripe.</div></div>
+      <div class="step"><div class="k">3</div><div class="t"><b>Superbill template</b> — your info, date, CPT (97124 massage), amount.</div></div>
+      <div class="step"><div class="k">4</div><div class="t"><b>Pick a lane</b> — cash + superbill (client submits) vs. auto-injury / workers-comp.</div></div>
+    </div>
+    <div class="card">
+      <h3>📇 Client tracker</h3>
+      <p>Per insured client: <b>insured?</b> · <b>LMN on file?</b> · <b>superbill owed?</b> · <b>auto / workers-comp?</b></p>
+      <div class="fillnote">✎ Becomes a live row-per-client tracker once we know your covered clients — starting with the one already using insurance.</div>
+    </div>
+  </div>
+
+  <!-- PARTNERSHIPS -->
+  <div class="screen" id="scr-partners">
+    <div class="topbar"><div class="back" onclick="go('scr-main')">←</div><div><div class="tbtitle">🤝 Partnerships</div><div class="tbsub">your referral pipeline</div></div></div>
+    <div class="legend"><span><i style="background:var(--ink-faint)"></i>target</span><span><i style="background:var(--amber)"></i>contacted</span><span><i style="background:var(--selenite)"></i>met</span><span><i style="background:var(--good)"></i>referring</span></div>
+    <div class="card">
+      <div class="trow"><div class="tcirc">🦴<span class="dot k"></span></div><div class="tbody"><div class="tname">Chiropractors</div><div class="tmeta">Your <b>#1 source</b> — pain &amp; auto-injury patients who need soft-tissue work.</div><div class="tmove">First move: pick 3 near your service area.</div></div></div>
+      <div class="trow"><div class="tcirc">🏃<span class="dot k"></span></div><div class="tbody"><div class="tname">Physical therapists</div><div class="tmeta">Refer maintenance &amp; overflow; you complement each other.</div><div class="tmove">First move: offer a reciprocal referral loop.</div></div></div>
+      <div class="trow"><div class="tcirc">🧑‍⚖️<span class="dot k"></span></div><div class="tbody"><div class="tname">PI / auto-accident attorneys</div><div class="tmeta">Car-accident clients whose treatment is <b>covered care</b>.</div><div class="tmove">First move: a one-pager that you take injury referrals.</div></div></div>
+      <div class="trow"><div class="tcirc">🏥<span class="dot k"></span></div><div class="tbody"><div class="tname">Pain clinics / physicians</div><div class="tmeta">Write the LMNs and diagnosed-condition referrals you need.</div><div class="tmove">First move: introduce yourself as their mobile LMT.</div></div></div>
+      <div class="trow"><div class="tcirc">👷<span class="dot k"></span></div><div class="tbody"><div class="tname">Occupational / workers-comp</div><div class="tmeta">Steady WC referrals for work-injury recovery.</div><div class="tmove">First move: find the local occ-health clinics.</div></div></div>
+    </div>
+    <div class="fillnote">✎ Each partner moves target → contacted → met → referring. As you work them, tell me and I'll advance the dots and log names/dates.</div>
+  </div>
+
+  <!-- GET IN FRONT -->
+  <div class="screen" id="scr-outreach">
+    <div class="topbar"><div class="back" onclick="go('scr-main')">←</div><div><div class="tbtitle">📣 Get in front</div><div class="tbsub">how to open the door</div></div></div>
+    <div class="card">
+      <h3>🪑 Door-opener · free chair demo</h3>
+      <p>Offer a clinic <b>15 minutes of free chair massage for their staff.</b> The front desk and providers become fans — and fans refer. Nothing sells you like hands-on.</p>
+    </div>
+    <div class="card">
+      <h3>🥪 Lunch-and-learn</h3>
+      <p>Bring lunch, give a 10-min talk on how massage improves <b>their</b> patients' outcomes (recovery, pain, range of motion). You leave as the name they remember.</p>
+    </div>
+    <div class="card">
+      <h3>📄 One-pager + cards</h3>
+      <p>A clean leave-behind: what you do, that you're <b>mobile</b>, that you take <b>HSA/FSA</b> and <b>injury referrals</b>, and an easy booking link. Drop it in person, not by email.</p>
+    </div>
+    <div class="card">
+      <h3>🔁 Make referring easy</h3>
+      <p>Hand them referral cards or a QR to your booking page, and <b>refer back</b> — send your clients to them too. Reciprocity makes it stick. Thank them every time they send someone.</p>
+    </div>
+    <div class="card">
+      <h3>👣 This week</h3>
+      <p><b>Walk into 3 chiropractors</b> near your route, offer the free staff chair demo, leave the one-pager. That's the whole play to start.</p>
+      <span class="pill now">start here</span>
+    </div>
+  </div>
+
+</div>
+<script>
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+</script>
+</body>
+</html>
