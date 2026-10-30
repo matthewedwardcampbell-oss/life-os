@@ -202,10 +202,13 @@ var REGULARS=["Aaron Swift","George Gramer","Sam Irvin","Paul Sablich"]; // stan
 /* per-client cadence (weeks, 1-8) + reached flags — persisted on device */
 function load(k){try{return JSON.parse(localStorage.getItem(k)||"{}")}catch(e){return{}}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-var CAD=load("crm-cadence"), DONE=load("crm-reached");
+var CAD=load("crm-cadence"), LOG=load("crm-contacted"); // LOG[key]="YYYY-MM-DD" last CRM contact
 var NOW=new Date();
 function daysSince(d){ if(!d)return null; var p=d.split("-"); var dt=new Date(+p[0],+p[1]-1,+p[2]); return Math.round((NOW-dt)/86400000); }
+function todayStr(){ return NOW.getFullYear()+"-"+String(NOW.getMonth()+1).padStart(2,"0")+"-"+String(NOW.getDate()).padStart(2,"0"); }
 function keyOf(n){return n.toLowerCase();}
+function contactedOn(c){ return LOG[keyOf(c.name)]||""; }
+function nextDue(c){ var k=keyOf(c.name), cad=CAD[k]; if(!LOG[k]||!cad) return null; return daysSince(LOG[k])>=cad*7 ? 0 : (cad*7-daysSince(LOG[k])); }
 function statusOf(c){ if(!c.last) return "new"; var dl=daysSince(c.last); if(dl<45)return"active"; if(dl<90)return"cooling"; if(dl<270)return"dormant"; return"lost"; }
 function whenLabel(c){ if(!c.last) return "one-timer · "+c.city; var dl=daysSince(c.last); if(dl<31)return dl+"d ago"; if(dl<365)return Math.round(dl/30)+"mo ago"; return (dl/365).toFixed(1)+"y ago"; }
 function stratOf(st,c){
@@ -215,12 +218,16 @@ function stratOf(st,c){
   if(st==="lost") return "Reactivate — “I'm back in Denver, would love to get you on the table,” offer a specific slot.";
   return "Came once, never rebooked. Biggest conversion pool — one warm text can make them a regular.";
 }
-/* is this client "due" to contact? cadence set → by weeks; else by status */
-function isDue(c){ if(DONE[keyOf(c.name)])return false; var st=statusOf(c); var cad=CAD[keyOf(c.name)];
-  if(!c.last) return true; // one-timers always worth a convert text until reached
+/* is this client "due" to contact? */
+function isDue(c){ var k=keyOf(c.name), cad=CAD[k];
+  if(LOG[k]){ // already run through the CRM process once
+    if(!cad) return false;            // contacted, no cadence yet → cleared until you set one
+    return daysSince(LOG[k])>=cad*7;  // comes back around after their cadence
+  }
+  if(!c.last) return true;            // never-contacted one-timer → convert target
   var dl=daysSince(c.last);
   if(cad) return dl>=cad*7;
-  return st!=="active"; // no cadence set: cooling/dormant/lost are due; active waits for a cadence
+  return statusOf(c)!=="active";      // no cadence set: cooling/dormant/lost are due; active waits
 }
 function clients(){ return ROSTER.map(r=>({name:r[0],city:r[1],last:r[2],count:r[3]})); }
 
@@ -235,25 +242,27 @@ function reachList(){ // sorted: warm first (fewest days), one-timers, then win-
 }
 function cadLabel(n){ var cad=CAD[keyOf(n)]; return cad?("every "+cad+" wk"):"set cadence"; }
 
-function clientRow(c,idx){ var st=statusOf(c), k=keyOf(c.name), done=!!DONE[k];
+function clientRow(c,idx){ var st=statusOf(c), k=keyOf(c.name), con=contactedOn(c), done=!!con && !isDue(c);
+  var nd=nextDue(c), nextTxt = con ? (CAD[k] ? (nd===0?'due again now':'next in '+nd+'d') : 'set a cadence to schedule the next') : '';
   return '<div class="cli'+(done?' reached':'')+'" data-k="'+k+'">'+
     '<div class="clih" onclick="toggleCli(this)">'+
       '<span class="cdot '+st+'"></span>'+
-      '<span class="cnm">'+c.name+'</span>'+
+      '<span class="cnm">'+c.name+(done?' ✓':'')+'</span>'+
       '<span class="cwhen"><b>'+st+'</b>'+whenLabel(c)+' · '+c.count+'×</span>'+
     '</div>'+
     '<div class="clibody" style="display:none">'+
       '<div class="strat">'+stratOf(st,c)+'</div>'+
+      (con?'<div style="margin-top:9px;font-size:11.5px;color:var(--good)">✓ Last contacted '+(daysSince(con)===0?'today':daysSince(con)+'d ago')+(nextTxt?' · <span style="color:var(--ink-dim)">'+nextTxt+'</span>':'')+'</div>':'')+
       '<div class="cadrow"><span class="lb">Cadence</span><div class="step">'+
         '<button onclick="bumpCad(\''+k+'\',-1)">−</button>'+
         '<span class="val'+(CAD[k]?'':' unset')+'">'+cadLabel(c.name)+'</span>'+
         '<button onclick="bumpCad(\''+k+'\',1)">+</button></div></div>'+
-      '<button class="reachbtn'+(done?' undo':'')+'" onclick="markReach(\''+k+'\')">'+(done?'↩ mark not reached':'✓ mark reached')+'</button>'+
+      '<button class="reachbtn'+(con?' undo':'')+'" onclick="markDone(\''+k+'\')">'+(con?'↩ undo contact':'✓ Done — contacted today')+'</button>'+
     '</div></div>';
 }
 function toggleCli(h){ var b=h.nextElementSibling; b.style.display=b.style.display==="none"?"block":"none"; }
 function bumpCad(k,d){ var v=(CAD[k]||0)+d; if(v<1)v=1; if(v>8)v=8; CAD[k]=v; save("crm-cadence",CAD); renderAll(); reopen(k); }
-function markReach(k){ if(DONE[k])delete DONE[k]; else DONE[k]=true; save("crm-reached",DONE); renderAll(); }
+function markDone(k){ if(LOG[k])delete LOG[k]; else LOG[k]=todayStr(); save("crm-contacted",LOG); renderAll(); reopen(k); }
 function reopen(k){ var el=document.querySelector('.cli[data-k="'+CSS.escape(k)+'"] .clibody'); if(el)el.style.display="block"; }
 
 function renderAll(){
