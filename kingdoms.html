@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kingdoms Reborn · City</title>
+<style>
+  :root{
+    --sky-0:#12162a; --sky-1:#1a2038; --sky-2:#232a48; --sky-3:#2e3760;
+    --purple:#8a6fd4; --purple-lt:#a487da; --amber:#e9a95c; --selenite:#84b8ca;
+    --good:#7ac9a0; --warn:#e07a7a; --ink:#eceaf4; --ink-dim:#a1a4c2; --ink-faint:#6d7199;
+    --acc:#e6b84a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--sky-0)}
+  body{color:var(--ink);font-family:'Inter',-apple-system,system-ui,sans-serif;font-size:15px;line-height:1.5;
+    max-width:460px;margin:0 auto;min-height:100vh;background-image:radial-gradient(1200px 520px at 50% -10%,rgba(230,184,74,.1),transparent);}
+  .wrap{padding:18px 15px 70px}
+  h1{font-family:'Fraunces',Georgia,serif;font-size:23px;font-weight:600}
+  .sub{color:var(--ink-dim);font-size:12.5px;margin-top:2px;font-style:italic}
+  .top{display:flex;align-items:center;gap:11px;margin-bottom:6px}
+  .gcirc{width:52px;height:52px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:2.5px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:26px}
+  .seclbl{font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin:4px 0 11px;display:flex;align-items:center;gap:7px}
+  .screen{display:none;animation:fade .22s ease}.screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .topbar{display:flex;align-items:center;gap:11px;padding:4px 0 12px;position:sticky;top:0;z-index:5;background:linear-gradient(var(--sky-0) 72%,transparent)}
+  .back{width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:var(--sky-1);border:1px solid var(--sky-2);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink);cursor:pointer}
+  .back:active{transform:scale(.93)}
+  .tbtitle{font-family:'Fraunces',serif;font-size:19px}.tbsub{font-size:10.5px;color:var(--ink-faint)}
+
+  .patch{display:flex;align-items:center;gap:8px;background:var(--sky-1);border:1px solid var(--sky-2);border-radius:11px;padding:9px 12px;font-size:11px;color:var(--ink-dim);margin-bottom:14px}
+  .patch b{color:var(--warn)}
+  .legend{display:flex;gap:11px;flex-wrap:wrap;margin-bottom:12px;font-size:9.5px;color:var(--ink-faint)}
+  .legend span{display:flex;align-items:center;gap:4px}.legend i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+
+  .split{display:flex;gap:11px;align-items:flex-start}
+  .col-ref{flex:0 0 33%;min-width:0}.col-flow{flex:1;min-width:0}.col-fleet{flex:0 0 27%;min-width:0}
+  .colhd{font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-bottom:10px}
+
+  .refrow{display:flex;align-items:center;gap:10px;padding:6px 3px;cursor:pointer;border-radius:12px}
+  .rcirc{width:40px;height:40px;flex:0 0 auto;border-radius:50%;background:var(--sky-1);border:2px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:18px;position:relative}
+  .rcirc.acc{border-color:var(--acc)}.rcirc.red{border-color:var(--warn)}.rcirc.teal{border-color:var(--selenite)}
+  .rcirc .sdot{position:absolute;bottom:-2px;right:-2px;width:11px;height:11px;border:2px solid var(--sky-0);border-radius:50%}
+  .sdot.v{background:var(--good)}.sdot.c{background:var(--amber)}.sdot.k{background:var(--ink-faint)}
+  .reflabel{font-size:12.5px;line-height:1.2;font-weight:600}
+
+  .flow{position:relative}
+  .fitem{display:flex;gap:11px;position:relative;padding-bottom:16px}
+  .fitem:not(:last-child)::before{content:'';position:absolute;left:19px;top:42px;bottom:-2px;width:2px;background:var(--sky-3)}
+  .fnode{width:40px;height:40px;flex:0 0 auto;border-radius:50%;background:var(--sky-1);border:2.5px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:18px;z-index:1}
+  .fbody{flex:1;min-width:0;background:var(--sky-1);border:1px solid var(--sky-2);border-radius:12px;padding:10px 11px}
+  .fphase{font-family:'Fraunces',serif;font-size:14px}
+  .fstep{font-size:11px;color:var(--ink-dim);line-height:1.4;margin-top:6px;padding-left:11px;position:relative}
+  .fstep::before{content:'●';position:absolute;left:0;color:var(--acc);font-size:7px;top:4px}
+  .fstep b{color:var(--ink)}.fstep .ref{color:var(--purple-lt);font-weight:600;cursor:pointer;border-bottom:1px dotted var(--purple-lt)}
+
+  .ship{display:flex;flex-direction:column;align-items:center;text-align:center;gap:5px;cursor:pointer;margin-bottom:14px}
+  .ship:active{transform:scale(.95)}
+  .scirc{width:46px;height:46px;border-radius:50%;background:var(--sky-1);border:2.5px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:21px;position:relative}
+  .scirc.a{border-color:var(--acc)}.scirc.b{border-color:var(--selenite)}.scirc.c{border-color:var(--purple)}
+  .scirc .n{position:absolute;bottom:-5px;right:-7px;background:var(--sky-0);border:1px solid var(--sky-3);border-radius:99px;font-size:8px;font-weight:700;padding:0 5px;color:var(--ink-dim)}
+  .sname{font-size:10px;font-weight:600;line-height:1.15;max-width:78px}
+  .srole{font-size:8.5px;color:var(--ink-faint)}
+
+  .vbadge{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:600;border-radius:99px;padding:5px 11px;margin-bottom:4px}
+  .vbadge.v{color:var(--good);background:rgba(122,201,160,.1);border:1px solid rgba(122,201,160,.3)}
+  .vbadge.c{color:var(--amber);background:rgba(233,169,92,.1);border:1px solid rgba(233,169,92,.3)}
+  .vbadge.k{color:var(--ink-dim);background:var(--sky-2);border:1px solid var(--sky-3)}
+  .sdesc{font-size:12.5px;color:var(--ink-dim);line-height:1.6;margin-top:10px}.sdesc b{color:var(--ink)}.sdesc .hl{color:var(--acc);font-weight:600}
+  .fillnote{font-size:11px;color:var(--purple-lt);background:rgba(138,111,212,.1);border:1px dashed rgba(138,111,212,.4);border-radius:10px;padding:8px 10px;margin-top:12px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .chips span{font-size:10px;color:var(--ink-dim);background:var(--sky-2);border:1px solid var(--sky-3);border-radius:99px;padding:3px 9px}
+  template{display:none}
+
+  @media (min-width:640px){
+    body{max-width:1000px;font-size:16px}.wrap{padding:26px 30px 90px}
+    .col-ref{flex:0 0 28%}.col-fleet{flex:0 0 22%}
+    .rcirc{width:50px;height:50px;font-size:22px}.reflabel{font-size:15px}
+    .fstep{font-size:14px}.fnode{width:50px;height:50px;font-size:23px}.fphase{font-size:16px}
+    .scirc{width:58px;height:58px;font-size:26px}.sname{font-size:12px;max-width:100px}.srole{font-size:10px}
+    .sdesc{font-size:15px}.tbtitle{font-size:23px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- MAIN -->
+  <div class="screen active" id="scr-main">
+    <a href="games.html" style="display:inline-block;color:var(--ink-faint);font-size:12.5px;text-decoration:none;margin-bottom:8px">← Games</a>
+    <div class="top"><div class="gcirc">🏰</div><div><h1>Kingdoms Reborn · City</h1><div class="sub">Survive the winter, chain the economy, grow the realm. Scaffold — fill as you play.</div></div></div>
+    <div class="patch"><span>🧩</span><div>Scaffold only — <b>seed notes, not verified strategy yet.</b> We fill each circle as you play and learn the current build.</div></div>
+    <div class="split">
+      <div class="col-ref">
+        <div class="colhd">📚 Reference</div>
+        <div class="legend"><span><i style="background:var(--good)"></i>solid</span><span><i style="background:var(--amber)"></i>my rec</span><span><i style="background:var(--ink-faint)"></i>fill in</span></div>
+        <div class="refrow" onclick="openRef('seasons','Seasons / winter','k')"><div class="rcirc acc">❄️<span class="sdot k"></span></div><div class="reflabel">Seasons / winter</div></div>
+        <div class="refrow" onclick="openRef('needs','Happiness &amp; needs','k')"><div class="rcirc acc">😊<span class="sdot k"></span></div><div class="reflabel">Happiness &amp; needs</div></div>
+        <div class="refrow" onclick="openRef('chains','Production chains','k')"><div class="rcirc acc">⚙️<span class="sdot k"></span></div><div class="reflabel">Production chains</div></div>
+        <div class="refrow" onclick="openRef('trade','Trade &amp; market','k')"><div class="rcirc teal">⚖️<span class="sdot k"></span></div><div class="reflabel">Trade &amp; market</div></div>
+        <div class="refrow" onclick="openRef('expand','Territory / expand','k')"><div class="rcirc teal">🗺️<span class="sdot k"></span></div><div class="reflabel">Territory / expand</div></div>
+        <div class="refrow" onclick="openRef('era','Research / eras','k')"><div class="rcirc acc">📜<span class="sdot k"></span></div><div class="reflabel">Research / eras</div></div>
+      </div>
+
+      <div class="col-flow">
+        <div class="colhd">🧭 Game flow</div>
+        <div class="flow">
+          <div class="fitem"><div class="fnode">⛺</div><div class="fbody"><div class="fphase">1 · Settle</div>
+            <div class="fstep">Drop the town center near <b>fresh water + forest + fertile land</b>. First workers to <span class="ref" onclick="openRef('chains','Production chains','k')">food &amp; wood</span>.</div></div></div>
+          <div class="fitem"><div class="fnode">❄️</div><div class="fbody"><div class="fphase">2 · Beat winter</div>
+            <div class="fstep">Before the first <span class="ref" onclick="openRef('seasons','Seasons / winter','k')">winter</span>: enough <b>food stockpile + firewood/coats</b>. This is the make-or-break early wall.</div></div></div>
+          <div class="fitem"><div class="fnode">⚙️</div><div class="fbody"><div class="fphase">3 · Chains</div>
+            <div class="fstep">Stand up first <span class="ref" onclick="openRef('chains','Production chains','k')">production chain</span> (e.g. wheat→flour→bread) to raise <span class="ref" onclick="openRef('needs','Happiness &amp; needs','k')">happiness</span>.</div></div></div>
+          <div class="fitem"><div class="fnode">⚖️</div><div class="fbody"><div class="fphase">4 · Trade</div>
+            <div class="fstep">Turn surplus into coin at the <span class="ref" onclick="openRef('trade','Trade &amp; market','k')">market</span>; buy what your land can't make.</div></div></div>
+          <div class="fitem"><div class="fnode">🗺️</div><div class="fbody"><div class="fphase">5 · Expand &amp; era up</div>
+            <div class="fstep">Claim <span class="ref" onclick="openRef('expand','Territory / expand','k')">territory</span> for new resources; push <span class="ref" onclick="openRef('era','Research / eras','k')">research</span> to the next era.</div></div></div>
+        </div>
+      </div>
+
+      <div class="col-fleet">
+        <div class="colhd">🧱 Build order</div>
+        <div class="ship" onclick="openRef('b_food','Food first','c')"><div class="scirc a">🌾<span class="n">1</span></div><div class="sname">Food first</div><div class="srole">foragers / farms</div></div>
+        <div class="ship" onclick="openRef('b_warm','Warmth','c')"><div class="scirc a">🔥<span class="n">2</span></div><div class="sname">Warmth</div><div class="srole">wood / coats</div></div>
+        <div class="ship" onclick="openRef('b_house','Housing','c')"><div class="scirc b">🏠<span class="n">3</span></div><div class="sname">Housing</div><div class="srole">grow pop</div></div>
+        <div class="ship" onclick="openRef('b_chain','First chain','c')"><div class="scirc b">🍞<span class="n">4</span></div><div class="sname">First chain</div><div class="srole">bread / cloth</div></div>
+        <div class="ship" onclick="openRef('b_market','Market','c')"><div class="scirc c">⚖️<span class="n">5</span></div><div class="sname">Market</div><div class="srole">coin engine</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAIL -->
+  <div class="screen" id="scr-ref">
+    <div class="topbar"><div class="back" onclick="go('scr-main')">←</div>
+      <div><div class="tbtitle" id="ref-title">—</div><div class="tbsub">Kingdoms Reborn · reference</div></div></div>
+    <div id="ref-badge"></div><div id="ref-content"></div>
+  </div>
+</div>
+
+<!-- TEMPLATES -->
+<template id="tpl-seasons"><div class="sdesc" style="margin-top:0"><b>Winter is the early game's boss fight.</b> Food production drops and heating demand spikes; an unprepared town starves or freezes.</div><div class="fillnote">✎ Fill as you play: note how many food/firewood turns of buffer you actually needed, and which season the wall hit.</div></template>
+<template id="tpl-needs"><div class="sdesc" style="margin-top:0"><b>Citizens climb tiers as their needs are met</b> (food variety, goods, services). Higher tiers = more tax and better workers, but harder demands.</div><div class="fillnote">✎ Fill as you play: list the need thresholds that unlocked each population tier.</div></template>
+<template id="tpl-chains"><div class="sdesc" style="margin-top:0"><b>Nothing is one building.</b> Goods come from multi-step chains (raw → processed → finished). Bottlenecks are usually a missing middle step.</div><div class="fillnote">✎ Fill as you play: map your go-to chains and the worker ratio each step needs.</div></template>
+<template id="tpl-trade"><div class="sdesc" style="margin-top:0"><b>Trade covers what your tiles can't grow.</b> Sell surplus, import scarcities. On the shared map, neighbors matter.</div><div class="fillnote">✎ Fill as you play: note reliable sell goods and what's worth importing vs making.</div></template>
+<template id="tpl-expand"><div class="sdesc" style="margin-top:0"><b>Expansion = new resource tiles.</b> Claim land for ore, specific crops, or luxuries you're missing.</div><div class="fillnote">✎ Fill as you play: which resource forced your first expansion?</div></template>
+<template id="tpl-era"><div class="sdesc" style="margin-top:0"><b>Research unlocks eras, buildings, and better chains.</b> Order it around your current bottleneck, not a fixed path.</div><div class="fillnote">✎ Fill as you play: log the research order that felt smoothest.</div></template>
+<template id="tpl-b_food"><div class="sdesc" style="margin-top:0"><b>Step 1 — food first.</b> Foragers/fishers/farms before anything. No food, no town.</div></template>
+<template id="tpl-b_warm"><div class="sdesc" style="margin-top:0"><b>Step 2 — warmth.</b> Woodcutters + fuel/coats so winter doesn't wipe you.</div></template>
+<template id="tpl-b_house"><div class="sdesc" style="margin-top:0"><b>Step 3 — housing.</b> Only once food + warmth are safe; more pop = more labor.</div></template>
+<template id="tpl-b_chain"><div class="sdesc" style="margin-top:0"><b>Step 4 — first production chain.</b> A happiness good (bread or cloth) to start climbing tiers.</div></template>
+<template id="tpl-b_market"><div class="sdesc" style="margin-top:0"><b>Step 5 — market.</b> Convert surplus to coin and import gaps; the economy flywheel starts here.</div></template>
+
+<script>
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+var BADGE={v:['v','✓ Solid'],c:['c','✎ My suggested order'],k:['k','⟳ Fill in as you play']};
+function openRef(id,title,status){
+  document.getElementById('ref-title').innerHTML=title;
+  var b=BADGE[status]||BADGE.k;
+  document.getElementById('ref-badge').innerHTML='<span class="vbadge '+b[0]+'">'+b[1]+'</span>';
+  document.getElementById('ref-content').innerHTML=document.getElementById('tpl-'+id).innerHTML;
+  go('scr-ref');
+}
+</script>
+</body>
+</html>
