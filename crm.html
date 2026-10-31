@@ -227,24 +227,31 @@ function hashN(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>
 
 /* ---- constellation map ---- */
 function tierOf(c){ var n=c.count||1; return n<=3?0:(n<=7?1:2); } // 0 Mercury(new 1-3) · 1 Middle(4-7) · 2 Pluto(vet 8+)
+var BAND=[[58,128],[150,170],[194,212]], BANDC=[93,160,203]; // radial bands + centers per tier
+// lay a tier's members into staggered concentric sub-rings (hex/quincunx packing)
+function layBand(list,rMin,rMax,cx,cy){
+  var N=list.length; if(!N)return; var sub=Math.max(1,Math.ceil(N/13));
+  var caps=[]; if(sub===1){caps=[N];} else { var tot=0,w=[]; for(var j=0;j<sub;j++){w.push(j+2);tot+=j+2;} var acc=0; for(var j=0;j<sub;j++){caps[j]=Math.round(N*w[j]/tot);acc+=caps[j];} caps[sub-1]+=N-acc; }
+  var idx=0, phase=-Math.PI/2;
+  for(var j=0;j<sub;j++){ var r= sub===1?(rMin+rMax)/2 : rMin+(j/(sub-1))*(rMax-rMin); var m=Math.max(1,caps[j]); phase += Math.PI/m; // stagger half-step each shell
+    for(var i=0;i<m;i++){ var c=list[idx++]; if(!c)break; c._ang=phase+(i/m)*2*Math.PI; c._r=r; c._x=cx+r*Math.cos(c._ang); c._y=cy+r*Math.sin(c._ang); } }
+}
 function renderMap(){
   var wrap=document.getElementById("mapWrap"); if(!wrap)return;
   var cs=clients(), byKey={}; cs.forEach(c=>byKey[keyOf(c.name)]=c);
   var kids={}; cs.forEach(c=>{ if(c.ref&&byKey[c.ref]) (kids[c.ref]=kids[c.ref]||[]).push(c); });
-  var W=440,H=492,cx=W/2,cy=H/2+4, RAD=[84,146,206];
-  // direct clients sit on their loyalty orbit, spaced evenly (a ring, not confetti)
+  var W=440,H=486,cx=W/2,cy=H/2+2;
   var direct=cs.filter(c=>!(c.ref&&byKey[c.ref]));
   var ring=[[],[],[]]; direct.forEach(c=>ring[tierOf(c)].push(c));
-  ring.forEach((arr,t)=>{ arr.sort((a,b)=>keyOf(a.name)<keyOf(b.name)?-1:1); var m=arr.length||1, phase=-Math.PI/2+t*0.6;
-    arr.forEach((c,i)=>{ c._ang=phase+(i/m)*2*Math.PI; c._r=RAD[t]; c._x=cx+c._r*Math.cos(c._ang); c._y=cy+c._r*Math.sin(c._ang); }); });
-  // referred clients: their own orbit, parked at the referrer's angle so the chain runs on one ray
-  function placeKids(p,depth){ var ks=kids[keyOf(p.name)]||[]; ks.forEach((c,j)=>{ var off=(ks.length>1?(j-(ks.length-1)/2)*0.16:0)+depth*0.05; c._ang=p._ang+off; c._r=RAD[tierOf(c)]; c._x=cx+c._r*Math.cos(c._ang); c._y=cy+c._r*Math.sin(c._ang); placeKids(c,depth+1); }); }
+  ring.forEach((arr,t)=>{ arr.sort((a,b)=>keyOf(a.name)<keyOf(b.name)?-1:1); layBand(arr,BAND[t][0],BAND[t][1],cx,cy); });
+  // referred clients: their own band, parked near the referrer's angle so the chain runs on one ray
+  function placeKids(p,depth){ var ks=kids[keyOf(p.name)]||[]; ks.forEach((c,j)=>{ var off=(ks.length>1?(j-(ks.length-1)/2)*0.17:0)+depth*0.05; c._ang=p._ang+off; c._r=BANDC[tierOf(c)]; c._x=cx+c._r*Math.cos(c._ang); c._y=cy+c._r*Math.sin(c._ang); placeKids(c,depth+1); }); }
   direct.forEach(c=>placeKids(c,1));
   var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block">';
   for(var i=0;i<48;i++){ s+='<circle cx="'+(hashN("d"+i)%W)+'" cy="'+(hashN("e"+i)%H)+'" r="'+(0.4+(hashN("r"+i)%8)/12)+'" fill="#fff" opacity="0.06"/>'; }
   var names=["MERCURY · new","MIDDLE · regulars","PLUTO · veterans"];
-  for(var t=0;t<3;t++){ s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+RAD[t]+'" fill="none" stroke="#a487da" stroke-opacity="'+(0.1-t*0.015)+'" stroke-width="1"/>';
-    s+='<text x="'+cx+'" y="'+(cy-RAD[t]+12)+'" text-anchor="middle" fill="#6d7199" font-size="7" font-weight="700" letter-spacing=".6" opacity=".75">'+names[t]+'</text>'; }
+  for(var t=0;t<3;t++){ s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+BAND[t][1]+'" fill="none" stroke="#a487da" stroke-opacity="'+(0.09-t*0.012)+'" stroke-width="1"/>';
+    s+='<text x="'+cx+'" y="'+(cy-BAND[t][1]+12)+'" text-anchor="middle" fill="#6d7199" font-size="7" font-weight="700" letter-spacing=".6" opacity=".75">'+names[t]+'</text>'; }
   // referral edges
   cs.forEach(c=>{ if(c.ref&&byKey[c.ref]){ var p=byKey[c.ref]; s+='<line x1="'+p._x+'" y1="'+p._y+'" x2="'+c._x+'" y2="'+c._y+'" stroke="#a487da" stroke-opacity=".6" stroke-width="1.3"/>'; } });
   // nodes
