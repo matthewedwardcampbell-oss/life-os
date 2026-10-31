@@ -71,6 +71,7 @@
   .legend{display:flex;gap:11px;flex-wrap:wrap;margin:0 0 10px;font-size:9.5px;color:var(--ink-faint)}
   .legend span{display:flex;align-items:center;gap:4px}.legend i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
   #mapWrap{background:radial-gradient(130% 80% at 50% 0%,#191f3a,var(--sky-0));border:1px solid var(--sky-2);border-radius:14px;padding:2px;overflow:hidden}
+  #mapWrap svg{touch-action:none}
   #mapWrap svg text{font-family:'Inter',sans-serif;user-select:none}
   .trow{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--sky-2)}.trow:last-child{border-bottom:none}
   .tcirc{width:44px;height:44px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:2.5px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:20px;position:relative}
@@ -120,6 +121,7 @@
   <div class="screen" id="scr-followup">
     <div class="topbar"><div class="back" onclick="go('scr-main')">←</div><div><div class="tbtitle">🌌 Client map</div><div class="tbsub">referral chains · tap a star</div></div></div>
     <div class="legend"><span><i style="background:var(--good)"></i>active</span><span><i style="background:var(--selenite)"></i>cooling</span><span><i style="background:var(--amber)"></i>dormant</span><span><i style="background:var(--warn)"></i>lost</span><span><i style="background:var(--ink-faint)"></i>one-timer</span><span><i style="background:none;box-shadow:0 0 0 1.5px var(--amber)"></i>due</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:11px;color:var(--ink-faint)"><span>✥ drag stars to arrange · tap to open</span><button onclick="resetPos()" style="background:var(--sky-1);border:1px solid var(--sky-3);color:var(--ink-dim);font:inherit;font-size:11px;padding:4px 10px;border-radius:8px;cursor:pointer">reset layout</button></div>
     <div id="mapWrap"></div>
     <div id="nodeDetail" style="margin-top:12px"></div>
   </div>
@@ -192,7 +194,7 @@ var ROSTER=[
 function load(k){try{return JSON.parse(localStorage.getItem(k)||"{}")}catch(e){return{}}}
 function loadA(k){try{return JSON.parse(localStorage.getItem(k)||"[]")}catch(e){return[]}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-var CAD=load("crm-cadence"), LOG=load("crm-contacted"), REF=load("crm-ref"), EXTRA=loadA("crm-extra");
+var CAD=load("crm-cadence"), LOG=load("crm-contacted"), REF=load("crm-ref"), EXTRA=loadA("crm-extra"), POS=load("crm-pos");
 var DEFCAD={jonathan:4}; Object.keys(DEFCAD).forEach(function(k){ if(CAD[k]==null) CAD[k]=DEFCAD[k]; });
 var NOW=new Date(), SELECTED=null, LEAD=7;
 function daysSince(d){ if(!d)return null; var p=d.split("-"); var dt=new Date(+p[0],+p[1]-1,+p[2]); return Math.round((NOW-dt)/86400000); }
@@ -251,21 +253,23 @@ function renderMap(){
   // referred clients: their own band, parked near the referrer's angle so the chain runs on one ray
   function placeKids(p,depth){ var ks=kids[keyOf(p.name)]||[]; ks.forEach((c,j)=>{ var off=(ks.length>1?(j-(ks.length-1)/2)*0.17:0)+depth*0.05; c._ang=p._ang+off; c._r=BANDC[tierOf(c)]; c._x=cx+c._r*Math.cos(c._ang); c._y=cy+c._r*Math.sin(c._ang); placeKids(c,depth+1); }); }
   direct.forEach(c=>placeKids(c,1));
+  // apply any manual drag positions on top
+  cs.forEach(c=>{ var k=keyOf(c.name); if(POS[k]){ c._x=POS[k].x; c._y=POS[k].y; } });
   var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block">';
   for(var i=0;i<52;i++){ s+='<circle cx="'+(hashN("d"+i)%W)+'" cy="'+(hashN("e"+i)%H)+'" r="'+(0.4+(hashN("r"+i)%8)/12)+'" fill="#fff" opacity="0.06"/>'; }
   var guides=[[mercOut+13,"MERCURY · new"],[RMID,"MIDDLE · regulars"],[RPLU,"PLUTO · veterans"]];
   guides.forEach((g,t)=>{ s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+g[0]+'" fill="none" stroke="#a487da" stroke-opacity="'+(0.1-t*0.012)+'" stroke-width="1"/>'; s+='<text x="'+cx+'" y="'+(cy-g[0]+12)+'" text-anchor="middle" fill="#6d7199" font-size="7" font-weight="700" letter-spacing=".6" opacity=".75">'+g[1]+'</text>'; });
-  // referral edges
-  cs.forEach(c=>{ if(c.ref&&byKey[c.ref]){ var p=byKey[c.ref]; s+='<line x1="'+p._x+'" y1="'+p._y+'" x2="'+c._x+'" y2="'+c._y+'" stroke="#a487da" stroke-opacity=".6" stroke-width="1.3"/>'; } });
-  // nodes
+  // referral edges (data-a = referrer, data-b = referred — so drags can update endpoints)
+  cs.forEach(c=>{ if(c.ref&&byKey[c.ref]){ var p=byKey[c.ref]; s+='<line class="edge" data-a="'+c.ref+'" data-b="'+keyOf(c.name)+'" x1="'+p._x+'" y1="'+p._y+'" x2="'+c._x+'" y2="'+c._y+'" stroke="#a487da" stroke-opacity=".6" stroke-width="1.3"/>'; } });
+  // nodes — translate groups so they can be dragged
   cs.forEach(c=>{ var k=keyOf(c.name), st=statusOf(c), r=4.5+Math.min(5,(c.count||1)*0.5), due=isDue(c), sel=SELECTED===k;
     var showLabel = sel || tierOf(c)>0 || c.ref || kids[k];
-    s+='<g onclick="selectNode(\''+k+'\')" style="cursor:pointer">';
-    s+='<circle cx="'+c._x+'" cy="'+c._y+'" r="'+(r+9)+'" fill="transparent"/>';
-    if(due) s+='<circle cx="'+c._x+'" cy="'+c._y+'" r="'+(r+3.5)+'" fill="none" stroke="#e9a95c" stroke-opacity=".9" stroke-width="1.3"/>';
-    if(sel) s+='<circle cx="'+c._x+'" cy="'+c._y+'" r="'+(r+6.5)+'" fill="none" stroke="#eceaf4" stroke-width="1.5"/>';
-    s+='<circle cx="'+c._x+'" cy="'+c._y+'" r="'+r+'" fill="'+statusColor(st)+'"/>';
-    if(showLabel) s+='<text x="'+c._x+'" y="'+(c._y-r-4)+'" text-anchor="middle" fill="'+(sel?"#eceaf4":"#a1a4c2")+'" font-size="8" font-weight="'+(sel?"700":"400")+'">'+c.name.split(" ")[0]+'</text>';
+    s+='<g class="node" data-k="'+k+'" transform="translate('+c._x+','+c._y+')" style="cursor:grab">';
+    s+='<circle r="'+(r+9)+'" fill="transparent"/>';
+    if(due) s+='<circle r="'+(r+3.5)+'" fill="none" stroke="#e9a95c" stroke-opacity=".9" stroke-width="1.3"/>';
+    if(sel) s+='<circle r="'+(r+6.5)+'" fill="none" stroke="#eceaf4" stroke-width="1.5"/>';
+    s+='<circle r="'+r+'" fill="'+statusColor(st)+'"/>';
+    if(showLabel) s+='<text y="'+(-r-4)+'" text-anchor="middle" fill="'+(sel?"#eceaf4":"#a1a4c2")+'" font-size="8" font-weight="'+(sel?"700":"400")+'">'+c.name.split(" ")[0]+'</text>';
     s+='</g>';
   });
   // center hub — Matthew
@@ -275,6 +279,26 @@ function renderMap(){
   s+='<text x="'+cx+'" y="'+(cy+12)+'" text-anchor="middle" fill="#6d7199" font-size="6.5" font-weight="700" letter-spacing=".6">MATTHEW</text>';
   s+='</svg>';
   wrap.innerHTML=s;
+  attachDrag();
+}
+function resetPos(){ POS={}; save("crm-pos",POS); renderMap(); }
+function attachDrag(){
+  var svg=document.querySelector("#mapWrap svg"); if(!svg)return; var drag=null;
+  function pt(e){ var p=svg.createSVGPoint(); p.x=e.clientX; p.y=e.clientY; var m=svg.getScreenCTM(); if(!m)return null; return p.matrixTransform(m.inverse()); }
+  svg.querySelectorAll("g.node").forEach(function(g){
+    g.addEventListener("pointerdown",function(e){ e.preventDefault(); var p=pt(e); if(!p)return;
+      var tr=(g.getAttribute("transform")||"translate(0,0)").match(/translate\(([^,]+),\s*([^)]+)\)/); var ox=+tr[1],oy=+tr[2];
+      drag={g:g,k:g.getAttribute("data-k"),sx:p.x,sy:p.y,ox:ox,oy:oy,nx:ox,ny:oy,moved:false};
+      try{g.setPointerCapture(e.pointerId);}catch(_){ } g.style.cursor="grabbing"; });
+    g.addEventListener("pointermove",function(e){ if(!drag||drag.g!==g)return; var p=pt(e); if(!p)return;
+      drag.nx=drag.ox+(p.x-drag.sx); drag.ny=drag.oy+(p.y-drag.sy);
+      if(Math.hypot(p.x-drag.sx,p.y-drag.sy)>3)drag.moved=true;
+      g.setAttribute("transform","translate("+drag.nx+","+drag.ny+")");
+      svg.querySelectorAll("line.edge").forEach(function(ln){ if(ln.getAttribute("data-a")===drag.k){ln.setAttribute("x1",drag.nx);ln.setAttribute("y1",drag.ny);} if(ln.getAttribute("data-b")===drag.k){ln.setAttribute("x2",drag.nx);ln.setAttribute("y2",drag.ny);} }); });
+    g.addEventListener("pointerup",function(e){ if(!drag||drag.g!==g)return; g.style.cursor="grab";
+      if(drag.moved){ POS[drag.k]={x:Math.round(drag.nx),y:Math.round(drag.ny)}; save("crm-pos",POS); } else { selectNode(drag.k); }
+      drag=null; });
+  });
 }
 function selectNode(k){ SELECTED=k; renderMap(); var c=get(k); var d=document.getElementById("nodeDetail"); d.innerHTML=nodeDetailHTML(c); d.scrollIntoView({behavior:"smooth",block:"nearest"}); }
 function nodeDetailHTML(c){ var k=keyOf(c.name), st=statusOf(c), refby=c.ref?((get(c.ref)||{}).name||""):"", ks=referralsOf(k), nr=nextReach(c), con=contactedOn(c);
