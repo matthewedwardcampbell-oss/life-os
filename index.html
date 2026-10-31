@@ -5,10 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Life OS</title>
 <meta name="theme-color" content="#8a6fd4">
+<link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Life OS">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='32%25' r='90%25'%3E%3Cstop offset='0' stop-color='%23a487da'/%3E%3Cstop offset='55%25' stop-color='%238a6fd4'/%3E%3Cstop offset='100' stop-color='%234b3a86'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='40' fill='url(%23g)'/%3E%3Ccircle cx='90' cy='92' r='15' fill='%23f4e9c8'/%3E%3Cg stroke='%23f4e9c8' stroke-width='3' opacity='.85'%3E%3Cline x1='90' y1='92' x2='44' y2='52'/%3E%3Cline x1='90' y1='92' x2='140' y2='54'/%3E%3Cline x1='90' y1='92' x2='48' y2='140'/%3E%3Cline x1='90' y1='92' x2='138' y2='136'/%3E%3C/g%3E%3Ccircle cx='44' cy='52' r='8' fill='%23e9a95c'/%3E%3Ccircle cx='140' cy='54' r='8' fill='%2384b8ca'/%3E%3Ccircle cx='48' cy='140' r='8' fill='%23e58bad'/%3E%3Ccircle cx='138' cy='136' r='8' fill='%236fc48a'/%3E%3C/svg%3E">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 html{zoom:1.5;overflow-x:hidden}
@@ -564,6 +566,15 @@ html{zoom:1.5;overflow-x:hidden}
 
   footer{text-align:center;font-size:10.5px;color:var(--ink-faint);padding:20px;line-height:1.6}
   footer .s{color:var(--selenite)}
+
+  /* ---- phone layer: touch behaviour + safe areas ---- */
+  html{touch-action:manipulation}                       /* no double-tap zoom delay */
+  body{-webkit-touch-callout:none}                      /* no iOS callout fighting the long-press */
+  input,textarea,.chmsgs{-webkit-touch-callout:default}
+  #hub,#hubTree,nav,.addbtn{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+  body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
+  .addbtn{bottom:calc(78px + env(safe-area-inset-bottom,0px))}
+  .toast{bottom:calc(78px + env(safe-area-inset-bottom,0px))}
 </style>
 </head>
 <body>
@@ -1610,11 +1621,15 @@ function mapBack(){
   if(currentNode!==null){ openProject(currentProject); }
   else if(currentProject!==null){ renderMaster(); }
   else if(expandedProj){ expandedProj=null; renderMaster(); }
+  else { navTo('hub'); }                                 // top level: back = home, like everywhere else
 }
 function renderMaster(){
   currentProject=null; currentNode=null;
   document.getElementById('backwrap').innerHTML='';
-  document.getElementById('maphint').textContent='Left-click a cell to open it · tap its name to edit · right-click to go back a level. The skyline on each rim shows how much lives inside; a gold dot marks a business.';
+  document.getElementById('maphint').textContent=(TOUCH
+    ?'Tap a cell to open it · tap its name to edit · long-press to go back a level. '
+    :'Left-click a cell to open it · tap its name to edit · right-click to go back a level. ')
+    +'The skyline on each rim shows how much lives inside; a gold dot marks a business.';
   const svg=document.getElementById('svg'); svg.innerHTML='';
   const cx=200,cy=200, RI=46, RMID=92, RGAP=4, ROUT=124;
   const ps=S.projects, N=Math.max(ps.length,1), SEC=360/N;
@@ -3597,6 +3612,7 @@ const HUBKIDS={
 };
 const HUBURL={}; HUBTABS.forEach(t=>{ if(t.url)HUBURL[t.v]=t.url; });
 let hubActive='fn', treeMode=false;
+const TOUCH=window.matchMedia&&matchMedia('(pointer:coarse)').matches;
 /* The Flower of Life field — circles on a triangular lattice (spacing = radius, so each
    passes through its neighbours' centres), fading outward to suggest the infinite field. */
 function flower(cx,cy,step,maxR,stroke){
@@ -3630,7 +3646,9 @@ function renderHub(){
   h+='<div class="hub-center" id="hubCenter" style="--c:'+act.col+'"><span class="ic">'+act.ic+'</span><span class="nm">'+act.name+'</span><span class="sub">'+(act.v==='fn'?'home · ⌥branch':'tap to open')+'</span></div>';
   others.forEach((t,i)=>{ h+='<div class="hub-tile" data-hubv="'+t.v+'" style="left:'+pos[i][0].toFixed(2)+'%;top:'+pos[i][1].toFixed(2)+'%"><span class="tc" style="border-color:'+t.col+'">'+t.ic+'</span><span class="tn">'+t.name+'</span></div>'; });
   ring.innerHTML=h;
-  document.getElementById('hubHint').textContent='Your systems, on the Flower of Life. Left-click to open · right-click to go back · right-click the center to branch the whole map.';
+  document.getElementById('hubHint').textContent=TOUCH
+    ?'Your systems, on the Flower of Life. Tap to open · long-press to go back · long-press the center to branch the whole map.'
+    :'Your systems, on the Flower of Life. Left-click to open · right-click to go back · right-click the center to branch the whole map.';
 }
 function selectHub(v){ if(HUBURL[v]){ location.href=HUBURL[v]; return; } hubActive=v; navTo(v); }
 function openKid(tab,i){ const k=(HUBKIDS[tab]||[])[i]; if(!k){navTo(tab);return;} if(k.url){location.href=k.url;return;} if(k.go){navTo(k.go[0]); if(k.go[0]==='learn')lrnGo(k.go[1]); return;} navTo(tab); }
@@ -3640,7 +3658,7 @@ function renderTree(){
   ring.style.display='none'; tw.style.display='block';
   const cx=335,cy=335,R1=145,R2=262,VB=670;
   const tabs=HUBTABS.filter(t=>t.v!=='fn');
-  const N=tabs.length, wedge=360/N, fill=0.78;
+  const N=tabs.length, wedge=360/N;
   let edges='', nodes='';
   tabs.forEach((t,i)=>{
     const mid=-90+i*wedge, ma=mid*Math.PI/180;
@@ -3649,18 +3667,22 @@ function renderTree(){
     const kids=HUBKIDS[t.v]||[];
     kids.forEach((k,j)=>{
       const frac=kids.length===1?0.5:(j+0.5)/kids.length;
-      const ka=(mid+(frac-0.5)*wedge*fill)*Math.PI/180;
+      const ka=(mid+(frac-0.5)*wedge*0.88)*Math.PI/180;
       const kx=cx+R2*Math.cos(ka), ky=cy+R2*Math.sin(ka);
       const an=Math.cos(ka)<-0.25?'end':(Math.cos(ka)>0.25?'start':'middle');
       const lx=kx+(an==='end'?-11:an==='start'?11:0);
       edges+='<line x1="'+tx.toFixed(1)+'" y1="'+ty.toFixed(1)+'" x2="'+kx.toFixed(1)+'" y2="'+ky.toFixed(1)+'" stroke="#2a3360" stroke-width="1.6"/>';
       nodes+='<g class="knode" data-kidtab="'+t.v+'" data-kidi="'+j+'" style="cursor:pointer"><circle cx="'+kx.toFixed(1)+'" cy="'+ky.toFixed(1)+'" r="8" fill="'+t.col+'"/><text x="'+lx.toFixed(1)+'" y="'+(ky+4.6).toFixed(1)+'" text-anchor="'+an+'" font-size="13" fill="#b8bbd8">'+k.t+'</text></g>';
     });
-    nodes+='<g class="tnode" data-hubv="'+t.v+'" style="cursor:pointer"><circle cx="'+tx.toFixed(1)+'" cy="'+ty.toFixed(1)+'" r="23" fill="#1a2038" stroke="'+t.col+'" stroke-width="3"/><text x="'+tx.toFixed(1)+'" y="'+(ty+7).toFixed(1)+'" text-anchor="middle" font-size="22">'+t.ic+'</text><text x="'+tx.toFixed(1)+'" y="'+(ty-30).toFixed(1)+'" text-anchor="middle" font-size="13" font-weight="700" fill="#eceaf4">'+t.name+'</text></g>';
+    const ux=Math.cos(ma), uy=Math.sin(ma);
+    const lnx=tx+ux*40, lny=ty+uy*40;
+    nodes+='<g class="tnode" data-hubv="'+t.v+'" style="cursor:pointer"><circle cx="'+tx.toFixed(1)+'" cy="'+ty.toFixed(1)+'" r="23" fill="#1a2038" stroke="'+t.col+'" stroke-width="3"/><text x="'+tx.toFixed(1)+'" y="'+(ty+7).toFixed(1)+'" text-anchor="middle" font-size="22">'+t.ic+'</text><text x="'+lnx.toFixed(1)+'" y="'+(lny+4.5).toFixed(1)+'" text-anchor="middle" font-size="13" font-weight="700" fill="#eceaf4">'+t.name+'</text></g>';
   });
   nodes+='<g class="tnode" data-hubv="fn" style="cursor:pointer"><circle cx="'+cx+'" cy="'+cy+'" r="38" fill="#232a48" stroke="#8a6fd4" stroke-width="3.5"/><text x="'+cx+'" y="'+(cy-2)+'" text-anchor="middle" font-size="27">🗓️</text><text x="'+cx+'" y="'+(cy+20)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#a487da">Fortnight</text></g>';
   tw.innerHTML='<svg viewBox="0 0 '+VB+' '+VB+'" width="100%" style="max-width:100%;height:auto;overflow:visible" preserveAspectRatio="xMidYMid meet">'+flower(cx,cy,36,360)+edges+nodes+'</svg>';
-  document.getElementById('hubHint').textContent='The whole map, on the Flower of Life. Tap any branch to jump in · right-click to collapse.';
+  document.getElementById('hubHint').textContent=TOUCH
+    ?'The whole map, on the Flower of Life. Tap any branch to jump in · long-press to collapse.'
+    :'The whole map, on the Flower of Life. Tap any branch to jump in · right-click to collapse.';
 }
 document.getElementById('hub').addEventListener('click',e=>{
   if(treeMode){
@@ -3671,7 +3693,8 @@ document.getElementById('hub').addEventListener('click',e=>{
   const tile=e.target.closest('.hub-tile'); if(tile){ selectHub(tile.dataset.hubv); return; }
   if(e.target.closest('#hubCenter')){ navTo(hubActive); return; }
 });
-document.addEventListener('contextmenu',e=>{
+/* Back gesture, two forms of one action: right-click on computers, long-press on phones. */
+function onCtx(e){
   if(e.target.closest('#svg')) return;               // star map keeps its own back
   if(e.target.closest('#hub')){
     e.preventDefault();
@@ -3684,7 +3707,35 @@ document.addEventListener('contextmenu',e=>{
     hubActive='fn'; renderHub(); return;              // right-click a tile / empty hub -> recenter home
   }
   if(e.target.closest('.view')){ e.preventDefault(); navTo('hub'); }   // right-click inside any view -> back to hub
+}
+let lastCtx=0;                                       // dedupe: Android fires its own contextmenu on long-press
+document.addEventListener('contextmenu',e=>{
+  const now=Date.now(); if(now-lastCtx<700) return; lastCtx=now; onCtx(e);
 });
+/* Long-press (~0.5s, finger still) = right-click. A small haptic confirms it. */
+let lpTimer=null, lpX=0, lpY=0, lpEl=null, lpFired=false;
+document.addEventListener('touchstart',e=>{
+  if(e.touches.length!==1) return;
+  const t=e.touches[0]; lpX=t.clientX; lpY=t.clientY; lpEl=e.target;
+  clearTimeout(lpTimer);
+  lpTimer=setTimeout(()=>{
+    lpTimer=null; lpFired=true;
+    setTimeout(()=>{lpFired=false;},600);            // swallow the ghost click that follows a long-press
+    if(navigator.vibrate) navigator.vibrate(12);
+    lpEl.dispatchEvent(new MouseEvent('contextmenu',{bubbles:true,cancelable:true,clientX:lpX,clientY:lpY}));
+  },480);
+},{passive:true});
+document.addEventListener('touchmove',e=>{
+  if(!lpTimer) return;
+  const t=e.touches[0];
+  if(Math.hypot(t.clientX-lpX,t.clientY-lpY)>10){ clearTimeout(lpTimer); lpTimer=null; }
+},{passive:true});
+['touchend','touchcancel'].forEach(ev=>document.addEventListener(ev,()=>{
+  if(lpTimer){ clearTimeout(lpTimer); lpTimer=null; }
+},{passive:true}));
+document.addEventListener('click',e=>{
+  if(lpFired){ lpFired=false; e.preventDefault(); e.stopPropagation(); }
+},true);
 document.getElementById('fnSync').onclick=()=>{ if(gcalState!=='loading') syncGcal(); };
 (function(){ const t=document.getElementById('dialToggle'), c=document.getElementById('fnGlance');
   let open=true; t.onclick=()=>{ open=!open; c.style.display=open?'block':'none'; t.textContent=(open?'▾':'▸')+' the fortnight at a glance'; };
