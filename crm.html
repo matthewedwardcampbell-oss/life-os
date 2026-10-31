@@ -138,8 +138,8 @@
   <div class="screen" id="scr-followup">
     <div class="topbar"><div class="back" onclick="go('scr-main')">←</div><div><div class="tbtitle">🌌 Client map</div><div class="tbsub">referral chains · tap a star</div></div></div>
     <div class="actrow">
-      <div class="actc" id="actDue" onclick="setFilter('due')"><div class="acirc" style="border-color:var(--amber)">📅<span class="cnt" id="actDueN">0</span></div><div class="albl">Due to book</div></div>
-      <div class="actc" id="actFol" onclick="setFilter('follow')"><div class="acirc" style="border-color:var(--selenite)">🔔<span class="cnt" id="actFolN">0</span></div><div class="albl">Follow-up</div></div>
+      <div class="actc" id="actDue" onclick="setFilter('due')"><div class="acirc" style="border-color:var(--amber)">📞<span class="cnt" id="actDueN">0</span></div><div class="albl">Reschedule</div></div>
+      <div class="actc" id="actFol" onclick="setFilter('follow')"><div class="acirc" style="border-color:var(--selenite)">🩹<span class="cnt" id="actFolN">0</span></div><div class="albl">Post-care · 2d</div></div>
     </div>
     <div class="legend"><span><i style="background:var(--good)"></i>active</span><span><i style="background:var(--selenite)"></i>cooling</span><span><i style="background:var(--amber)"></i>dormant</span><span><i style="background:var(--warn)"></i>lost</span><span><i style="background:var(--ink-faint)"></i>one-timer</span><span><i style="background:none;box-shadow:0 0 0 1.5px var(--amber)"></i>due</span></div>
     <div class="maphint"><span>✥ drag · tap to open · tap a circle to filter</span><button onclick="resetPos()">reset</button></div>
@@ -191,7 +191,7 @@ function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remo
 var ROSTER=[
  ["Aaron Swift","Denver","2026-10-01",13,"",""],["George Gramer","Denver","2026-10-02",11,"",""],["Sam Irvin","Denver","2026-10-01",10,"",""],
  ["Paul Sablich","Denver","2026-10-07",9,"",""],["Tony Rodelli","Denver","2026-08-26",9,"720-908-6279",""],["Steve","Dallas","2026-10-19",8,"214-244-7203",""],
- ["Chris Chovan","Denver","2026-05-06",6,"",""],["Meg Arthur","Denver","2026-05-12",4,"",""],["Amanda","Denver","2026-10-08",2,"",""],
+ ["Chris Chovan","Denver","2026-05-06",6,"",""],["Meg Arthur","Denver","2026-05-12",4,"",""],["Amanda","Dallas","2026-10-08",2,"",""],
  ["Cristal","Denver","2026-09-01",2,"",""],["Robert","Denver","2026-10-10",2,"985-774-3098","michael (salons by jc)"],["Jason","Dallas","2026-10-11",2,"214-862-4820",""],
  ["Holt","Dallas","2026-09-18",2,"214-763-5965",""],["Paul","Denver","2026-10-12",1,"720-503-2718","michael (salons by jc)"],
  ["Jalan","Denver","2025-09-07",4,"",""],["Troy Cairns","Denver","2024-09-08",5,"",""],["Nate Shafer","Denver","2024-08-10",5,"",""],
@@ -291,17 +291,17 @@ function renderMap(){
   attachDrag();
 }
 function resetPos(){ POS={}; save("crm-pos",POS); renderMap(); }
-var CITYORD=["Denver","Dallas","Virginia","Florida","Other"];
-function matchesFilter(c){ if(FILTER.type==="due")return isDue(c); if(FILTER.type==="follow")return (c.count||1)<=1; if(FILTER.type==="city")return (c.city||"Other")===FILTER.city; return true; }
+// travel-work cities (Denver excluded — home base; add it later if needed)
+var CITIES=[{n:"Dallas"},{n:"Seattle"},{n:"Portland"},{n:"Vancouver"},{n:"New York City",s:"NYC"},{n:"Tampa/St Pete",s:"Tampa"},{n:"Bradenton/Sarasota",s:"Sarasota"},{n:"Miami"},{n:"Atlanta"},{n:"Chicago"}];
+function matchesFilter(c){ if(FILTER.type==="due")return isDue(c); if(FILTER.type==="follow")return (c.count||1)<=1; if(FILTER.type==="city")return (c.city||"")===FILTER.city; return true; }
 function setFilter(t,v){ if(FILTER.type===t && (t!=="city"||FILTER.city===v)){ FILTER={type:"all",city:""}; } else { FILTER={type:t,city:v||""}; } syncFilterUI(); renderMap(); }
 function newCity(){ /* add-city command — coming with the functional build */ }
 function syncFilterUI(){ var d=document.getElementById("actDue"),f=document.getElementById("actFol");
   if(d)d.classList.toggle("on",FILTER.type==="due"); if(f)f.classList.toggle("on",FILTER.type==="follow");
   document.querySelectorAll("#cityRow .cityc").forEach(function(el){ el.classList.toggle("on",FILTER.type==="city"&&FILTER.city===el.getAttribute("data-city")); }); }
 function renderCities(){ var row=document.getElementById("cityRow"); if(!row)return; var cs=clients(), by={};
-  cs.forEach(c=>{ var ct=c.city||"Other"; by[ct]=(by[ct]||0)+1; });
-  var cities=Object.keys(by).sort(function(a,b){ var ia=CITYORD.indexOf(a),ib=CITYORD.indexOf(b); return (ia<0?99:ia)-(ib<0?99:ib); });
-  row.innerHTML=cities.map(function(ct){ return '<div class="cityc" data-city="'+ct+'" onclick="setFilter(\'city\',\''+ct+'\')"><div class="citycirc">'+by[ct]+'</div><div class="cityname">'+ct+'</div></div>'; }).join("")
+  cs.forEach(c=>{ by[c.city]=(by[c.city]||0)+1; });
+  row.innerHTML=CITIES.map(function(ct){ var n=by[ct.n]||0; return '<div class="cityc" data-city="'+ct.n+'" onclick="setFilter(\'city\',\''+ct.n+'\')"><div class="citycirc"'+(n?'':' style="opacity:.55"')+'>'+n+'</div><div class="cityname">'+(ct.s||ct.n)+'</div></div>'; }).join("")
     +'<div class="cityc" onclick="newCity()"><div class="citycirc" style="border-style:dashed;color:var(--purple-lt);font-size:20px">＋</div><div class="cityname">new city</div></div>'; }
 function attachDrag(){
   var svg=document.querySelector("#mapWrap svg"); if(!svg)return; var drag=null;
