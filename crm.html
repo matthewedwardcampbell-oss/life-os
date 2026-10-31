@@ -298,7 +298,7 @@ function renderMap(){
 }
 function resetPos(){ POS={}; save("crm-pos",POS); renderMap(); }
 // travel-work cities (Denver excluded — home base; add it later if needed)
-var CITIES=[{n:"Dallas"},{n:"Seattle"},{n:"Portland"},{n:"Vancouver"},{n:"New York City",s:"NYC"},{n:"Tampa/St Pete",s:"Tampa"},{n:"Bradenton/Sarasota",s:"Sarasota"},{n:"Miami"},{n:"Atlanta"},{n:"Chicago"}];
+var CITIES=[{n:"Dallas"},{n:"Las Vegas",s:"Vegas"},{n:"Seattle"},{n:"Portland"},{n:"Vancouver"},{n:"New York City",s:"NYC"},{n:"Tampa/St Pete",s:"Tampa"},{n:"Bradenton/Sarasota",s:"Sarasota"},{n:"Miami"},{n:"Atlanta"},{n:"Chicago"}];
 function matchesFilter(c){ if(FILTER.type==="due")return isDue(c); if(FILTER.type==="follow")return (c.count||1)<=1; if(FILTER.type==="city")return (c.city||"")===FILTER.city; return true; }
 function setFilter(t,v){ if(FILTER.type===t && (t!=="city"||FILTER.city===v)){ FILTER={type:"all",city:""}; } else { FILTER={type:t,city:v||""}; } syncFilterUI(); renderMap(); }
 function newCity(){ /* add-city command — coming with the functional build */ }
