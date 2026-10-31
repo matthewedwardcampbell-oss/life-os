@@ -96,7 +96,7 @@
   <div class="screen active" id="scr-main">
     <a href="index.html" style="display:inline-block;color:var(--ink-faint);font-size:12.5px;text-decoration:none;margin-bottom:8px">← Life OS</a>
     <div class="top"><div class="gcirc">📇</div><div><h1>CRM · Stone Therapy</h1><div class="sub">Keep the table full. Clients, follow-ups, and the chains that feed them.</div></div></div>
-    <div class="patch"><span>🎯</span><div>Target: <b>3 massages/day · 5 days/week.</b> This is the engine that feeds it.</div></div>
+    <div class="patch"><span>🎯</span><div>Target: <b>4.5 hrs/day · 9 days a fortnight</b> (then a stretch off). This is the engine that feeds it.</div></div>
     <div class="glance">
       <div class="gt due"><b id="kDue">0</b><span>reach-outs due</span></div>
       <div class="gt win"><b id="kWin">0</b><span>win-back</span></div>
@@ -238,33 +238,35 @@ function renderMap(){
   var wrap=document.getElementById("mapWrap"); if(!wrap)return;
   var cs=clients(), byKey={}; cs.forEach(c=>byKey[keyOf(c.name)]=c);
   var kids={}; cs.forEach(c=>{ if(c.ref&&byKey[c.ref]) (kids[c.ref]=kids[c.ref]||[]).push(c); });
-  var W=660,H=660,cx=330,cy=330;
-  var RING=[0,188,252,316], TIERR=[132,188,252,316]; // 4 layers; tier0 = honeycomb cluster
-  // --- referral chains: one axis per chain, spread symmetrically; members ride the ray at their layer radius ---
+  var W=680,H=680,cx=340,cy=340, SEG=Math.PI/6; // 12-fold sacred-geometry grid (30° segments)
+  var CORER=[60,100,140,180], PER=12;                 // first-timer core: 12 per shell, flower-of-life interlock
+  var LR=[0,214,272,330], TIERR=[182,214,272,330];    // outer layer radii
+  // --- referral chains: one axis per chain, snapped to the 12-fold grid, members ride the ray ---
   function rootOf(c){ var cur=c,g=0; while(cur.ref&&byKey[cur.ref]&&g<20){cur=byKey[cur.ref];g++;} return keyOf(cur.name); }
   var comp={}; cs.forEach(c=>{ var r=rootOf(c); (comp[r]=comp[r]||[]).push(c); });
   var chainRoots=Object.keys(comp).filter(r=>comp[r].length>1), inChain={};
-  chainRoots.forEach(function(r,ci){ var ax=ci*(2*Math.PI/chainRoots.length), mem=comp[r], byT={};
+  chainRoots.forEach(function(r,ci){ var raw=ci*(2*Math.PI/chainRoots.length), ax=Math.round(raw/SEG)*SEG, mem=comp[r], byT={};
     mem.forEach(function(c){ (byT[tierOf(c)]=byT[tierOf(c)]||[]).push(c); });
     Object.keys(byT).forEach(function(t){ var arr=byT[t], m=arr.length; arr.sort((a,b)=>(a.count||1)-(b.count||1));
-      arr.forEach(function(c,j){ var off=(m>1?(j-(m-1)/2)*0.16:0); c._ang=ax+off; c._r=TIERR[+t]; c._x=cx+c._r*Math.cos(c._ang); c._y=cy+c._r*Math.sin(c._ang); inChain[keyOf(c.name)]=1; }); });
+      arr.forEach(function(c,j){ var off=(m>1?(j-(m-1)/2)*0.14:0); c._ang=ax+off; c._r=TIERR[+t]; c._x=cx+c._r*Math.cos(c._ang); c._y=cy+c._r*Math.sin(c._ang); inChain[keyOf(c.name)]=1; }); });
   });
   // --- solo clients ---
   var solo=cs.filter(c=>!inChain[keyOf(c.name)]), sBy=[[],[],[],[]]; solo.forEach(c=>sBy[tierOf(c)].push(c));
   sBy.forEach(a=>a.sort((x,y)=>keyOf(x.name)<keyOf(y.name)?-1:1));
-  // tier0 first-timers: tight honeycomb shells near center
-  var merc=sBy[0], mi=0, shell=1, SR0=52, SSTEP=27, mercOut=SR0;
-  while(mi<merc.length){ var cap=6*shell, r=SR0+(shell-1)*SSTEP, ph=-Math.PI/2+(shell%2)*(Math.PI/cap);
-    for(var i=0;i<cap&&mi<merc.length;i++){ var c=merc[mi++]; c._ang=ph+(i/cap)*2*Math.PI; c._r=r; c._x=cx+r*Math.cos(c._ang); c._y=cy+r*Math.sin(c._ang); } mercOut=r; shell++; }
-  // tiers 1-3: clean even rings
-  [1,2,3].forEach(function(t){ var arr=sBy[t], m=arr.length||1, R=RING[t], phase=-Math.PI/2+t*0.45;
-    arr.forEach(function(c,i){ c._ang=phase+(i/m)*2*Math.PI; c._r=R; c._x=cx+R*Math.cos(c._ang); c._y=cy+R*Math.sin(c._ang); }); });
+  // tier0 first-timers: 12-per-shell concentric rings, alternate shells rotated 15° (seed → flower of life)
+  var merc=sBy[0], mi=0, sh=0, mercOut=CORER[0];
+  while(mi<merc.length && sh<CORER.length){ var r=CORER[sh], base=-Math.PI/2+(sh%2)*(SEG/2);
+    for(var i=0;i<PER&&mi<merc.length;i++){ var c=merc[mi++]; c._ang=base+i*SEG; c._r=r; c._x=cx+r*Math.cos(c._ang); c._y=cy+r*Math.sin(c._ang); } mercOut=r; sh++; }
+  // tiers 1-3: symmetric even rings
+  [1,2,3].forEach(function(t){ var arr=sBy[t], m=arr.length||1, R=LR[t]; arr.forEach(function(c,i){ c._ang=-Math.PI/2+(i/m)*2*Math.PI; c._r=R; c._x=cx+R*Math.cos(c._ang); c._y=cy+R*Math.sin(c._ang); }); });
   // manual drag positions override
   cs.forEach(c=>{ var k=keyOf(c.name); if(POS[k]){ c._x=POS[k].x; c._y=POS[k].y; } });
   var s='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="display:block;margin:0 auto">';
-  for(var i=0;i<72;i++){ s+='<circle cx="'+(hashN("d"+i)%W)+'" cy="'+(hashN("e"+i)%H)+'" r="'+(0.4+(hashN("r"+i)%8)/12)+'" fill="#fff" opacity="0.06"/>'; }
-  var guides=[[mercOut+12,"FIRST-TIMERS"],[RING[1],"2–4 VISITS"],[RING[2],"5–7 VISITS"],[RING[3],"VETERANS 8+"]];
-  guides.forEach(function(g,t){ s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+g[0]+'" fill="none" stroke="#a487da" stroke-opacity="'+(0.12-t*0.018)+'" stroke-width="1"/>'; s+='<text x="'+cx+'" y="'+(cy-g[0]+12)+'" text-anchor="middle" fill="#6d7199" font-size="7" font-weight="700" letter-spacing=".6" opacity=".7">'+g[1]+'</text>'; });
+  for(var i=0;i<80;i++){ s+='<circle cx="'+(hashN("d"+i)%W)+'" cy="'+(hashN("e"+i)%H)+'" r="'+(0.4+(hashN("r"+i)%8)/12)+'" fill="#fff" opacity="0.06"/>'; }
+  // 12-fold symmetry spokes
+  for(var k=0;k<12;k++){ var a=-Math.PI/2+k*SEG, R2=LR[3]+18; s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+R2*Math.cos(a))+'" y2="'+(cy+R2*Math.sin(a))+'" stroke="#a487da" stroke-opacity=".05" stroke-width="1"/>'; }
+  var guides=[[mercOut+16,"FIRST-TIMERS"],[LR[1],"2–4 VISITS"],[LR[2],"5–7 VISITS"],[LR[3],"VETERANS 8+"]];
+  guides.forEach(function(g,t){ s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+g[0]+'" fill="none" stroke="#a487da" stroke-opacity="'+(0.12-t*0.018)+'" stroke-width="1"/>'; s+='<text x="'+cx+'" y="'+(cy-g[0]+12)+'" text-anchor="middle" fill="#6d7199" font-size="7.5" font-weight="700" letter-spacing=".6" opacity=".7">'+g[1]+'</text>'; });
   // referral edges (data-a = referrer, data-b = referred — so drags can update endpoints)
   cs.forEach(c=>{ if(c.ref&&byKey[c.ref]){ var p=byKey[c.ref]; s+='<line class="edge" data-a="'+c.ref+'" data-b="'+keyOf(c.name)+'" x1="'+p._x+'" y1="'+p._y+'" x2="'+c._x+'" y2="'+c._y+'" stroke="#a487da" stroke-opacity=".6" stroke-width="1.3"/>'; } });
   // nodes — translate groups so they can be dragged
