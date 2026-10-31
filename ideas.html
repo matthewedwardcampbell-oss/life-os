@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ideas</title>
+<style>
+  :root{
+    --sky-0:#12162a; --sky-1:#1a2038; --sky-2:#232a48; --sky-3:#2e3760;
+    --purple:#8a6fd4; --purple-lt:#a487da; --amber:#e9a95c; --selenite:#84b8ca;
+    --good:#7ac9a0; --warn:#e07a7a; --ink:#eceaf4; --ink-dim:#a1a4c2; --ink-faint:#6d7199;
+    --acc:#e9a95c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--sky-0)}
+  body{color:var(--ink);font-family:'Inter',-apple-system,system-ui,sans-serif;font-size:15px;line-height:1.5;
+    max-width:460px;margin:0 auto;min-height:100vh;background-image:radial-gradient(1200px 520px at 50% -10%,rgba(233,169,92,.1),transparent);}
+  .wrap{padding:18px 15px 70px}
+  h1{font-family:'Fraunces',Georgia,serif;font-size:23px;font-weight:600}
+  .sub{color:var(--ink-dim);font-size:12.5px;margin-top:2px;font-style:italic}
+  .top{display:flex;align-items:center;gap:11px;margin-bottom:10px}
+  .gcirc{width:52px;height:52px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:2.5px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:26px}
+  .seclbl{font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin:4px 0 11px}
+  .screen{display:none;animation:fade .22s ease}.screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .topbar{display:flex;align-items:center;gap:11px;padding:4px 0 12px;position:sticky;top:0;z-index:5;background:linear-gradient(var(--sky-0) 72%,transparent)}
+  .back{width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:var(--sky-1);border:1px solid var(--sky-2);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink);cursor:pointer}
+  .tbtitle{font-family:'Fraunces',serif;font-size:19px}.tbsub{font-size:10.5px;color:var(--ink-faint)}
+
+  .ring{position:relative;width:100%;max-width:320px;margin:16px auto 8px;aspect-ratio:1/1}
+  .ringhub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:80px;height:80px;border-radius:50%;background:var(--sky-2);border:2px solid var(--purple);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 0 0 6px rgba(138,111,212,.1)}
+  .ringhub .mono{font-family:'Fraunces',Georgia,serif;font-size:23px;font-weight:600;line-height:.9;letter-spacing:.5px;color:var(--purple-lt)}
+  .ringhub .mono sup{font-size:.5em;margin-left:1px}
+  .ringhub small{font-size:7.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-top:2px}
+  .fcard{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;cursor:pointer;width:92px}
+  .fcard:active{transform:translate(-50%,-50%) scale(.92)}
+  .fcirc{width:66px;height:66px;border-radius:50%;background:var(--sky-1);border:3px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:28px;position:relative}
+  .fcirc .cnt{position:absolute;bottom:-4px;right:-6px;background:var(--sky-0);border:1px solid var(--sky-3);border-radius:99px;font-size:9px;font-weight:700;padding:1px 6px;color:var(--ink-dim)}
+  .fname{font-size:12.5px;font-weight:700;line-height:1.1}.fdesc{font-size:9px;color:var(--ink-faint)}
+
+  .card{background:var(--sky-1);border:1px solid var(--sky-2);border-radius:14px;padding:14px;margin-bottom:12px}
+  .card h3{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;font-family:'Fraunces',serif}
+  .card .st{font-size:10px;font-weight:700;border-radius:99px;padding:2px 9px;margin-left:auto}
+  .st.explore{color:var(--amber);background:rgba(233,169,92,.12);border:1px solid rgba(233,169,92,.3)}
+  .st.active{color:var(--good);background:rgba(122,201,160,.12);border:1px solid rgba(122,201,160,.3)}
+  .card p{font-size:12.5px;color:var(--ink-dim);line-height:1.6;margin-top:8px}.card p b{color:var(--ink)}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .tags span{font-size:10px;color:var(--selenite);background:rgba(132,184,202,.1);border:1px solid rgba(132,184,202,.28);border-radius:99px;padding:3px 9px}
+  .stage{display:flex;gap:9px;margin-top:9px}
+  .stage .k{width:22px;height:22px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:1px solid var(--sky-3);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--amber)}
+  .stage .t{font-size:11.5px;color:var(--ink-dim);line-height:1.5}.stage .t b{color:var(--ink)}
+  .fill{font-size:11px;color:var(--purple-lt);background:rgba(138,111,212,.1);border:1px dashed rgba(138,111,212,.4);border-radius:10px;padding:8px 10px;margin-top:4px}
+  @media (min-width:640px){ body{max-width:680px;font-size:16px}.ring{max-width:400px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- MAIN -->
+  <div class="screen active" id="scr-main">
+    <a href="index.html" style="display:inline-block;color:var(--ink-faint);font-size:12.5px;text-decoration:none;margin-bottom:8px">← Life OS</a>
+    <div class="top"><div class="gcirc">💡</div><div><h1>Ideas</h1><div class="sub">Where the sparks live before they become projects.</div></div></div>
+    <div class="ring">
+      <div class="ringhub"><span class="mono">MEC<sup>III</sup></span><small>Matthew</small></div>
+      <div class="fcard" style="left:50%;top:12%" onclick="go('scr-biz')"><div class="fcirc" style="border-color:var(--amber)">💼<span class="cnt">2</span></div><div class="fname">Business</div><div class="fdesc">ventures</div></div>
+      <div class="fcard" style="left:86%;top:50%" onclick="go('scr-soon')"><div class="fcirc" style="border-color:var(--purple)">🌌</div><div class="fname">Paracosm</div><div class="fdesc">game / IP</div></div>
+      <div class="fcard" style="left:50%;top:88%" onclick="go('scr-soon')"><div class="fcirc" style="border-color:var(--selenite)">🎨</div><div class="fname">Creative</div><div class="fdesc">music / art</div></div>
+      <div class="fcard" style="left:14%;top:50%" onclick="go('scr-soon')"><div class="fcirc" style="border-color:var(--good)">🌱</div><div class="fname">Passive</div><div class="fdesc">income</div></div>
+    </div>
+    <div class="fill" style="text-align:center;max-width:320px;margin:6px auto 0">Tap a category to open it. Business is seeded — the rest are ready for your sparks.</div>
+  </div>
+
+  <!-- BUSINESS -->
+  <div class="screen" id="scr-biz">
+    <div class="topbar"><div class="back" onclick="go('scr-main')">←</div><div><div class="tbtitle">💼 Business ideas</div><div class="tbsub">ventures in the hopper</div></div></div>
+
+    <div class="card">
+      <h3>🧬 AI Model League <span class="st explore">exploring</span></h3>
+      <p>A <b>team of AIs that build models in parallel</b> and compete in rounds. Winning teams grow (more agents / compute); smaller teams get <b>merged</b> — and their models merge with them, maybe yielding an upgrade. Hypothesis: competition + merging could surface a genuinely <b>different</b> AI.</p>
+      <p style="color:var(--ink)"><b>Why it's not crazy</b> — this intuition independently lands on real frontier research:</p>
+      <div class="tags"><span>Population-Based Training</span><span>Model soups / merging</span><span>Evolutionary Model Merge</span><span>League training</span><span>AutoML / NAS</span><span>Mixture-of-Experts</span></div>
+      <p><b>Open question to test:</b> does competitive pressure + merging <b>preserve diversity while improving</b>, or collapse everyone toward the same mediocre average? That tension is the whole experiment.</p>
+      <div class="fill">◆ First venture funded by extra usage credits — a first. Let's chase it.</div>
+    </div>
+
+    <div class="card">
+      <h3>🩺 NP + LMT Clinical Hybrid <span class="st active">Stage 1 active</span></h3>
+      <p>Scale from solo massage to <b>insurance-billed clinical practice</b> co-located with an NP partner — her diagnostic/aesthetic side writes medical necessity; your side bills clinical massage (CPT 97124/97140/97110). Ends in <b>absentee ownership</b>: 3–5 LMTs on staff, you as case reviewer collecting distributions.</p>
+      <div class="stage"><div class="k">1</div><div class="t"><b>Cash cushion &amp; systems</b> — EHR + SOAP notes, first subcontractor LMT, 6-mo reserve. <span style="color:var(--good)">(in motion)</span></div></div>
+      <div class="stage"><div class="k">2</div><div class="t"><b>Co-location &amp; alliance</b> — shared suite, MSO/LLC structure, outsource medical billing (PIP/Med-Pay).</div></div>
+      <div class="stage"><div class="k">3</div><div class="t"><b>Absentee owner</b> — lead diagnostician only, staff bill under protocols, profit distributions.</div></div>
+      <div class="tags"><span>Med-Pay / PIP billing</span><span>MSO structure</span><span>PI attorney network</span><span>EHR (Jane / ClinicSense)</span></div>
+      <p>Executes through the CRM's <b>Insurance/HSA</b> + <b>Partnerships</b> tools you built — this is the long-game they feed.</p>
+    </div>
+  </div>
+
+  <!-- PLACEHOLDER -->
+  <div class="screen" id="scr-soon">
+    <div class="topbar"><div class="back" onclick="go('scr-main')">←</div><div><div class="tbtitle">Coming soon</div><div class="tbsub">ready for your ideas</div></div></div>
+    <div class="card"><p>Empty on purpose. Drop an idea here anytime — tell me the category and the spark, and I'll card it up like the business ones.</p></div>
+  </div>
+
+</div>
+<script>
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+</script>
+</body>
+</html>
