@@ -167,8 +167,8 @@ var ROSTER=[
  ["Aaron Swift","Denver","2026-10-01",13,"",""],["George Gramer","Denver","2026-10-02",11,"",""],["Sam Irvin","Denver","2026-10-01",10,"",""],
  ["Paul Sablich","Denver","2026-10-07",9,"",""],["Tony Rodelli","Denver","2026-08-26",9,"720-908-6279",""],["Steve","Dallas","2026-10-19",8,"214-244-7203",""],
  ["Chris Chovan","Denver","2026-05-06",6,"",""],["Meg Arthur","Denver","2026-05-12",4,"",""],["Amanda","Denver","2026-10-08",2,"",""],
- ["Cristal","Denver","2026-09-01",2,"",""],["Robert","Denver","2026-10-10",2,"985-774-3098",""],["Jason","Dallas","2026-10-11",2,"214-862-4820",""],
- ["Holt","Dallas","2026-09-18",2,"214-763-5965",""],["Paul","Denver","2026-10-12",1,"720-503-2718",""],
+ ["Cristal","Denver","2026-09-01",2,"",""],["Robert","Denver","2026-10-10",2,"985-774-3098","michael (salons by jc)"],["Jason","Dallas","2026-10-11",2,"214-862-4820",""],
+ ["Holt","Dallas","2026-09-18",2,"214-763-5965",""],["Paul","Denver","2026-10-12",1,"720-503-2718","michael (salons by jc)"],
  ["Jalan","Denver","2025-09-07",4,"",""],["Troy Cairns","Denver","2024-09-08",5,"",""],["Nate Shafer","Denver","2024-08-10",5,"",""],
  ["Ally","Denver","2024-08-08",4,"",""],["Hannah Delap","Denver","2024-09-27",3,"",""],["Christy","Denver","2024-08-22",3,"",""],
  ["Kiki Stone","Denver","2024-03-17",3,"",""],["Tabitha Collins","Denver","2025-07-15",2,"",""],["TJ","Denver","2025-08-04",2,"",""],
@@ -185,7 +185,8 @@ var ROSTER=[
  ["Matt","Dallas","",1,"469-223-0306",""],["Benjamin","Dallas","",1,"817-363-3777",""],["Richard","Dallas","",1,"469-844-8216",""],
  ["Rob Townsend","Dallas","",1,"",""],["Rob Sullins","Dallas","",1,"",""],["Jeff","Virginia","",1,"703-303-1564",""],
  ["Chad","Florida","",1,"850-800-5714",""],["Joseph Palacios","Other","",1,"806-407-7334",""],["Jonathan","Denver","2026-10-30",1,"",""],
- ["Adam Consigli","Denver","",1,"720-297-0088","tony rodelli"],["Claire","Denver","",1,"703-216-8617","adam consigli"]
+ ["Adam Consigli","Denver","",1,"720-297-0088","tony rodelli"],["Claire","Denver","",1,"703-216-8617","adam consigli"],
+ ["Michael (Salons by JC)","Denver","",0,"720-404-5491",""]
 ];
 
 function load(k){try{return JSON.parse(localStorage.getItem(k)||"{}")}catch(e){return{}}}
@@ -225,30 +226,30 @@ function cadLabel(n){ var cad=CAD[keyOf(n)]; return cad?("every "+cad+" wk"):"se
 function hashN(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h;}
 
 /* ---- constellation map ---- */
+function tierOf(c){ var n=c.count||1; return n<=3?0:(n<=7?1:2); } // 0 Mercury(new 1-3) · 1 Middle(4-7) · 2 Pluto(vet 8+)
 function renderMap(){
   var wrap=document.getElementById("mapWrap"); if(!wrap)return;
   var cs=clients(), byKey={}; cs.forEach(c=>byKey[keyOf(c.name)]=c);
   var kids={}; cs.forEach(c=>{ if(c.ref&&byKey[c.ref]) (kids[c.ref]=kids[c.ref]||[]).push(c); });
-  var W=440,H=470,cx=W/2,cy=H/2;
-  // direct clients orbit Matthew: NEWEST (fewest visits) near center, veterans on the fringe
+  var W=440,H=492,cx=W/2,cy=H/2+4, RAD=[84,146,206];
+  // direct clients sit on their loyalty orbit, spaced evenly (a ring, not confetti)
   var direct=cs.filter(c=>!(c.ref&&byKey[c.ref]));
-  direct.sort((a,b)=> (a.count||1)-(b.count||1) || (keyOf(a.name)<keyOf(b.name)?-1:1));
-  var n=Math.max(1,direct.length), innerR=60, maxR=Math.min(cx,cy)-24;
-  var step=(maxR-innerR)/Math.sqrt(Math.max(1,n-1)), GA=Math.PI*(3-Math.sqrt(5));
-  direct.forEach((c,i)=>{ var ang=i*GA, r=innerR+step*Math.sqrt(i); c._x=cx+r*Math.cos(ang); c._y=cy+r*Math.sin(ang); c._ang=ang; c._r=r; });
-  // referred clients project distally — beyond their referrer, along the same ray
-  function placeKids(p){ var ks=kids[keyOf(p.name)]||[]; ks.forEach((c,j)=>{ var spread=(ks.length>1?(j-(ks.length-1)/2)*0.3:0); var ang=p._ang+spread, r=p._r+44; c._x=cx+r*Math.cos(ang); c._y=cy+r*Math.sin(ang); c._ang=ang; c._r=r; placeKids(c); }); }
-  direct.forEach(placeKids);
+  var ring=[[],[],[]]; direct.forEach(c=>ring[tierOf(c)].push(c));
+  ring.forEach((arr,t)=>{ arr.sort((a,b)=>keyOf(a.name)<keyOf(b.name)?-1:1); var m=arr.length||1, phase=-Math.PI/2+t*0.6;
+    arr.forEach((c,i)=>{ c._ang=phase+(i/m)*2*Math.PI; c._r=RAD[t]; c._x=cx+c._r*Math.cos(c._ang); c._y=cy+c._r*Math.sin(c._ang); }); });
+  // referred clients: their own orbit, parked at the referrer's angle so the chain runs on one ray
+  function placeKids(p,depth){ var ks=kids[keyOf(p.name)]||[]; ks.forEach((c,j)=>{ var off=(ks.length>1?(j-(ks.length-1)/2)*0.16:0)+depth*0.05; c._ang=p._ang+off; c._r=RAD[tierOf(c)]; c._x=cx+c._r*Math.cos(c._ang); c._y=cy+c._r*Math.sin(c._ang); placeKids(c,depth+1); }); }
+  direct.forEach(c=>placeKids(c,1));
   var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block">';
-  for(var i=0;i<46;i++){ s+='<circle cx="'+(hashN("d"+i)%W)+'" cy="'+(hashN("e"+i)%H)+'" r="'+(0.4+(hashN("r"+i)%8)/12)+'" fill="#fff" opacity="0.06"/>'; }
-  // faint orbit guides
-  s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(innerR+step*Math.sqrt(n*0.33))+'" fill="none" stroke="#a487da" stroke-opacity=".06"/>';
-  s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(innerR+step*Math.sqrt(n*0.8))+'" fill="none" stroke="#a487da" stroke-opacity=".05"/>';
-  // referral edges (project outward)
-  cs.forEach(c=>{ if(c.ref&&byKey[c.ref]){ var p=byKey[c.ref]; s+='<line x1="'+p._x+'" y1="'+p._y+'" x2="'+c._x+'" y2="'+c._y+'" stroke="#a487da" stroke-opacity=".6" stroke-width="1.4"/>'; } });
+  for(var i=0;i<48;i++){ s+='<circle cx="'+(hashN("d"+i)%W)+'" cy="'+(hashN("e"+i)%H)+'" r="'+(0.4+(hashN("r"+i)%8)/12)+'" fill="#fff" opacity="0.06"/>'; }
+  var names=["MERCURY · new","MIDDLE · regulars","PLUTO · veterans"];
+  for(var t=0;t<3;t++){ s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+RAD[t]+'" fill="none" stroke="#a487da" stroke-opacity="'+(0.1-t*0.015)+'" stroke-width="1"/>';
+    s+='<text x="'+cx+'" y="'+(cy-RAD[t]+12)+'" text-anchor="middle" fill="#6d7199" font-size="7" font-weight="700" letter-spacing=".6" opacity=".75">'+names[t]+'</text>'; }
+  // referral edges
+  cs.forEach(c=>{ if(c.ref&&byKey[c.ref]){ var p=byKey[c.ref]; s+='<line x1="'+p._x+'" y1="'+p._y+'" x2="'+c._x+'" y2="'+c._y+'" stroke="#a487da" stroke-opacity=".6" stroke-width="1.3"/>'; } });
   // nodes
-  cs.forEach(c=>{ var k=keyOf(c.name), st=statusOf(c), r=4.5+Math.min(5,(c.count||1)*0.55), due=isDue(c), sel=SELECTED===k;
-    var showLabel = sel || (c.count>1) || c.ref || kids[k];
+  cs.forEach(c=>{ var k=keyOf(c.name), st=statusOf(c), r=4.5+Math.min(5,(c.count||1)*0.5), due=isDue(c), sel=SELECTED===k;
+    var showLabel = sel || tierOf(c)>0 || c.ref || kids[k];
     s+='<g onclick="selectNode(\''+k+'\')" style="cursor:pointer">';
     s+='<circle cx="'+c._x+'" cy="'+c._y+'" r="'+(r+9)+'" fill="transparent"/>';
     if(due) s+='<circle cx="'+c._x+'" cy="'+c._y+'" r="'+(r+3.5)+'" fill="none" stroke="#e9a95c" stroke-opacity=".9" stroke-width="1.3"/>';
@@ -258,10 +259,10 @@ function renderMap(){
     s+='</g>';
   });
   // center hub — Matthew
-  s+='<circle cx="'+cx+'" cy="'+cy+'" r="37" fill="none" stroke="#8a6fd4" stroke-opacity=".16" stroke-width="6"/>';
-  s+='<circle cx="'+cx+'" cy="'+cy+'" r="30" fill="#232a48" stroke="#8a6fd4" stroke-width="2"/>';
-  s+='<text x="'+cx+'" y="'+(cy)+'" text-anchor="middle" fill="#a487da" font-family="Fraunces,Georgia,serif" font-size="15" font-weight="600">MEC<tspan font-size="8" dy="-5">III</tspan></text>';
-  s+='<text x="'+cx+'" y="'+(cy+13)+'" text-anchor="middle" fill="#6d7199" font-size="7" font-weight="700" letter-spacing=".6">MATTHEW</text>';
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="36" fill="none" stroke="#8a6fd4" stroke-opacity=".16" stroke-width="6"/>';
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="29" fill="#232a48" stroke="#8a6fd4" stroke-width="2"/>';
+  s+='<text x="'+cx+'" y="'+cy+'" text-anchor="middle" fill="#a487da" font-family="Fraunces,Georgia,serif" font-size="14" font-weight="600">MEC<tspan font-size="7.5" dy="-5">III</tspan></text>';
+  s+='<text x="'+cx+'" y="'+(cy+12)+'" text-anchor="middle" fill="#6d7199" font-size="6.5" font-weight="700" letter-spacing=".6">MATTHEW</text>';
   s+='</svg>';
   wrap.innerHTML=s;
 }
