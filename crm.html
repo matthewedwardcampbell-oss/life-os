@@ -190,29 +190,35 @@ function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remo
 
 /* roster: [name, city, last-seen, visits, phone, referred-by-key] */
 var ROSTER=[
- ["Aaron Swift","Denver","2026-10-01",13,"",""],["George Gramer","Denver","2026-10-02",11,"",""],["Sam Irvin","Denver","2026-10-01",10,"",""],
- ["Paul Sablich","Denver","2026-10-07",9,"",""],["Tony Rodelli","Denver","2026-08-26",9,"720-908-6279",""],["Steve","Dallas","2026-10-19",8,"214-244-7203",""],
- ["Chris Chovan","Denver","2026-05-06",6,"",""],["Meg Arthur","Denver","2026-05-12",4,"",""],["Amanda","Dallas","2026-10-08",2,"",""],
- ["Cristal","Denver","2026-09-01",2,"",""],["Robert","Denver","2026-10-10",2,"985-774-3098","michael (salons by jc)"],["Jason","Dallas","2026-10-11",2,"214-862-4820",""],
- ["Holt","Dallas","2026-09-18",2,"214-763-5965",""],["Paul","Denver","2026-10-12",1,"720-503-2718","michael (salons by jc)"],
+ ["Aaron Swift","Denver","2026-10-29",14,"",""],["George Gramer","Denver","2026-10-20",12,"",""],["Sam Irvin","Denver","2026-10-01",10,"",""],
+ ["Paul Sablich","Denver","2026-10-27",10,"",""],["Tony Rodelli","Denver","2026-10-16",10,"720-908-6279",""],["Steve","Dallas","2026-10-19",8,"214-244-7203",""],
+ ["Chris Chovan","Denver","2026-05-06",6,"",""],["Meg Arthur","Denver","2026-09-07",5,"",""],["Amanda","Dallas","2026-10-08",2,"",""],
+ ["Cristal","Denver","2026-10-21",3,"",""],["Robert","Denver","2026-10-10",2,"985-774-3098","michael (salons by jc)"],["Jason","Dallas","2026-10-11",2,"214-862-4820",""],
+ ["Holt","Dallas","2026-09-18",2,"214-763-5965",""],["Paul","Denver","2026-10-23",2,"720-503-2718","michael (salons by jc)"],
  ["Jalan","Denver","2025-09-07",4,"",""],["Troy Cairns","Denver","2024-09-08",5,"",""],["Nate Shafer","Denver","2024-08-10",5,"",""],
  ["Ally","Denver","2024-08-08",4,"",""],["Hannah Delap","Denver","2024-09-27",3,"",""],["Christy","Denver","2024-08-22",3,"",""],
  ["Kiki Stone","Denver","2024-03-17",3,"",""],["Tabitha Collins","Denver","2025-07-15",2,"",""],["TJ","Denver","2025-08-04",2,"",""],
  ["Rachel Daly","Denver","2025-09-01",2,"",""],["Vince","Denver","2024-08-01",2,"",""],["Lloyd Mills","Denver","2024-09-26",2,"",""],
  ["Roger","Denver","2023-12-21",2,"",""],["Keilani Hang","Denver","2024-04-07",2,"",""],["Braden Rice","Denver","2024-01-16",2,"",""],
- ["Miriam","Denver","",1,"303-505-7730",""],["Landon Harding","Denver","",1,"720-333-2290",""],["Remington","Denver","",1,"720-443-2307",""],
- ["Alejandro","Denver","",1,"720-322-3847",""],["Henry","Denver","",1,"303-378-2551",""],["Max","Denver","",1,"720-327-0006",""],
+ ["Miriam","Denver","",1,"303-505-7730",""],["Landon Harding","Denver","2026-10-22",2,"720-333-2290",""],["Remington","Denver","",1,"720-443-2307",""],
+ ["Alejandro","Denver","2026-09-07",1,"720-322-3847",""],["Henry","Denver","",1,"303-378-2551",""],["Max","Denver","",1,"720-327-0006",""],
  ["Ricky","Denver","",1,"720-402-6147",""],["Roy","Denver","",1,"720-203-1497",""],["Daniel","Denver","",1,"720-212-1718",""],
- ["Charlie Price","Denver","",1,"",""],["Mitch West","Dallas","",1,"214-668-1181",""],["Jay","Dallas","",1,"972-746-8529",""],
+ ["Charlie Price","Denver","2026-09-02",1,"",""],["Mitch West","Dallas","",1,"214-668-1181",""],["Jay","Dallas","",1,"972-746-8529",""],
  ["Jordon","Dallas","",1,"214-498-5240",""],["Martin","Dallas","",1,"817-229-2038",""],["Reid","Dallas","",1,"214-244-8920",""],
- ["Scott","Dallas","",1,"469-712-6780",""],["Shen","Dallas","",1,"469-438-5854",""],["Ahmed","Dallas","",1,"972-741-5234",""],
+ ["Scott","Dallas","",1,"469-712-6780",""],["Shen","Dallas","2026-09-20",1,"469-438-5854",""],["Ahmed","Dallas","",1,"972-741-5234",""],
  ["Sean House","Dallas","",1,"972-824-6873",""],["John","Dallas","",1,"214-415-0771",""],["Bob","Dallas","",1,"469-849-2073",""],
- ["Gil","Dallas","",1,"214-674-7217",""],["Jerry","Dallas","",1,"817-880-1507",""],["Jon","Dallas","",1,"469-243-6045",""],
+ ["Gil","Dallas","2026-09-17",1,"214-674-7217",""],["Jerry","Dallas","",1,"817-880-1507",""],["Jon","Dallas","",1,"469-243-6045",""],
  ["Matt","Dallas","",1,"469-223-0306",""],["Benjamin","Dallas","",1,"817-363-3777",""],["Richard","Dallas","",1,"469-844-8216",""],
  ["Rob Townsend","Dallas","",1,"",""],["Rob Sullins","Dallas","",1,"",""],["Jeff","Virginia","",1,"703-303-1564",""],
- ["Chad","Florida","",1,"850-800-5714",""],["Joseph Palacios","Other","",1,"806-407-7334",""],["Jonathan","Denver","2026-10-30",1,"",""],
- ["Adam Consigli","Denver","",1,"720-297-0088","tony rodelli"],["Claire","Denver","",1,"703-216-8617","adam consigli"],
- ["Michael (Salons by JC)","Denver","",0,"720-404-5491",""]
+ ["Chad","Florida","",1,"850-800-5714",""],["Joseph Palacios","Other","",1,"806-407-7334",""],["Jonathan","Denver","2026-10-30",1,"720-544-9475",""],
+ ["Adam Consigli","Denver","2026-10-26",3,"720-297-0088","tony rodelli"],["Claire","Denver","",1,"703-216-8617","adam consigli"],
+ ["Michael (Salons by JC)","Denver","",0,"720-404-5491",""],
+ ["Hayden","Denver","2026-09-08",2,"",""],["Bradley","Denver","2026-10-04",2,"",""],["Oswaldo","Denver","2026-09-01",1,"",""],
+ ["Tary","Denver","2026-09-13",1,"",""],["Trevor","Denver","2026-09-16",1,"",""],["Will B","Denver","2026-09-18",1,"",""],
+ ["Clinton","Denver","2026-09-21",1,"",""],["Darren Metzler","Denver","2026-10-05",2,"",""],["Brittany Tai","Denver","2026-10-18",3,"",""],
+ ["Mikaela","Denver","2026-10-07",1,"",""],["Katya","Denver","2026-10-18",1,"",""],["Troy","Denver","2026-09-11",1,"208-220-0969",""],
+ ["Jared","Denver","2026-10-26",1,"808-439-3669",""],["Justin","Denver","2026-10-28",1,"713-925-4252",""],["Dylan","Denver","2026-10-30",1,"212-858-0378",""],
+ ["Brian","Denver","2026-10-30",1,"303-859-2100",""]
 ];
 
 function load(k){try{return JSON.parse(localStorage.getItem(k)||"{}")}catch(e){return{}}}
