@@ -267,7 +267,7 @@ function renderMap(){
   var all=cs.slice(), GA=Math.PI*(3-Math.sqrt(5));
   all.forEach(function(c,i){ var ang=i*GA, r=40+16*Math.sqrt(i); c._x=cx+r*Math.cos(ang); c._y=cy+r*Math.sin(ang); });
   cs.forEach(c=>{ var k=keyOf(c.name); if(POS[k]){ c._x=POS[k].x; c._y=POS[k].y; } });
-  var s='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="display:block;margin:0 auto">';
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="auto" preserveAspectRatio="xMidYMid meet" style="display:block;margin:0 auto;max-width:100%">';
   for(var i=0;i<44;i++){ s+='<circle cx="'+(hashN("d"+i)%W)+'" cy="'+(hashN("e"+i)%H)+'" r="'+(0.4+(hashN("r"+i)%8)/12)+'" fill="#fff" opacity="0.06"/>'; }
   if(!COLL.master){ // tap the center to hide/show all orbiting clients
   // referral edges (data-a = referrer, data-b = referred — so drags can update endpoints)
