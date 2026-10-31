@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Learning</title>
+<style>
+  :root{
+    --sky-0:#12162a; --sky-1:#1a2038; --sky-2:#232a48; --sky-3:#2e3760;
+    --purple:#8a6fd4; --purple-lt:#a487da; --amber:#e9a95c; --selenite:#84b8ca;
+    --good:#7ac9a0; --warn:#e07a7a; --ink:#eceaf4; --ink-dim:#a1a4c2; --ink-faint:#6d7199;
+    --acc:#84b8ca;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--sky-0)}
+  body{color:var(--ink);font-family:'Inter',-apple-system,system-ui,sans-serif;font-size:15px;line-height:1.5;
+    max-width:460px;margin:0 auto;min-height:100vh;background-image:radial-gradient(1200px 520px at 50% -10%,rgba(132,184,202,.1),transparent);}
+  .wrap{padding:18px 15px 70px}
+  h1{font-family:'Fraunces',Georgia,serif;font-size:23px;font-weight:600}
+  .sub{color:var(--ink-dim);font-size:12.5px;margin-top:2px;font-style:italic}
+  .top{display:flex;align-items:center;gap:11px;margin-bottom:10px}
+  .gcirc{width:52px;height:52px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:2.5px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:26px}
+  .screen{display:none;animation:fade .22s ease}.screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .topbar{display:flex;align-items:center;gap:11px;padding:4px 0 12px;position:sticky;top:0;z-index:5;background:linear-gradient(var(--sky-0) 72%,transparent)}
+  .back{width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:var(--sky-1);border:1px solid var(--sky-2);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink);cursor:pointer}
+  .tbtitle{font-family:'Fraunces',serif;font-size:19px}.tbsub{font-size:10.5px;color:var(--ink-faint)}
+
+  .ring{position:relative;width:100%;max-width:320px;margin:16px auto 8px;aspect-ratio:1/1}
+  .ringhub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:80px;height:80px;border-radius:50%;background:var(--sky-2);border:2px solid var(--purple);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 0 0 6px rgba(138,111,212,.1)}
+  .ringhub .mono{font-family:'Fraunces',Georgia,serif;font-size:23px;font-weight:600;line-height:.9;letter-spacing:.5px;color:var(--purple-lt)}
+  .ringhub .mono sup{font-size:.5em;margin-left:1px}
+  .ringhub small{font-size:7.5px;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-top:2px}
+  .fcard{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;cursor:pointer;width:88px}
+  .fcard:active{transform:translate(-50%,-50%) scale(.92)}
+  .fcirc{width:66px;height:66px;border-radius:50%;background:var(--sky-1);border:3px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:28px;position:relative}
+  .fcirc .cnt{position:absolute;bottom:-4px;right:-6px;background:var(--sky-0);border:1px solid var(--sky-3);border-radius:99px;font-size:9px;font-weight:700;padding:1px 6px;color:var(--ink-dim)}
+  .fname{font-size:12.5px;font-weight:700;line-height:1.1}.fdesc{font-size:9px;color:var(--ink-faint)}
+
+  .card{background:var(--sky-1);border:1px solid var(--sky-2);border-radius:14px;padding:14px;margin-bottom:12px}
+  .card h3{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;font-family:'Fraunces',serif}
+  .card p{font-size:12.5px;color:var(--ink-dim);line-height:1.6;margin-top:7px}.card p b{color:var(--ink)}
+  pre.tithe{background:#0d1020;border:1px solid var(--sky-3);border-radius:12px;padding:12px;overflow-x:auto;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:10.5px;line-height:1.5;color:#c7cbe6;white-space:pre;margin-top:4px}
+  pre.tithe .k{color:var(--selenite)} /* unused but reserved */
+  .path{display:flex;gap:9px;margin-top:9px}
+  .path .k{width:24px;height:24px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:1px solid var(--sky-3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--acc)}
+  .path .t{font-size:12px;color:var(--ink-dim);line-height:1.5}.path .t b{color:var(--ink)}
+  .gl{display:flex;gap:9px;margin-top:7px;font-size:12px}
+  .gl b{color:var(--acc);flex:0 0 96px}.gl span{color:var(--ink-dim)}
+  .fill{font-size:11px;color:var(--purple-lt);background:rgba(138,111,212,.1);border:1px dashed rgba(138,111,212,.4);border-radius:10px;padding:8px 10px;margin-top:4px}
+  .lead{background:rgba(132,184,202,.08);border:1px solid rgba(132,184,202,.25);border-radius:12px;padding:11px 13px;font-size:12px;color:var(--ink-dim);line-height:1.6}
+  .lead b{color:var(--ink)}
+  @media (min-width:640px){ body{max-width:720px;font-size:16px}.ring{max-width:400px}pre.tithe{font-size:12px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- MAIN -->
+  <div class="screen active" id="scr-main">
+    <a href="index.html" style="display:inline-block;color:var(--ink-faint);font-size:12.5px;text-decoration:none;margin-bottom:8px">← Life OS</a>
+    <div class="top"><div class="gcirc">📚</div><div><h1>Learning</h1><div class="sub">Knowledge kept as tithes — structured to learn from and to train a channel on.</div></div></div>
+    <div class="ring">
+      <div class="ringhub"><span class="mono">MEC<sup>III</sup></span><small>Matthew</small></div>
+      <div class="fcard" style="left:50%;top:12%" onclick="go('scr-ai')"><div class="fcirc" style="border-color:var(--selenite)">🧠<span class="cnt">1</span></div><div class="fname">AI / ML</div><div class="fdesc">1 tithe</div></div>
+      <div class="fcard" style="left:86%;top:62%" onclick="go('scr-soon')"><div class="fcirc" style="border-color:var(--amber)">🗣️</div><div class="fname">Languages</div><div class="fdesc">KR · ZH</div></div>
+      <div class="fcard" style="left:14%;top:62%" onclick="go('scr-soon')"><div class="fcirc" style="border-color:var(--good)">🩺</div><div class="fname">Clinical</div><div class="fdesc">bodywork</div></div>
+    </div>
+    <div class="lead" style="max-width:340px;margin:6px auto 0">A <b>tithe</b> is a structured data block: every concept is both <b>parseable</b> (a channel can ingest it by <code>id</code>) and <b>teachable</b> (you read it top-to-bottom). Tap a topic to open its tithes.</div>
+  </div>
+
+  <!-- AI -->
+  <div class="screen" id="scr-ai">
+    <div class="topbar"><div class="back" onclick="go('scr-main')">←</div><div><div class="tbtitle">🧠 AI / ML</div><div class="tbsub">tithes</div></div></div>
+
+    <div class="card">
+      <h3>🧬 AI Model League — primer</h3>
+      <p>Your idea, mapped to the real research around it. <b>Learning path</b> (ordered, not alphabetical):</p>
+      <div class="path"><div class="k">1</div><div class="t"><b>Model merging</b> — most intuitive; run it first with <code>mergekit</code>.</div></div>
+      <div class="path"><div class="k">2</div><div class="t"><b>Population-Based Training</b> — parallel competition, winners propagate.</div></div>
+      <div class="path"><div class="k">3</div><div class="t"><b>Evolutionary Model Merge</b> — where 1 + 2 combine = <i>your idea</i> (Sakana AI, 2024).</div></div>
+      <div class="path"><div class="k">4</div><div class="t"><b>Mixture-of-Experts</b> — many specialists + a router.</div></div>
+      <div class="path"><div class="k">5</div><div class="t"><b>AutoML / NAS</b> — AI that designs AI.</div></div>
+      <div class="fill" style="margin-top:11px">◆ The novel lever: <b>merge the losers, don't kill them</b> — testable, falsifiable, under-explored.</div>
+    </div>
+
+    <div class="card">
+      <h3>📜 The tithe · copy to train a channel</h3>
+      <pre class="tithe">&#9679; DATA TITHE &#9679;
+tithe_id:   ai.model-league.primer.v1
+domain:     artificial-intelligence / machine-learning
+purpose:    learning-primer + ingestion seed for a channel
+origin:     "AI Model League" (competitive parallel build + merge)
+maturity:   [ established | emerging | frontier | speculative ]
+
+CONCEPTS
+- population_based_training  [established] DeepMind 2017
+    weak models copy winners' weights+settings, then mutate.
+    -> "teams that win get more each round"
+- league_training            [established] AlphaStar 2019
+    champions vs exploiter rivals -> arms race, no collapse.
+- model_merging              [emerging]   soups/SLERP/TIES/DARE
+    blend model WEIGHTS; result inherits both skillsets.
+    ! must share a base model (same architecture).
+    -> "smaller teams merge, maybe an upgrade"
+- evolutionary_model_merge   [frontier]   Sakana AI 2024
+    evolve WHICH models to merge + HOW -> new abilities.
+    -> "could yield a different AI"  (= your whole idea)
+- mixture_of_experts         [established]
+    many specialists + a router picks per input.
+- automl / nas               [established]
+    AI systems that design/tune other AI models.
+- neuroevolution (NEAT)      [established] Stanley 2002
+    evolve nets: mutate, cross-breed, select fittest.
+
+HYPOTHESIS (the novel lever)
+  standard: evolution KILLS losers.
+  yours:    MERGE losers (and winners) instead.
+  tension:  preserve diversity + improve  ...OR... collapse to mediocre average?
+  status:   open / testable / under-explored
+
+EXPERIMENT (weekend-scale)
+  tool:   mergekit + Hugging Face
+  1  pick 4-6 models sharing ONE base (e.g. Mistral-7B fine-tunes)
+  2  score each on a benchmark      = the tournament
+  3a merge the BOTTOM teams         = your hypothesis
+  3b merge the TOP teams            = control
+  4  re-score the offspring
+  win:  merged underdogs BEAT their parents
+  kill: merges regress to the mean
+  wall: compute (GPU hours), not ideas
+
+GLOSSARY
+  weights      the learned numbers = a model's knowledge
+  fine-tune    a base model trained further on a narrow task
+  base_model   the shared ancestor; required for clean merging
+  benchmark    a fixed test set to score/compare models
+  emergent     a capability of the whole, absent in the parts
+&#9679; END TITHE &#9679;</pre>
+    </div>
+
+    <div class="card">
+      <h3>🧪 Why "falsifiable" matters</h3>
+      <p>A claim is <b>falsifiable</b> if a specific result could prove it wrong (Popper's line between science and faith). The tithe's <b>kill criterion</b> — "merges regress to the mean" — is what makes the hypothesis real instead of just hopeful. If nothing could ever disprove it, it teaches you nothing.</p>
+    </div>
+  </div>
+
+  <!-- PLACEHOLDER -->
+  <div class="screen" id="scr-soon">
+    <div class="topbar"><div class="back" onclick="go('scr-main')">←</div><div><div class="tbtitle">Ready for tithes</div><div class="tbsub">drop a topic in</div></div></div>
+    <div class="card"><p>Empty and waiting. Tell me what you're learning — Korean grammar, a modality, credit mechanics — and I'll render it as a tithe here: parseable for a channel, teachable for you.</p></div>
+  </div>
+
+</div>
+<script>
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+</script>
+</body>
+</html>
