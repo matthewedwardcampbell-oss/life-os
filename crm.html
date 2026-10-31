@@ -70,7 +70,7 @@
   .mini .cnm{flex:1;font-size:13px;font-weight:600}.mini .cwhen{font-size:10.5px;color:var(--ink-dim)}
   .legend{display:flex;gap:11px;flex-wrap:wrap;margin:0 0 10px;font-size:9.5px;color:var(--ink-faint)}
   .legend span{display:flex;align-items:center;gap:4px}.legend i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
-  #mapWrap{background:radial-gradient(130% 80% at 50% 0%,#191f3a,var(--sky-0));border:1px solid var(--sky-2);border-radius:14px;padding:2px;overflow:hidden}
+  #mapWrap{background:radial-gradient(130% 80% at 50% 0%,#191f3a,var(--sky-0));border:1px solid var(--sky-2);border-radius:14px;padding:2px;overflow:auto;-webkit-overflow-scrolling:touch;max-height:76vh}
   #mapWrap svg{touch-action:none}
   #mapWrap svg text{font-family:'Inter',sans-serif;user-select:none}
   .trow{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--sky-2)}.trow:last-child{border-bottom:none}
@@ -238,8 +238,8 @@ function renderMap(){
   var wrap=document.getElementById("mapWrap"); if(!wrap)return;
   var cs=clients(), byKey={}; cs.forEach(c=>byKey[keyOf(c.name)]=c);
   var kids={}; cs.forEach(c=>{ if(c.ref&&byKey[c.ref]) (kids[c.ref]=kids[c.ref]||[]).push(c); });
-  var W=476,H=516,cx=238,cy=256;
-  var RING=[0,146,188,228], TIERR=[100,146,188,228]; // 4 layers; tier0 = honeycomb cluster
+  var W=660,H=660,cx=330,cy=330;
+  var RING=[0,188,252,316], TIERR=[132,188,252,316]; // 4 layers; tier0 = honeycomb cluster
   // --- referral chains: one axis per chain, spread symmetrically; members ride the ray at their layer radius ---
   function rootOf(c){ var cur=c,g=0; while(cur.ref&&byKey[cur.ref]&&g<20){cur=byKey[cur.ref];g++;} return keyOf(cur.name); }
   var comp={}; cs.forEach(c=>{ var r=rootOf(c); (comp[r]=comp[r]||[]).push(c); });
@@ -253,7 +253,7 @@ function renderMap(){
   var solo=cs.filter(c=>!inChain[keyOf(c.name)]), sBy=[[],[],[],[]]; solo.forEach(c=>sBy[tierOf(c)].push(c));
   sBy.forEach(a=>a.sort((x,y)=>keyOf(x.name)<keyOf(y.name)?-1:1));
   // tier0 first-timers: tight honeycomb shells near center
-  var merc=sBy[0], mi=0, shell=1, SR0=40, SSTEP=20, mercOut=SR0;
+  var merc=sBy[0], mi=0, shell=1, SR0=52, SSTEP=27, mercOut=SR0;
   while(mi<merc.length){ var cap=6*shell, r=SR0+(shell-1)*SSTEP, ph=-Math.PI/2+(shell%2)*(Math.PI/cap);
     for(var i=0;i<cap&&mi<merc.length;i++){ var c=merc[mi++]; c._ang=ph+(i/cap)*2*Math.PI; c._r=r; c._x=cx+r*Math.cos(c._ang); c._y=cy+r*Math.sin(c._ang); } mercOut=r; shell++; }
   // tiers 1-3: clean even rings
@@ -261,21 +261,21 @@ function renderMap(){
     arr.forEach(function(c,i){ c._ang=phase+(i/m)*2*Math.PI; c._r=R; c._x=cx+R*Math.cos(c._ang); c._y=cy+R*Math.sin(c._ang); }); });
   // manual drag positions override
   cs.forEach(c=>{ var k=keyOf(c.name); if(POS[k]){ c._x=POS[k].x; c._y=POS[k].y; } });
-  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block">';
-  for(var i=0;i<54;i++){ s+='<circle cx="'+(hashN("d"+i)%W)+'" cy="'+(hashN("e"+i)%H)+'" r="'+(0.4+(hashN("r"+i)%8)/12)+'" fill="#fff" opacity="0.06"/>'; }
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="display:block;margin:0 auto">';
+  for(var i=0;i<72;i++){ s+='<circle cx="'+(hashN("d"+i)%W)+'" cy="'+(hashN("e"+i)%H)+'" r="'+(0.4+(hashN("r"+i)%8)/12)+'" fill="#fff" opacity="0.06"/>'; }
   var guides=[[mercOut+12,"FIRST-TIMERS"],[RING[1],"2–4 VISITS"],[RING[2],"5–7 VISITS"],[RING[3],"VETERANS 8+"]];
   guides.forEach(function(g,t){ s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+g[0]+'" fill="none" stroke="#a487da" stroke-opacity="'+(0.12-t*0.018)+'" stroke-width="1"/>'; s+='<text x="'+cx+'" y="'+(cy-g[0]+12)+'" text-anchor="middle" fill="#6d7199" font-size="7" font-weight="700" letter-spacing=".6" opacity=".7">'+g[1]+'</text>'; });
   // referral edges (data-a = referrer, data-b = referred — so drags can update endpoints)
   cs.forEach(c=>{ if(c.ref&&byKey[c.ref]){ var p=byKey[c.ref]; s+='<line class="edge" data-a="'+c.ref+'" data-b="'+keyOf(c.name)+'" x1="'+p._x+'" y1="'+p._y+'" x2="'+c._x+'" y2="'+c._y+'" stroke="#a487da" stroke-opacity=".6" stroke-width="1.3"/>'; } });
   // nodes — translate groups so they can be dragged
-  cs.forEach(c=>{ var k=keyOf(c.name), st=statusOf(c), r=4.5+Math.min(5,(c.count||1)*0.5), due=isDue(c), sel=SELECTED===k;
+  cs.forEach(c=>{ var k=keyOf(c.name), st=statusOf(c), r=6+Math.min(6,(c.count||1)*0.6), due=isDue(c), sel=SELECTED===k;
     var showLabel = sel || tierOf(c)>0 || c.ref || kids[k];
     s+='<g class="node" data-k="'+k+'" transform="translate('+c._x+','+c._y+')" style="cursor:grab">';
     s+='<circle r="'+(r+9)+'" fill="transparent"/>';
     if(due) s+='<circle r="'+(r+3.5)+'" fill="none" stroke="#e9a95c" stroke-opacity=".9" stroke-width="1.3"/>';
     if(sel) s+='<circle r="'+(r+6.5)+'" fill="none" stroke="#eceaf4" stroke-width="1.5"/>';
     s+='<circle r="'+r+'" fill="'+statusColor(st)+'"/>';
-    if(showLabel) s+='<text y="'+(-r-4)+'" text-anchor="middle" fill="'+(sel?"#eceaf4":"#a1a4c2")+'" font-size="8" font-weight="'+(sel?"700":"400")+'">'+c.name.split(" ")[0]+'</text>';
+    if(showLabel) s+='<text y="'+(-r-5)+'" text-anchor="middle" fill="'+(sel?"#eceaf4":"#a1a4c2")+'" font-size="9.5" font-weight="'+(sel?"700":"400")+'">'+c.name.split(" ")[0]+'</text>';
     s+='</g>';
   });
   // center hub — Matthew
