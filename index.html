@@ -575,7 +575,8 @@ html{zoom:1.5;overflow-x:hidden}
     </div>
     <div class="sync" id="syncbar"><span class="pip"></span><span id="synctxt">—</span></div>
     <nav id="nav">
-      <button data-v="fn" class="on">Fortnight</button>
+      <button data-v="hub" class="on">⌂ Home</button>
+      <button data-v="fn">Fortnight</button>
       <button data-v="map">Map</button>
       <button data-v="trust">Circle</button>
       <button data-v="ins">Projects</button>
@@ -589,6 +590,32 @@ html{zoom:1.5;overflow-x:hidden}
       <button id="asksend" aria-label="Send">➤</button>
     </div>
   </header>
+
+  <!-- HUB · radial launcher / landing -->
+  <style>
+  #hub{padding:12px 15px 34px;min-height:66vh}
+  #hub .hub-top{text-align:center;margin:6px 0 2px}
+  #hub .hub-top h2{font-family:'Fraunces',serif;font-size:24px;font-weight:600;margin:0}
+  #hub .hub-top .sub{color:var(--ink-dim);font-size:12px;font-style:italic;margin-top:2px}
+  #hub .hub-ring{position:relative;width:100%;max-width:300px;margin:16px auto;aspect-ratio:1/1}
+  #hub .hub-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:108px;height:108px;border-radius:50%;background:var(--sky-2);border:3px solid var(--c,var(--purple));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;box-shadow:0 0 0 7px rgba(138,111,212,.08);z-index:3;padding:4px}
+  #hub .hub-center:active{transform:translate(-50%,-50%) scale(.94)}
+  #hub .hub-center .ic{font-size:30px;line-height:1}
+  #hub .hub-center .nm{font-family:'Fraunces',serif;font-size:15.5px;font-weight:600;color:var(--ink);margin-top:3px;line-height:1}
+  #hub .hub-center .sub{font-size:7.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-top:3px;line-height:1.1}
+  #hub .hub-tile{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;width:74px;text-align:center}
+  #hub .hub-tile:active{transform:translate(-50%,-50%) scale(.9)}
+  #hub .hub-tile .tc{width:56px;height:56px;border-radius:50%;background:var(--sky-1);border:2.5px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:24px}
+  #hub .hub-tile .tn{font-size:11px;font-weight:600;line-height:1.05;color:var(--ink-dim)}
+  #hub .hub-hint{text-align:center;color:var(--ink-faint);font-size:11px;line-height:1.55;max-width:300px;margin:6px auto 0}
+  #hub .hub-tree{display:none;width:100%;max-width:360px;margin:8px auto 0}
+  </style>
+  <div class="view on" id="hub">
+    <div class="hub-top"><h2>Life OS</h2><div class="sub">your worlds, in orbit</div></div>
+    <div class="hub-ring" id="hubRing"></div>
+    <div class="hub-tree" id="hubTree"></div>
+    <div class="hub-hint" id="hubHint">Left-click a world to open it · right-click to go back · right-click the center to branch the whole map.</div>
+  </div>
 
   <!-- MAP -->
   <div class="view" id="map">
@@ -769,7 +796,7 @@ GLOSSARY
   </div>
 
   <!-- FORTNIGHT -->
-  <div class="view on" id="fn">
+  <div class="view" id="fn">
     <div class="fnhead">
       <div class="big" id="fnTitle">This fortnight</div>
       <div class="sub" id="fnRange">—</div>
@@ -3523,19 +3550,110 @@ document.getElementById('instabs').addEventListener('click',e=>{ const b=e.targe
   projTab=b.dataset.i; renderProjects(); });
 
 /* ---------- nav + add button ---------- */
+function navTo(v){
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x.dataset.v===v));
+  document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id===v));
+  document.getElementById('addbtn').style.display=(v==='fn'||v==='chat'||v==='lab'||v==='learn'||v==='hub')?'none':'flex';
+  if(v==='learn')lrnGo('lrn-main');
+  if(v==='hub'){ treeMode=false; renderHub(); }
+  if(v==='fn'){ renderFortnight(); if(gcalState!=='loading' && (!S.gcalAt || Date.now()-S.gcalAt>120000)) syncGcal(); }
+  if(v==='chat')renderChat();
+  if(v==='lists')renderLists();
+  if(v==='trust')renderTrust();
+  if(v==='ins')renderProjects();
+  if(v==='sky')renderSky();
+  if(v!=='hub' && HUBTABS.some(t=>t.v===v)) hubActive=v;
+  window.scrollTo(0,0);
+}
 document.getElementById('nav').addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b)return;
-  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
   b.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
-  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id===b.dataset.v));
-  document.getElementById('addbtn').style.display=(b.dataset.v==='fn'||b.dataset.v==='chat'||b.dataset.v==='lab'||b.dataset.v==='learn')?'none':'flex';
-  if(b.dataset.v==='learn')lrnGo('lrn-main');
-  if(b.dataset.v==='fn'){ renderFortnight(); if(gcalState!=='loading' && (!S.gcalAt || Date.now()-S.gcalAt>120000)) syncGcal(); }
-  if(b.dataset.v==='chat')renderChat();
-  if(b.dataset.v==='lists')renderLists();
-  if(b.dataset.v==='trust')renderTrust();
-  if(b.dataset.v==='ins')renderProjects();
-  if(b.dataset.v==='sky')renderSky();
+  navTo(b.dataset.v);
+});
+
+/* ---------- Hub: radial launcher + tree map ---------- */
+const HUBTABS=[
+  {v:'fn',   name:'Fortnight',ic:'🗓️',col:'#8a6fd4'},
+  {v:'map',  name:'Map',      ic:'🌌',col:'#84b8ca'},
+  {v:'trust',name:'Circle',   ic:'🤝',col:'#e9a95c'},
+  {v:'ins',  name:'Projects', ic:'🗂️',col:'#7ac9a0'},
+  {v:'sky',  name:'Sky',      ic:'🔮',col:'#a487da'},
+  {v:'lists',name:'MISC',     ic:'🧷',col:'#84b8ca'},
+  {v:'learn',name:'Learn',    ic:'📚',col:'#7ac9a0'},
+  {v:'lab',  name:'Lab',      ic:'🧪',col:'#e9a95c'}
+];
+const HUBKIDS={
+  fn:[], map:[{t:'Constellation'}], trust:[{t:'Circle of trust'}], ins:[{t:'Projects'}],
+  sky:[{t:'Natal chart'},{t:'Horizon'}],
+  lists:[{t:'Lists'}],
+  learn:[{t:'AI / ML',go:['learn','lrn-ai']},{t:'Languages',go:['learn','lrn-soon']},{t:'Clinical',go:['learn','lrn-soon']}],
+  lab:[{t:'CRM',url:'crm.html'},{t:'Finances',url:'finances.html'},{t:'Ideas',url:'ideas.html'},{t:'Chez Matthew',url:'food.html'},{t:'Apothecarion',url:'gym.html'},{t:'Megalomania',url:'games.html'},{t:'Wish List',url:'wishlist.html'},{t:'Mind-Maps',url:'formats.html'}]
+};
+let hubActive='fn', treeMode=false;
+function renderHub(){
+  const ring=document.getElementById('hubRing'); if(!ring)return;
+  document.getElementById('hubTree').style.display='none'; ring.style.display='block';
+  const act=HUBTABS.find(t=>t.v===hubActive)||HUBTABS[0];
+  const others=HUBTABS.filter(t=>t.v!==hubActive);
+  let h='<div class="hub-center" id="hubCenter" style="--c:'+act.col+'"><span class="ic">'+act.ic+'</span><span class="nm">'+act.name+'</span><span class="sub">'+(act.v==='fn'?'home · ⌥branch':'tap to open')+'</span></div>';
+  const N=others.length,R=40;
+  others.forEach((t,i)=>{ const a=(-90+i*360/N)*Math.PI/180, x=50+R*Math.cos(a), y=50+R*Math.sin(a);
+    h+='<div class="hub-tile" data-hubv="'+t.v+'" style="left:'+x+'%;top:'+y+'%"><span class="tc" style="border-color:'+t.col+'">'+t.ic+'</span><span class="tn">'+t.name+'</span></div>'; });
+  ring.innerHTML=h;
+  document.getElementById('hubHint').textContent='Left-click a world to open it · right-click to go back · right-click the center to branch the whole map.';
+}
+function selectHub(v){ hubActive=v; navTo(v); }
+function openKid(tab,i){ const k=(HUBKIDS[tab]||[])[i]; if(!k){navTo(tab);return;} if(k.url){location.href=k.url;return;} if(k.go){navTo(k.go[0]); if(k.go[0]==='learn')lrnGo(k.go[1]); return;} navTo(tab); }
+function renderTree(){
+  const ring=document.getElementById('hubRing'), tw=document.getElementById('hubTree');
+  if(!treeMode){ renderHub(); return; }
+  ring.style.display='none'; tw.style.display='block';
+  const cx=210,cy=205,R1=92,R2=150;
+  const tabs=HUBTABS.filter(t=>t.v!=='fn');
+  const w=tabs.map(t=>1+(HUBKIDS[t.v]||[]).length*0.5), tot=w.reduce((a,b)=>a+b,0);
+  let acc=-90, edges='', nodes='';
+  tabs.forEach((t,i)=>{
+    const wd=w[i]/tot*360, mid=acc+wd/2, ma=mid*Math.PI/180;
+    const tx=cx+R1*Math.cos(ma), ty=cy+R1*Math.sin(ma);
+    edges+='<line x1="'+cx+'" y1="'+cy+'" x2="'+tx+'" y2="'+ty+'" stroke="#2e3760" stroke-width="2"/>';
+    const kids=HUBKIDS[t.v]||[];
+    kids.forEach((k,j)=>{
+      const ka=((kids.length===1?mid:acc+wd*(j+0.5)/kids.length))*Math.PI/180;
+      const kx=cx+R2*Math.cos(ka), ky=cy+R2*Math.sin(ka);
+      const an=Math.cos(ka)<-0.25?'end':(Math.cos(ka)>0.25?'start':'middle');
+      const lx=kx+(an==='end'?-8:an==='start'?8:0);
+      edges+='<line x1="'+tx+'" y1="'+ty+'" x2="'+kx+'" y2="'+ky+'" stroke="#232a48" stroke-width="1.5"/>';
+      nodes+='<g class="knode" data-kidtab="'+t.v+'" data-kidi="'+j+'" style="cursor:pointer"><circle cx="'+kx+'" cy="'+ky+'" r="5.5" fill="'+t.col+'"/><text x="'+lx+'" y="'+(ky+3.4)+'" text-anchor="'+an+'" font-size="9.5" fill="#a1a4c2">'+k.t+'</text></g>';
+    });
+    nodes+='<g class="tnode" data-hubv="'+t.v+'" style="cursor:pointer"><circle cx="'+tx+'" cy="'+ty+'" r="16" fill="#1a2038" stroke="'+t.col+'" stroke-width="2.5"/><text x="'+tx+'" y="'+(ty+5)+'" text-anchor="middle" font-size="15">'+t.ic+'</text><text x="'+tx+'" y="'+(ty-20)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#eceaf4">'+t.name+'</text></g>';
+    acc+=wd;
+  });
+  nodes+='<g class="tnode" data-hubv="fn" style="cursor:pointer"><circle cx="'+cx+'" cy="'+cy+'" r="27" fill="#232a48" stroke="#8a6fd4" stroke-width="3"/><text x="'+cx+'" y="'+(cy-1)+'" text-anchor="middle" font-size="19">🗓️</text><text x="'+cx+'" y="'+(cy+15)+'" text-anchor="middle" font-size="9" font-weight="700" fill="#a487da">Fortnight</text></g>';
+  tw.innerHTML='<svg viewBox="0 0 420 410" width="100%" style="max-width:100%;height:auto;overflow:visible" preserveAspectRatio="xMidYMid meet">'+edges+nodes+'</svg>';
+  document.getElementById('hubHint').textContent='The whole map. Tap any branch to jump straight in · right-click to collapse.';
+}
+document.getElementById('hub').addEventListener('click',e=>{
+  if(treeMode){
+    const tn=e.target.closest('.tnode'); if(tn){ treeMode=false; selectHub(tn.dataset.hubv); return; }
+    const kn=e.target.closest('.knode'); if(kn){ treeMode=false; openKid(kn.dataset.kidtab,+kn.dataset.kidi); return; }
+    return;
+  }
+  const tile=e.target.closest('.hub-tile'); if(tile){ selectHub(tile.dataset.hubv); return; }
+  if(e.target.closest('#hubCenter')){ navTo(hubActive); return; }
+});
+document.addEventListener('contextmenu',e=>{
+  if(e.target.closest('#svg')) return;               // star map keeps its own back
+  if(e.target.closest('#hub')){
+    e.preventDefault();
+    if(treeMode){ treeMode=false; renderHub(); return; }
+    if(e.target.closest('#hubCenter')){
+      if(hubActive!=='fn'){ hubActive='fn'; renderHub(); }
+      else { treeMode=true; renderTree(); }
+      return;
+    }
+    hubActive='fn'; renderHub(); return;              // right-click a tile / empty hub -> recenter home
+  }
+  if(e.target.closest('.view')){ e.preventDefault(); navTo('hub'); }   // right-click inside any view -> back to hub
 });
 document.getElementById('fnSync').onclick=()=>{ if(gcalState!=='loading') syncGcal(); };
 (function(){ const t=document.getElementById('dialToggle'), c=document.getElementById('fnGlance');
@@ -3558,6 +3676,7 @@ document.getElementById('addbtn').onclick=()=>{
 document.getElementById('svg').addEventListener('contextmenu',e=>{ e.preventDefault(); mapBack(); });
 ensureFortnight();
 renderMaster();
+renderHub();
 renderFortnight();
 renderLists();
 renderTrust();
