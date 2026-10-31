@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Finances · Fortnight</title>
+<style>
+  :root{
+    --sky-0:#12162a; --sky-1:#1a2038; --sky-2:#232a48; --sky-3:#2e3760;
+    --purple:#8a6fd4; --purple-lt:#a487da; --amber:#e9a95c; --selenite:#84b8ca;
+    --good:#7ac9a0; --warn:#e07a7a; --ink:#eceaf4; --ink-dim:#a1a4c2; --ink-faint:#6d7199;
+    --acc:#7ac9a0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--sky-0)}
+  body{color:var(--ink);font-family:'Inter',-apple-system,system-ui,sans-serif;font-size:15px;line-height:1.5;
+    max-width:460px;margin:0 auto;min-height:100vh;background-image:radial-gradient(1200px 520px at 50% -10%,rgba(122,201,160,.1),transparent);}
+  .wrap{padding:18px 15px 70px}
+  h1{font-family:'Fraunces',Georgia,serif;font-size:23px;font-weight:600}
+  .sub{color:var(--ink-dim);font-size:12.5px;margin-top:2px;font-style:italic}
+  .top{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+  .gcirc{width:52px;height:52px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:2.5px solid var(--acc);display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .gcirc .mono{font-family:'Fraunces',Georgia,serif;font-size:16px;font-weight:600;color:var(--purple-lt);line-height:.9}
+  .gcirc .mono sup{font-size:.5em}
+  .gcirc small{font-size:6px;letter-spacing:.4px;color:var(--ink-faint);font-weight:700;margin-top:1px}
+  .seclbl{font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin:20px 2px 11px}
+
+  .glance{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:6px}
+  .gt{background:var(--sky-1);border:1px solid var(--sky-3);border-radius:13px;padding:12px 8px;text-align:center}
+  .gt b{font-family:'Fraunces',serif;font-size:20px;display:block;line-height:1}
+  .gt span{font-size:9px;color:var(--ink-faint);font-weight:600;display:block;margin-top:5px;line-height:1.2}
+  .gt.out b{color:var(--warn)}.gt.in b{color:var(--good)}.gt.gap b{color:var(--amber)}
+
+  .obrow{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .ob{display:flex;flex-direction:column;align-items:center;gap:6px;width:72px}
+  .obc{width:60px;height:60px;border-radius:50%;background:var(--sky-1);border:2.5px solid var(--sky-3);display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .obc.rent{border-color:var(--warn)}.obc.booth{border-color:var(--amber)}.obc.phone{border-color:var(--selenite)}.obc.bed{border-color:var(--purple)}
+  .obc b{font-family:'Fraunces',serif;font-size:14px;line-height:1}
+  .obc .em{font-size:17px}
+  .obn{font-size:9.5px;color:var(--ink-faint);text-align:center;line-height:1.15}
+
+  .day{display:flex;gap:11px;align-items:stretch;margin-bottom:7px}
+  .dcol{width:46px;flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--sky-1);border:1px solid var(--sky-2);border-radius:11px;padding:7px 0}
+  .dcol.off{opacity:.5}
+  .dcol .dw{font-size:9px;color:var(--ink-faint);font-weight:700;text-transform:uppercase}
+  .dcol .dn{font-family:'Fraunces',serif;font-size:17px;line-height:1}
+  .dcol .dmo{font-size:8px;color:var(--ink-faint)}
+  .dstat{width:8px;height:8px;border-radius:50%;margin-top:4px;background:var(--sky-3)}
+  .dstat.ok{background:var(--good)}.dstat.short{background:var(--warn)}
+  .dbody{flex:1;min-width:0;background:var(--sky-1);border:1px solid var(--sky-2);border-radius:11px;padding:8px 11px;display:flex;flex-direction:column;justify-content:center;gap:5px}
+  .exp{display:flex;align-items:center;gap:7px;font-size:12px}
+  .exp .x{flex:1;color:var(--ink);min-width:0}
+  .exp .a{color:var(--warn);font-weight:700;font-variant-numeric:tabular-nums}
+  .exp .a.plan{color:var(--amber)}
+  .exp .a.var{color:var(--ink-faint);font-style:italic;font-weight:500}
+  .inrow{display:flex;align-items:center;gap:7px;font-size:12px}
+  .inrow label{color:var(--ink-faint);font-size:10.5px}
+  .inrow input{width:76px;background:var(--sky-0);border:1px solid var(--sky-3);border-radius:8px;color:var(--good);font-family:inherit;font-size:12.5px;font-weight:600;padding:4px 8px;text-align:right}
+  .inrow .net{margin-left:auto;font-size:10.5px;color:var(--ink-faint)}
+  .inrow .net b{color:var(--ink)}
+  .emptyday{font-size:11px;color:var(--ink-faint);font-style:italic}
+  .note{background:var(--sky-1);border:1px solid var(--sky-2);border-radius:12px;padding:12px 13px;font-size:12px;color:var(--ink-dim);line-height:1.6;margin-top:6px}
+  .note b{color:var(--ink)}
+  .wk{font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--purple-lt);font-weight:700;margin:14px 2px 9px;display:flex;align-items:center;gap:8px}
+  .wk::after{content:"";flex:1;height:1px;background:var(--sky-2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html" style="display:inline-block;color:var(--ink-faint);font-size:12.5px;text-decoration:none;margin-bottom:8px">← Life OS</a>
+  <div class="top"><div class="gcirc"><span class="mono">MEC<sup>III</sup></span><small>MATTHEW</small></div>
+    <div><h1>Finances · Fortnight</h1><div class="sub" id="range">Nov 1 – Nov 14 · the 14-day cashflow</div></div></div>
+
+  <div class="glance">
+    <div class="gt out"><b id="gOut">$0</b><span>to cover</span></div>
+    <div class="gt in"><b id="gIn">$0</b><span>logged in</span></div>
+    <div class="gt gap"><b id="gGap">$0</b><span>still needed</span></div>
+  </div>
+
+  <div class="seclbl">The obligations</div>
+  <div class="obrow">
+    <div class="ob"><div class="obc rent"><b>$350</b></div><div class="obn">Trevor<br>Oct left</div></div>
+    <div class="ob"><div class="obc booth"><b>$780</b></div><div class="obn">Booth<br>$440+$340</div></div>
+    <div class="ob"><div class="obc phone"><b>$200</b></div><div class="obn">Phone<br>repair</div></div>
+    <div class="ob"><div class="obc bed"><b>$220</b></div><div class="obn">Bed<br>Era 1</div></div>
+  </div>
+
+  <div class="seclbl">The 14-day timeline <span style="text-transform:none;letter-spacing:0;color:var(--ink-faint);font-weight:500">· tap a day to log what you earned</span></div>
+  <div id="timeline"></div>
+
+  <div class="note">📌 <b>Ongoing / recurring:</b> Trevor rent is now <b>$950/mo + utilities</b> (utilities TBD — we'll slot the number in once you have it). Booth rental is <b>$340/week</b> after this week's $440. These repeat every cycle.</div>
+  <div class="note" style="margin-top:8px">🛏 <b>Bed — staged plan:</b> Era 1 (Zinus 8″ innerspring + 3″ gel topper) ~<b>$220</b>, strictly after the phone fix. Eras 2–4 are later standalone upgrades — nothing gets thrown away. Full build saved in Quartermaster.</div>
+
+  <div class="seclbl">💳 Credit cleanup · after the mattress</div>
+  <div class="obrow">
+    <div class="ob"><div class="obc" style="border-color:var(--warn)"><b>$300</b></div><div class="obn">Credit card</div></div>
+    <div class="ob"><div class="obc" style="border-color:var(--selenite)"><b>$400</b></div><div class="obn">Care Credit</div></div>
+    <div class="ob"><div class="obc" style="border-color:var(--selenite)"><b>$450</b></div><div class="obn">Cherry</div></div>
+    <div class="ob"><div class="obc" style="border-color:var(--warn)"><b>$500</b></div><div class="obn">Credit card</div></div>
+    <div class="ob"><div class="obc" style="border-color:var(--amber)"><b>$1.5k</b></div><div class="obn">Back taxes</div></div>
+    <div class="ob"><div class="obc" style="border-color:var(--purple)"><b>$7.5k</b></div><div class="obn">Student loans</div></div>
+  </div>
+  <div class="note" style="margin-top:11px">Total ≈ <b>$10,650</b>. Listed <b>smallest-first (snowball)</b> — quick wins build momentum and lift your score as the small cards/collections clear. One flag: <b>back taxes (IRS)</b> can accrue penalties, so it may be worth bumping up the order regardless of balance. Student loans are the long tail. <span style="color:var(--ink-faint)">(Not financial advice — just your numbers organized; a quick call with a credit counselor could sharpen the order.)</span></div>
+
+  <div class="seclbl">🤝 Personal · owed to friends</div>
+  <div class="obrow">
+    <div class="ob"><div class="obc" style="border-color:var(--warn)"><b>$2k</b></div><div class="obn">Scott</div></div>
+    <div class="ob"><div class="obc" style="border-color:var(--amber)"><b>$600</b></div><div class="obn">Kevin</div></div>
+    <div class="ob"><div class="obc" style="border-color:var(--good)"><b>$1.5k<br>+</b></div><div class="obn">Kevin<br>(car)</div></div>
+    <div class="ob"><div class="obc" style="border-color:var(--ink-faint)"><b>$400?</b></div><div class="obn">Tony<br>maybe</div></div>
+  </div>
+  <div class="note" style="margin-top:11px">Friend loans ≈ <b>$4,500+</b>. <b>Kevin's car loan</b> is the flexible one — payable whenever, no fixed number (he figures &lt;$5k, likely less; <b>start at $1,500</b>). You want to pay him <b>generously</b> — he helped you get the car and came to rescue you when it died. That one's about loyalty, not just the ledger.</div>
+
+  <div class="seclbl">🎯 Savings goals</div>
+  <div class="obrow">
+    <div class="ob"><div class="obc" style="border-color:var(--good)"><b>$500<br>–1k</b></div><div class="obn">Car down<br>payment</div></div>
+    <div class="ob"><div class="obc bed"><b>$220</b></div><div class="obn">Mattress<br>Era 1</div></div>
+  </div>
+  <div class="note" style="margin-top:11px">🚗 <b>Car down payment</b> ($500–1,000) for a rental — from your friend or otherwise. Lands after credit cleanup so you're negotiating from a stronger position.</div>
+</div>
+<script>
+var START="2026-11-01"; // fortnight anchor (this weekend)
+var EXP={
+ "2026-11-01":[{x:"Trevor — October rent (remaining)",a:350,note:"paid $650 of $1,000"}],
+ "2026-11-03":[{x:"Booth rental · week 1",a:440}],
+ "2026-11-08":[{x:"Phone repair",a:200}],
+ "2026-11-10":[{x:"Booth rental · week 2",a:340}],
+ "2026-11-11":[{x:"Mattress — Era 1 (Zinus + topper)",a:220,plan:true}]
+};
+function load(){try{return JSON.parse(localStorage.getItem("fin-income")||"{}")}catch(e){return{}}}
+function save(v){try{localStorage.setItem("fin-income",JSON.stringify(v))}catch(e){}}
+var INCOME=load();
+function ymd(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function fromYmd(s){var p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2]);}
+var MO=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], WD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+function days(){ var out=[], s=fromYmd(START); for(var i=0;i<14;i++){ out.push(new Date(s.getFullYear(),s.getMonth(),s.getDate()+i)); } return out; }
+function money(n){ return "$"+Math.round(n).toLocaleString(); }
+
+function render(){
+  var ds=days(), totalOut=0, totalIn=0, body="", run=0, s0=ds[0], s1=ds[13];
+  document.getElementById("range").textContent=MO[s0.getMonth()]+" "+s0.getDate()+" – "+MO[s1.getMonth()]+" "+s1.getDate()+" · the 14-day cashflow";
+  // totals
+  ds.forEach(function(d){ (EXP[ymd(d)]||[]).forEach(function(e){ if(e.a)totalOut+=e.a; }); var inc=+INCOME[ymd(d)]||0; totalIn+=inc; });
+  document.getElementById("gOut").textContent=money(totalOut)+"+";
+  document.getElementById("gIn").textContent=money(totalIn);
+  document.getElementById("gGap").textContent=money(Math.max(0,totalOut-totalIn))+"+";
+  // timeline
+  ds.forEach(function(d,i){
+    if(i===0) body+='<div class="wk">Week 1</div>'; if(i===7) body+='<div class="wk">Week 2</div>';
+    var key=ymd(d), exps=EXP[key]||[], inc=+INCOME[key]||0, dayOut=exps.reduce(function(s,e){return s+(e.a||0);},0);
+    run+=inc-dayOut;
+    var isOff=(d.getDay()===1); // Mondays = rest (illustrative)
+    var covered = inc>=dayOut && (dayOut>0||inc>0);
+    body+='<div class="day"><div class="dcol'+(isOff?' off':'')+'"><div class="dw">'+WD[d.getDay()]+'</div><div class="dn">'+d.getDate()+'</div><div class="dmo">'+MO[d.getMonth()]+'</div><div class="dstat '+(dayOut>0?(covered?"ok":"short"):"")+'"></div></div>';
+    body+='<div class="dbody">';
+    if(exps.length){ exps.forEach(function(e){ body+='<div class="exp"><span class="x">'+e.x+(e.note?' <span style="color:var(--ink-faint);font-size:10px">('+e.note+')</span>':'')+'</span><span class="a'+(e.plan?" plan":"")+(e.var?" var":"")+'">'+(e.var?"all cash":"-"+money(e.a))+'</span></div>'; }); }
+    else { body+='<div class="emptyday">no fixed costs</div>'; }
+    body+='<div class="inrow"><label>earned</label><input type="number" inputmode="decimal" placeholder="0" value="'+(INCOME[key]||"")+'" data-d="'+key+'"><span class="net">running <b>'+money(run)+'</b></span></div>';
+    body+='</div></div>';
+  });
+  document.getElementById("timeline").innerHTML=body;
+  document.querySelectorAll('#timeline input').forEach(function(el){ el.oninput=function(){ var v=parseFloat(el.value); if(v>0)INCOME[el.dataset.d]=v; else delete INCOME[el.dataset.d]; save(INCOME); render(); var el2=document.querySelector('#timeline input[data-d="'+el.dataset.d+'"]'); if(el2){el2.focus();el2.setSelectionRange(el2.value.length,el2.value.length);} }; });
+}
+render();
+</script>
+</body>
+</html>
