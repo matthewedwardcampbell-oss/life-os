@@ -224,7 +224,7 @@ function cadLabel(n){ var cad=CAD[keyOf(n)]; return cad?("every "+cad+" wk"):"ev
 function hashN(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h;}
 
 /* ---- constellation map ---- */
-function tierOf(c){ var n=c.count||1; return n<=3?0:(n<=7?1:2); } // 0 Mercury(new 1-3) · 1 Middle(4-7) · 2 Pluto(vet 8+)
+function tierOf(c){ var n=c.count||1; return n<=1?0:(n<=4?1:(n<=7?2:3)); } // 0 first-timer(1) · 1 (2-4) · 2 (5-7) · 3 veteran(8+)
 var BAND=[[58,128],[150,170],[194,212]], BANDC=[93,160,203]; // radial bands + centers per tier
 // lay a tier's members into staggered concentric sub-rings (hex/quincunx packing)
 function layBand(list,rMin,rMax,cx,cy){
@@ -238,27 +238,33 @@ function renderMap(){
   var wrap=document.getElementById("mapWrap"); if(!wrap)return;
   var cs=clients(), byKey={}; cs.forEach(c=>byKey[keyOf(c.name)]=c);
   var kids={}; cs.forEach(c=>{ if(c.ref&&byKey[c.ref]) (kids[c.ref]=kids[c.ref]||[]).push(c); });
-  var W=440,H=512,cx=W/2,cy=H/2+2;
-  var direct=cs.filter(c=>!(c.ref&&byKey[c.ref]));
-  var ring=[[],[],[]]; direct.forEach(c=>ring[tierOf(c)].push(c));
-  ring.forEach(a=>a.sort((x,y)=>keyOf(x.name)<keyOf(y.name)?-1:1));
-  // Mercury: tight honeycomb shells hugging the center (cells close, interlocking)
-  var merc=ring[0], mi=0, shell=1, SR0=42, SSTEP=19, mercOut=SR0;
+  var W=476,H=516,cx=238,cy=256;
+  var RING=[0,146,188,228], TIERR=[100,146,188,228]; // 4 layers; tier0 = honeycomb cluster
+  // --- referral chains: one axis per chain, spread symmetrically; members ride the ray at their layer radius ---
+  function rootOf(c){ var cur=c,g=0; while(cur.ref&&byKey[cur.ref]&&g<20){cur=byKey[cur.ref];g++;} return keyOf(cur.name); }
+  var comp={}; cs.forEach(c=>{ var r=rootOf(c); (comp[r]=comp[r]||[]).push(c); });
+  var chainRoots=Object.keys(comp).filter(r=>comp[r].length>1), inChain={};
+  chainRoots.forEach(function(r,ci){ var ax=ci*(2*Math.PI/chainRoots.length), mem=comp[r], byT={};
+    mem.forEach(function(c){ (byT[tierOf(c)]=byT[tierOf(c)]||[]).push(c); });
+    Object.keys(byT).forEach(function(t){ var arr=byT[t], m=arr.length; arr.sort((a,b)=>(a.count||1)-(b.count||1));
+      arr.forEach(function(c,j){ var off=(m>1?(j-(m-1)/2)*0.16:0); c._ang=ax+off; c._r=TIERR[+t]; c._x=cx+c._r*Math.cos(c._ang); c._y=cy+c._r*Math.sin(c._ang); inChain[keyOf(c.name)]=1; }); });
+  });
+  // --- solo clients ---
+  var solo=cs.filter(c=>!inChain[keyOf(c.name)]), sBy=[[],[],[],[]]; solo.forEach(c=>sBy[tierOf(c)].push(c));
+  sBy.forEach(a=>a.sort((x,y)=>keyOf(x.name)<keyOf(y.name)?-1:1));
+  // tier0 first-timers: tight honeycomb shells near center
+  var merc=sBy[0], mi=0, shell=1, SR0=40, SSTEP=20, mercOut=SR0;
   while(mi<merc.length){ var cap=6*shell, r=SR0+(shell-1)*SSTEP, ph=-Math.PI/2+(shell%2)*(Math.PI/cap);
-    for(var i=0;i<cap && mi<merc.length;i++){ var c=merc[mi++]; c._ang=ph+(i/cap)*2*Math.PI; c._r=r; c._x=cx+r*Math.cos(c._ang); c._y=cy+r*Math.sin(c._ang); } mercOut=r; shell++; }
-  // Middle + Pluto: clean, symmetric, well-separated single rings
-  var RMID=182, RPLU=236;
-  [[ring[1],RMID],[ring[2],RPLU]].forEach(pair=>{ var arr=pair[0],R=pair[1],m=arr.length||1; arr.forEach((c,i)=>{ c._ang=-Math.PI/2+(i/m)*2*Math.PI; c._r=R; c._x=cx+R*Math.cos(c._ang); c._y=cy+R*Math.sin(c._ang); }); });
-  var BANDC=[Math.max(64,mercOut-12),RMID,RPLU];
-  // referred clients: their own band, parked near the referrer's angle so the chain runs on one ray
-  function placeKids(p,depth){ var ks=kids[keyOf(p.name)]||[]; ks.forEach((c,j)=>{ var off=(ks.length>1?(j-(ks.length-1)/2)*0.17:0)+depth*0.05; c._ang=p._ang+off; c._r=BANDC[tierOf(c)]; c._x=cx+c._r*Math.cos(c._ang); c._y=cy+c._r*Math.sin(c._ang); placeKids(c,depth+1); }); }
-  direct.forEach(c=>placeKids(c,1));
-  // apply any manual drag positions on top
+    for(var i=0;i<cap&&mi<merc.length;i++){ var c=merc[mi++]; c._ang=ph+(i/cap)*2*Math.PI; c._r=r; c._x=cx+r*Math.cos(c._ang); c._y=cy+r*Math.sin(c._ang); } mercOut=r; shell++; }
+  // tiers 1-3: clean even rings
+  [1,2,3].forEach(function(t){ var arr=sBy[t], m=arr.length||1, R=RING[t], phase=-Math.PI/2+t*0.45;
+    arr.forEach(function(c,i){ c._ang=phase+(i/m)*2*Math.PI; c._r=R; c._x=cx+R*Math.cos(c._ang); c._y=cy+R*Math.sin(c._ang); }); });
+  // manual drag positions override
   cs.forEach(c=>{ var k=keyOf(c.name); if(POS[k]){ c._x=POS[k].x; c._y=POS[k].y; } });
   var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block">';
-  for(var i=0;i<52;i++){ s+='<circle cx="'+(hashN("d"+i)%W)+'" cy="'+(hashN("e"+i)%H)+'" r="'+(0.4+(hashN("r"+i)%8)/12)+'" fill="#fff" opacity="0.06"/>'; }
-  var guides=[[mercOut+13,"MERCURY · new"],[RMID,"MIDDLE · regulars"],[RPLU,"PLUTO · veterans"]];
-  guides.forEach((g,t)=>{ s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+g[0]+'" fill="none" stroke="#a487da" stroke-opacity="'+(0.1-t*0.012)+'" stroke-width="1"/>'; s+='<text x="'+cx+'" y="'+(cy-g[0]+12)+'" text-anchor="middle" fill="#6d7199" font-size="7" font-weight="700" letter-spacing=".6" opacity=".75">'+g[1]+'</text>'; });
+  for(var i=0;i<54;i++){ s+='<circle cx="'+(hashN("d"+i)%W)+'" cy="'+(hashN("e"+i)%H)+'" r="'+(0.4+(hashN("r"+i)%8)/12)+'" fill="#fff" opacity="0.06"/>'; }
+  var guides=[[mercOut+12,"FIRST-TIMERS"],[RING[1],"2–4 VISITS"],[RING[2],"5–7 VISITS"],[RING[3],"VETERANS 8+"]];
+  guides.forEach(function(g,t){ s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+g[0]+'" fill="none" stroke="#a487da" stroke-opacity="'+(0.12-t*0.018)+'" stroke-width="1"/>'; s+='<text x="'+cx+'" y="'+(cy-g[0]+12)+'" text-anchor="middle" fill="#6d7199" font-size="7" font-weight="700" letter-spacing=".6" opacity=".7">'+g[1]+'</text>'; });
   // referral edges (data-a = referrer, data-b = referred — so drags can update endpoints)
   cs.forEach(c=>{ if(c.ref&&byKey[c.ref]){ var p=byKey[c.ref]; s+='<line class="edge" data-a="'+c.ref+'" data-b="'+keyOf(c.name)+'" x1="'+p._x+'" y1="'+p._y+'" x2="'+c._x+'" y2="'+c._y+'" stroke="#a487da" stroke-opacity=".6" stroke-width="1.3"/>'; } });
   // nodes — translate groups so they can be dragged
