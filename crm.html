@@ -73,6 +73,23 @@
   #mapWrap{background:radial-gradient(130% 80% at 50% 0%,#191f3a,var(--sky-0));border:1px solid var(--sky-2);border-radius:14px;padding:2px;overflow:auto;-webkit-overflow-scrolling:touch;max-height:76vh}
   #mapWrap svg{touch-action:none}
   #mapWrap svg text{font-family:'Inter',sans-serif;user-select:none}
+  .actrow{display:flex;gap:28px;justify-content:center;margin-bottom:14px}
+  .actc{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer}
+  .actc:active{transform:scale(.95)}
+  .acirc{width:66px;height:66px;border-radius:50%;background:var(--sky-1);border:3px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:27px;position:relative}
+  .acirc .cnt{position:absolute;bottom:-4px;right:-7px;background:var(--amber);color:#2a1e08;border-radius:99px;font-size:10px;font-weight:700;padding:1px 7px}
+  .actc.on .acirc{box-shadow:0 0 0 4px rgba(233,169,92,.22)}
+  .albl{font-size:11.5px;font-weight:700}
+  .maphint{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:11px;color:var(--ink-faint)}
+  .maphint button{background:var(--sky-1);border:1px solid var(--sky-3);color:var(--ink-dim);font:inherit;font-size:11px;padding:4px 10px;border-radius:8px;cursor:pointer}
+  .citylbl{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin:16px 0 11px;text-align:center}
+  .cityrow{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  .cityc{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer}
+  .cityc:active{transform:scale(.94)}
+  .citycirc{width:52px;height:52px;border-radius:50%;background:var(--sky-1);border:2.5px solid var(--sky-3);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--ink);position:relative}
+  .citycirc .cc{font-size:9px;color:var(--ink-faint);font-weight:600}
+  .cityc.on .citycirc{border-color:var(--purple);box-shadow:0 0 0 4px rgba(138,111,212,.18)}
+  .cityname{font-size:10px;color:var(--ink-faint);font-weight:600}
   .trow{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--sky-2)}.trow:last-child{border-bottom:none}
   .tcirc{width:44px;height:44px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:2.5px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:20px;position:relative}
   .tcirc .d{position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;border:2px solid var(--sky-1);border-radius:50%;background:var(--ink-faint)}
@@ -120,10 +137,16 @@
   <!-- CLIENT MAP (constellation) -->
   <div class="screen" id="scr-followup">
     <div class="topbar"><div class="back" onclick="go('scr-main')">←</div><div><div class="tbtitle">🌌 Client map</div><div class="tbsub">referral chains · tap a star</div></div></div>
+    <div class="actrow">
+      <div class="actc" id="actDue" onclick="setFilter('due')"><div class="acirc" style="border-color:var(--amber)">📅<span class="cnt" id="actDueN">0</span></div><div class="albl">Due to book</div></div>
+      <div class="actc" id="actFol" onclick="setFilter('follow')"><div class="acirc" style="border-color:var(--selenite)">🔔<span class="cnt" id="actFolN">0</span></div><div class="albl">Follow-up</div></div>
+    </div>
     <div class="legend"><span><i style="background:var(--good)"></i>active</span><span><i style="background:var(--selenite)"></i>cooling</span><span><i style="background:var(--amber)"></i>dormant</span><span><i style="background:var(--warn)"></i>lost</span><span><i style="background:var(--ink-faint)"></i>one-timer</span><span><i style="background:none;box-shadow:0 0 0 1.5px var(--amber)"></i>due</span></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:11px;color:var(--ink-faint)"><span>✥ drag stars to arrange · tap to open</span><button onclick="resetPos()" style="background:var(--sky-1);border:1px solid var(--sky-3);color:var(--ink-dim);font:inherit;font-size:11px;padding:4px 10px;border-radius:8px;cursor:pointer">reset layout</button></div>
+    <div class="maphint"><span>✥ drag · tap to open · tap a circle to filter</span><button onclick="resetPos()">reset</button></div>
     <div id="mapWrap"></div>
     <div id="nodeDetail" style="margin-top:12px"></div>
+    <div class="citylbl">📍 By city — book an area together</div>
+    <div id="cityRow" class="cityrow"></div>
   </div>
 
   <!-- INSURANCE / HSA -->
@@ -196,7 +219,7 @@ function loadA(k){try{return JSON.parse(localStorage.getItem(k)||"[]")}catch(e){
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 var CAD=load("crm-cadence"), LOG=load("crm-contacted"), REF=load("crm-ref"), EXTRA=loadA("crm-extra"), POS=load("crm-pos");
 var DEFCAD={jonathan:4}; Object.keys(DEFCAD).forEach(function(k){ if(CAD[k]==null) CAD[k]=DEFCAD[k]; });
-var NOW=new Date(), SELECTED=null, LEAD=7;
+var NOW=new Date(), SELECTED=null, LEAD=7, FILTER={type:"all",city:""};
 function daysSince(d){ if(!d)return null; var p=d.split("-"); var dt=new Date(+p[0],+p[1]-1,+p[2]); return Math.round((NOW-dt)/86400000); }
 function todayStr(){ return NOW.getFullYear()+"-"+String(NOW.getMonth()+1).padStart(2,"0")+"-"+String(NOW.getDate()).padStart(2,"0"); }
 function keyOf(n){return (n||"").toLowerCase().trim();}
@@ -238,41 +261,19 @@ function renderMap(){
   var wrap=document.getElementById("mapWrap"); if(!wrap)return;
   var cs=clients(), byKey={}; cs.forEach(c=>byKey[keyOf(c.name)]=c);
   var kids={}; cs.forEach(c=>{ if(c.ref&&byKey[c.ref]) (kids[c.ref]=kids[c.ref]||[]).push(c); });
-  var W=680,H=680,cx=340,cy=340, SEG=Math.PI/6; // 12-fold sacred-geometry grid (30° segments)
-  var CORER=[60,100,140,180], PER=12;                 // first-timer core: 12 per shell, flower-of-life interlock
-  var LR=[0,214,272,330], TIERR=[182,214,272,330];    // outer layer radii
-  // --- referral chains: one axis per chain, snapped to the 12-fold grid, members ride the ray ---
-  function rootOf(c){ var cur=c,g=0; while(cur.ref&&byKey[cur.ref]&&g<20){cur=byKey[cur.ref];g++;} return keyOf(cur.name); }
-  var comp={}; cs.forEach(c=>{ var r=rootOf(c); (comp[r]=comp[r]||[]).push(c); });
-  var chainRoots=Object.keys(comp).filter(r=>comp[r].length>1), inChain={};
-  chainRoots.forEach(function(r,ci){ var raw=ci*(2*Math.PI/chainRoots.length), ax=Math.round(raw/SEG)*SEG, mem=comp[r], byT={};
-    mem.forEach(function(c){ (byT[tierOf(c)]=byT[tierOf(c)]||[]).push(c); });
-    Object.keys(byT).forEach(function(t){ var arr=byT[t], m=arr.length; arr.sort((a,b)=>(a.count||1)-(b.count||1));
-      arr.forEach(function(c,j){ var off=(m>1?(j-(m-1)/2)*0.14:0); c._ang=ax+off; c._r=TIERR[+t]; c._x=cx+c._r*Math.cos(c._ang); c._y=cy+c._r*Math.sin(c._ang); inChain[keyOf(c.name)]=1; }); });
-  });
-  // --- solo clients ---
-  var solo=cs.filter(c=>!inChain[keyOf(c.name)]), sBy=[[],[],[],[]]; solo.forEach(c=>sBy[tierOf(c)].push(c));
-  sBy.forEach(a=>a.sort((x,y)=>keyOf(x.name)<keyOf(y.name)?-1:1));
-  // tier0 first-timers: 12-per-shell concentric rings, alternate shells rotated 15° (seed → flower of life)
-  var merc=sBy[0], mi=0, sh=0, mercOut=CORER[0];
-  while(mi<merc.length && sh<CORER.length){ var r=CORER[sh], base=-Math.PI/2+(sh%2)*(SEG/2);
-    for(var i=0;i<PER&&mi<merc.length;i++){ var c=merc[mi++]; c._ang=base+i*SEG; c._r=r; c._x=cx+r*Math.cos(c._ang); c._y=cy+r*Math.sin(c._ang); } mercOut=r; sh++; }
-  // tiers 1-3: symmetric even rings
-  [1,2,3].forEach(function(t){ var arr=sBy[t], m=arr.length||1, R=LR[t]; arr.forEach(function(c,i){ c._ang=-Math.PI/2+(i/m)*2*Math.PI; c._r=R; c._x=cx+R*Math.cos(c._ang); c._y=cy+R*Math.sin(c._ang); }); });
-  // manual drag positions override
+  // TEMPORARY: pack all clients tight near the center (orbits off while we redesign)
+  var W=480,H=480,cx=240,cy=240;
+  var all=cs.slice(), GA=Math.PI*(3-Math.sqrt(5));
+  all.forEach(function(c,i){ var ang=i*GA, r=40+16*Math.sqrt(i); c._x=cx+r*Math.cos(ang); c._y=cy+r*Math.sin(ang); });
   cs.forEach(c=>{ var k=keyOf(c.name); if(POS[k]){ c._x=POS[k].x; c._y=POS[k].y; } });
   var s='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="display:block;margin:0 auto">';
-  for(var i=0;i<80;i++){ s+='<circle cx="'+(hashN("d"+i)%W)+'" cy="'+(hashN("e"+i)%H)+'" r="'+(0.4+(hashN("r"+i)%8)/12)+'" fill="#fff" opacity="0.06"/>'; }
-  // 12-fold symmetry spokes
-  for(var k=0;k<12;k++){ var a=-Math.PI/2+k*SEG, R2=LR[3]+18; s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+R2*Math.cos(a))+'" y2="'+(cy+R2*Math.sin(a))+'" stroke="#a487da" stroke-opacity=".05" stroke-width="1"/>'; }
-  var guides=[[mercOut+16,"FIRST-TIMERS"],[LR[1],"2–4 VISITS"],[LR[2],"5–7 VISITS"],[LR[3],"VETERANS 8+"]];
-  guides.forEach(function(g,t){ s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+g[0]+'" fill="none" stroke="#a487da" stroke-opacity="'+(0.12-t*0.018)+'" stroke-width="1"/>'; s+='<text x="'+cx+'" y="'+(cy-g[0]+12)+'" text-anchor="middle" fill="#6d7199" font-size="7.5" font-weight="700" letter-spacing=".6" opacity=".7">'+g[1]+'</text>'; });
+  for(var i=0;i<44;i++){ s+='<circle cx="'+(hashN("d"+i)%W)+'" cy="'+(hashN("e"+i)%H)+'" r="'+(0.4+(hashN("r"+i)%8)/12)+'" fill="#fff" opacity="0.06"/>'; }
   // referral edges (data-a = referrer, data-b = referred — so drags can update endpoints)
   cs.forEach(c=>{ if(c.ref&&byKey[c.ref]){ var p=byKey[c.ref]; s+='<line class="edge" data-a="'+c.ref+'" data-b="'+keyOf(c.name)+'" x1="'+p._x+'" y1="'+p._y+'" x2="'+c._x+'" y2="'+c._y+'" stroke="#a487da" stroke-opacity=".6" stroke-width="1.3"/>'; } });
   // nodes — translate groups so they can be dragged
   cs.forEach(c=>{ var k=keyOf(c.name), st=statusOf(c), r=6+Math.min(6,(c.count||1)*0.6), due=isDue(c), sel=SELECTED===k;
-    var showLabel = sel || tierOf(c)>0 || c.ref || kids[k];
-    s+='<g class="node" data-k="'+k+'" transform="translate('+c._x+','+c._y+')" style="cursor:grab">';
+    var showLabel = sel || (c.count>1) || c.ref || kids[k];
+    s+='<g class="node" data-k="'+k+'" transform="translate('+c._x+','+c._y+')" style="cursor:grab" opacity="'+(matchesFilter(c)?1:0.16)+'">';
     s+='<circle r="'+(r+9)+'" fill="transparent"/>';
     if(due) s+='<circle r="'+(r+3.5)+'" fill="none" stroke="#e9a95c" stroke-opacity=".9" stroke-width="1.3"/>';
     if(sel) s+='<circle r="'+(r+6.5)+'" fill="none" stroke="#eceaf4" stroke-width="1.5"/>';
@@ -290,6 +291,18 @@ function renderMap(){
   attachDrag();
 }
 function resetPos(){ POS={}; save("crm-pos",POS); renderMap(); }
+var CITYORD=["Denver","Dallas","Virginia","Florida","Other"];
+function matchesFilter(c){ if(FILTER.type==="due")return isDue(c); if(FILTER.type==="follow")return (c.count||1)<=1; if(FILTER.type==="city")return (c.city||"Other")===FILTER.city; return true; }
+function setFilter(t,v){ if(FILTER.type===t && (t!=="city"||FILTER.city===v)){ FILTER={type:"all",city:""}; } else { FILTER={type:t,city:v||""}; } syncFilterUI(); renderMap(); }
+function newCity(){ /* add-city command — coming with the functional build */ }
+function syncFilterUI(){ var d=document.getElementById("actDue"),f=document.getElementById("actFol");
+  if(d)d.classList.toggle("on",FILTER.type==="due"); if(f)f.classList.toggle("on",FILTER.type==="follow");
+  document.querySelectorAll("#cityRow .cityc").forEach(function(el){ el.classList.toggle("on",FILTER.type==="city"&&FILTER.city===el.getAttribute("data-city")); }); }
+function renderCities(){ var row=document.getElementById("cityRow"); if(!row)return; var cs=clients(), by={};
+  cs.forEach(c=>{ var ct=c.city||"Other"; by[ct]=(by[ct]||0)+1; });
+  var cities=Object.keys(by).sort(function(a,b){ var ia=CITYORD.indexOf(a),ib=CITYORD.indexOf(b); return (ia<0?99:ia)-(ib<0?99:ib); });
+  row.innerHTML=cities.map(function(ct){ return '<div class="cityc" data-city="'+ct+'" onclick="setFilter(\'city\',\''+ct+'\')"><div class="citycirc">'+by[ct]+'</div><div class="cityname">'+ct+'</div></div>'; }).join("")
+    +'<div class="cityc" onclick="newCity()"><div class="citycirc" style="border-style:dashed;color:var(--purple-lt);font-size:20px">＋</div><div class="cityname">new city</div></div>'; }
 function attachDrag(){
   var svg=document.querySelector("#mapWrap svg"); if(!svg)return; var drag=null;
   function pt(e){ var p=svg.createSVGPoint(); p.x=e.clientX; p.y=e.clientY; var m=svg.getScreenCTM(); if(!m)return null; return p.matrixTransform(m.inverse()); }
@@ -351,6 +364,9 @@ function renderAll(){
     return '<div class="mini" onclick="go(\'scr-followup\');selectNode(\''+k+'\')"><span class="cdot '+st+'"></span><span class="cnm">'+c.name+'</span><span class="cwhen">'+whenLabel(c)+'</span></div>';
   }).join("")|| '<div style="font-size:12px;color:var(--ink-faint);font-style:italic">All caught up — nobody’s overdue. 🎉</div>';
   document.getElementById("reachMini").innerHTML=mini;
+  var dn=document.getElementById("actDueN"); if(dn)dn.textContent=due.length;
+  var fn=document.getElementById("actFolN"); if(fn)fn.textContent=cs.filter(c=>(c.count||1)<=1).length;
+  renderCities(); syncFilterUI();
   renderMap();
 }
 renderAll();
