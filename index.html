@@ -598,12 +598,13 @@ html{zoom:1.5;overflow-x:hidden}
   #hub .hub-top h2{font-family:'Fraunces',serif;font-size:24px;font-weight:600;margin:0}
   #hub .hub-top .sub{color:var(--ink-dim);font-size:12px;font-style:italic;margin-top:2px}
   #hub .hub-ring{position:relative;width:100%;max-width:300px;margin:16px auto;aspect-ratio:1/1}
+  #hub .hub-geo{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
   #hub .hub-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:108px;height:108px;border-radius:50%;background:var(--sky-2);border:3px solid var(--c,var(--purple));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;box-shadow:0 0 0 7px rgba(138,111,212,.08);z-index:3;padding:4px}
   #hub .hub-center:active{transform:translate(-50%,-50%) scale(.94)}
   #hub .hub-center .ic{font-size:30px;line-height:1}
   #hub .hub-center .nm{font-family:'Fraunces',serif;font-size:15.5px;font-weight:600;color:var(--ink);margin-top:3px;line-height:1}
   #hub .hub-center .sub{font-size:7.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-top:3px;line-height:1.1}
-  #hub .hub-tile{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;width:74px;text-align:center}
+  #hub .hub-tile{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;width:74px;text-align:center;z-index:2}
   #hub .hub-tile:active{transform:translate(-50%,-50%) scale(.9)}
   #hub .hub-tile .tc{width:56px;height:56px;border-radius:50%;background:var(--sky-1);border:2.5px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:24px}
   #hub .hub-tile .tn{font-size:11px;font-weight:600;line-height:1.05;color:var(--ink-dim)}
@@ -3590,12 +3591,26 @@ const HUBKIDS={
   lab:[{t:'CRM',url:'crm.html'},{t:'Finances',url:'finances.html'},{t:'Ideas',url:'ideas.html'},{t:'Chez Matthew',url:'food.html'},{t:'Apothecarion',url:'gym.html'},{t:'Megalomania',url:'games.html'},{t:'Wish List',url:'wishlist.html'},{t:'Mind-Maps',url:'formats.html'}]
 };
 let hubActive='fn', treeMode=false;
+/* Flower of Life / Metatron's Cube backdrop — 13 circles on the hex lattice + every connecting line */
+function metatron(cx,cy,outR,stroke){
+  stroke=stroke||'#2e3760';
+  const s=outR/Math.sqrt(3), r=s/2, lw=outR*0.009, cw=outR*0.011;
+  const pts=[[cx,cy]];
+  for(let k=0;k<6;k++){const a=k*60*Math.PI/180; pts.push([cx+s*Math.cos(a),cy+s*Math.sin(a)]);}
+  for(let k=0;k<6;k++){const a=(30+k*60)*Math.PI/180; pts.push([cx+outR*Math.cos(a),cy+outR*Math.sin(a)]);}
+  let g='<g stroke="'+stroke+'" fill="none"><g stroke-opacity="0.20" stroke-width="'+lw.toFixed(2)+'">';
+  for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++)g+='<line x1="'+pts[i][0].toFixed(2)+'" y1="'+pts[i][1].toFixed(2)+'" x2="'+pts[j][0].toFixed(2)+'" y2="'+pts[j][1].toFixed(2)+'"/>';
+  g+='</g><g stroke-opacity="0.45" stroke-width="'+cw.toFixed(2)+'">';
+  pts.forEach(p=>g+='<circle cx="'+p[0].toFixed(2)+'" cy="'+p[1].toFixed(2)+'" r="'+r.toFixed(2)+'"/>');
+  return g+'</g></g>';
+}
 function renderHub(){
   const ring=document.getElementById('hubRing'); if(!ring)return;
   document.getElementById('hubTree').style.display='none'; ring.style.display='block';
   const act=HUBTABS.find(t=>t.v===hubActive)||HUBTABS[0];
   const others=HUBTABS.filter(t=>t.v!==hubActive);
-  let h='<div class="hub-center" id="hubCenter" style="--c:'+act.col+'"><span class="ic">'+act.ic+'</span><span class="nm">'+act.name+'</span><span class="sub">'+(act.v==='fn'?'home · ⌥branch':'tap to open')+'</span></div>';
+  let h='<svg class="hub-geo" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">'+metatron(50,50,46.5)+'</svg>';
+  h+='<div class="hub-center" id="hubCenter" style="--c:'+act.col+'"><span class="ic">'+act.ic+'</span><span class="nm">'+act.name+'</span><span class="sub">'+(act.v==='fn'?'home · ⌥branch':'tap to open')+'</span></div>';
   const N=others.length,R=40;
   others.forEach((t,i)=>{ const a=(-90+i*360/N)*Math.PI/180, x=50+R*Math.cos(a), y=50+R*Math.sin(a);
     h+='<div class="hub-tile" data-hubv="'+t.v+'" style="left:'+x+'%;top:'+y+'%"><span class="tc" style="border-color:'+t.col+'">'+t.ic+'</span><span class="tn">'+t.name+'</span></div>'; });
@@ -3608,29 +3623,29 @@ function renderTree(){
   const ring=document.getElementById('hubRing'), tw=document.getElementById('hubTree');
   if(!treeMode){ renderHub(); return; }
   ring.style.display='none'; tw.style.display='block';
-  const cx=210,cy=205,R1=92,R2=150;
+  const cx=310,cy=310,R1=120,R2=232,VB=620;
   const tabs=HUBTABS.filter(t=>t.v!=='fn');
-  const w=tabs.map(t=>1+(HUBKIDS[t.v]||[]).length*0.5), tot=w.reduce((a,b)=>a+b,0);
-  let acc=-90, edges='', nodes='';
+  const N=tabs.length, wedge=360/N, fill=0.78;
+  let edges='', nodes='';
   tabs.forEach((t,i)=>{
-    const wd=w[i]/tot*360, mid=acc+wd/2, ma=mid*Math.PI/180;
+    const mid=-90+i*wedge, ma=mid*Math.PI/180;
     const tx=cx+R1*Math.cos(ma), ty=cy+R1*Math.sin(ma);
-    edges+='<line x1="'+cx+'" y1="'+cy+'" x2="'+tx+'" y2="'+ty+'" stroke="#2e3760" stroke-width="2"/>';
+    edges+='<line x1="'+cx+'" y1="'+cy+'" x2="'+tx.toFixed(1)+'" y2="'+ty.toFixed(1)+'" stroke="#3a4374" stroke-width="2"/>';
     const kids=HUBKIDS[t.v]||[];
     kids.forEach((k,j)=>{
-      const ka=((kids.length===1?mid:acc+wd*(j+0.5)/kids.length))*Math.PI/180;
+      const frac=kids.length===1?0.5:(j+0.5)/kids.length;
+      const ka=(mid+(frac-0.5)*wedge*fill)*Math.PI/180;
       const kx=cx+R2*Math.cos(ka), ky=cy+R2*Math.sin(ka);
       const an=Math.cos(ka)<-0.25?'end':(Math.cos(ka)>0.25?'start':'middle');
-      const lx=kx+(an==='end'?-8:an==='start'?8:0);
-      edges+='<line x1="'+tx+'" y1="'+ty+'" x2="'+kx+'" y2="'+ky+'" stroke="#232a48" stroke-width="1.5"/>';
-      nodes+='<g class="knode" data-kidtab="'+t.v+'" data-kidi="'+j+'" style="cursor:pointer"><circle cx="'+kx+'" cy="'+ky+'" r="5.5" fill="'+t.col+'"/><text x="'+lx+'" y="'+(ky+3.4)+'" text-anchor="'+an+'" font-size="9.5" fill="#a1a4c2">'+k.t+'</text></g>';
+      const lx=kx+(an==='end'?-11:an==='start'?11:0);
+      edges+='<line x1="'+tx.toFixed(1)+'" y1="'+ty.toFixed(1)+'" x2="'+kx.toFixed(1)+'" y2="'+ky.toFixed(1)+'" stroke="#2a3360" stroke-width="1.6"/>';
+      nodes+='<g class="knode" data-kidtab="'+t.v+'" data-kidi="'+j+'" style="cursor:pointer"><circle cx="'+kx.toFixed(1)+'" cy="'+ky.toFixed(1)+'" r="8" fill="'+t.col+'"/><text x="'+lx.toFixed(1)+'" y="'+(ky+4.6).toFixed(1)+'" text-anchor="'+an+'" font-size="13" fill="#b8bbd8">'+k.t+'</text></g>';
     });
-    nodes+='<g class="tnode" data-hubv="'+t.v+'" style="cursor:pointer"><circle cx="'+tx+'" cy="'+ty+'" r="16" fill="#1a2038" stroke="'+t.col+'" stroke-width="2.5"/><text x="'+tx+'" y="'+(ty+5)+'" text-anchor="middle" font-size="15">'+t.ic+'</text><text x="'+tx+'" y="'+(ty-20)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#eceaf4">'+t.name+'</text></g>';
-    acc+=wd;
+    nodes+='<g class="tnode" data-hubv="'+t.v+'" style="cursor:pointer"><circle cx="'+tx.toFixed(1)+'" cy="'+ty.toFixed(1)+'" r="23" fill="#1a2038" stroke="'+t.col+'" stroke-width="3"/><text x="'+tx.toFixed(1)+'" y="'+(ty+7).toFixed(1)+'" text-anchor="middle" font-size="22">'+t.ic+'</text><text x="'+tx.toFixed(1)+'" y="'+(ty-30).toFixed(1)+'" text-anchor="middle" font-size="13" font-weight="700" fill="#eceaf4">'+t.name+'</text></g>';
   });
-  nodes+='<g class="tnode" data-hubv="fn" style="cursor:pointer"><circle cx="'+cx+'" cy="'+cy+'" r="27" fill="#232a48" stroke="#8a6fd4" stroke-width="3"/><text x="'+cx+'" y="'+(cy-1)+'" text-anchor="middle" font-size="19">🗓️</text><text x="'+cx+'" y="'+(cy+15)+'" text-anchor="middle" font-size="9" font-weight="700" fill="#a487da">Fortnight</text></g>';
-  tw.innerHTML='<svg viewBox="0 0 420 410" width="100%" style="max-width:100%;height:auto;overflow:visible" preserveAspectRatio="xMidYMid meet">'+edges+nodes+'</svg>';
-  document.getElementById('hubHint').textContent='The whole map. Tap any branch to jump straight in · right-click to collapse.';
+  nodes+='<g class="tnode" data-hubv="fn" style="cursor:pointer"><circle cx="'+cx+'" cy="'+cy+'" r="38" fill="#232a48" stroke="#8a6fd4" stroke-width="3.5"/><text x="'+cx+'" y="'+(cy-2)+'" text-anchor="middle" font-size="27">🗓️</text><text x="'+cx+'" y="'+(cy+20)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#a487da">Fortnight</text></g>';
+  tw.innerHTML='<svg viewBox="0 0 '+VB+' '+VB+'" width="100%" style="max-width:100%;height:auto;overflow:visible" preserveAspectRatio="xMidYMid meet">'+metatron(cx,cy,150)+edges+nodes+'</svg>';
+  document.getElementById('hubHint').textContent='The whole map, on the Flower of Life. Tap any branch to jump in · right-click to collapse.';
 }
 document.getElementById('hub').addEventListener('click',e=>{
   if(treeMode){
