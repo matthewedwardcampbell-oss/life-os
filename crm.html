@@ -20,7 +20,7 @@
   .sub{color:var(--ink-dim);font-size:12.5px;margin-top:2px;font-style:italic}
   .top{display:flex;align-items:center;gap:11px;margin-bottom:10px}
   .gcirc{width:52px;height:52px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:2.5px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:26px}
-  .seclbl{font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin:18px 2px 10px;display:flex;align-items:center;gap:8px}
+  .seclbl{font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin:14px 2px 10px;display:flex;align-items:center;gap:8px}
   .seclbl .c{background:var(--sky-2);color:var(--ink-dim);font-size:10px;border-radius:99px;padding:1px 8px;font-weight:700}
   .screen{display:none;animation:fade .22s ease}.screen.active{display:block}
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -52,22 +52,10 @@
   .fdesc{font-size:9px;color:var(--ink-faint);line-height:1.2}
 
   .card{background:var(--sky-1);border:1px solid var(--sky-2);border-radius:14px;padding:13px 14px;margin-bottom:12px}
-  .card h3{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
-  .card p{font-size:12px;color:var(--ink-dim);line-height:1.6;margin-top:6px}.card p b{color:var(--ink)}
-
-  /* client rows */
-  .cli{background:var(--sky-1);border:1px solid var(--sky-2);border-radius:12px;margin-bottom:8px;overflow:hidden}
-  .clih{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer}
-  .clih:active{background:var(--sky-2)}
-  .cdot{width:10px;height:10px;flex:0 0 auto;border-radius:50%}
+  .card h3{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .card p{font-size:12px;color:var(--ink-dim);line-height:1.55;margin-top:5px}.card p b{color:var(--ink)}
+  .cdot{width:10px;height:10px;flex:0 0 auto;border-radius:50%;display:inline-block}
   .cdot.active{background:var(--good)}.cdot.cooling{background:var(--selenite)}.cdot.dormant{background:var(--amber)}.cdot.lost{background:var(--warn)}.cdot.new{background:var(--ink-faint)}
-  .cnm{flex:1;min-width:0;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .cwhen{font-size:10.5px;color:var(--ink-dim);text-align:right;line-height:1.3}
-  .cwhen b{display:block;font-size:9px;color:var(--ink-faint);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
-  .cli.reached{opacity:.5}
-  .cli.reached .cnm{text-decoration:line-through}
-  .clibody{padding:0 12px 12px;border-top:1px solid var(--sky-2);font-size:12px;color:var(--ink-dim);line-height:1.6}
-  .clibody .strat{margin-top:9px;color:var(--ink)}
   .cadrow{display:flex;align-items:center;gap:9px;margin-top:11px}
   .cadrow .lb{font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--ink-faint);font-weight:700}
   .step{display:flex;align-items:center;gap:8px}
@@ -79,9 +67,11 @@
   .reachbtn.undo{border-color:var(--sky-3);background:var(--sky-0);color:var(--ink-dim)}
   .mini{display:flex;align-items:center;gap:10px;padding:9px 11px;background:var(--sky-1);border:1px solid var(--sky-2);border-radius:11px;margin-bottom:7px;cursor:pointer}
   .mini:active{background:var(--sky-2)}
-  .mini .cnm{font-size:13px}
-  .legend{display:flex;gap:11px;flex-wrap:wrap;margin:0 0 12px;font-size:9.5px;color:var(--ink-faint)}
+  .mini .cnm{flex:1;font-size:13px;font-weight:600}.mini .cwhen{font-size:10.5px;color:var(--ink-dim)}
+  .legend{display:flex;gap:11px;flex-wrap:wrap;margin:0 0 10px;font-size:9.5px;color:var(--ink-faint)}
   .legend span{display:flex;align-items:center;gap:4px}.legend i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+  #mapWrap{background:radial-gradient(130% 80% at 50% 0%,#191f3a,var(--sky-0));border:1px solid var(--sky-2);border-radius:14px;padding:2px;overflow:hidden}
+  #mapWrap svg text{font-family:'Inter',sans-serif;user-select:none}
   .trow{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--sky-2)}.trow:last-child{border-bottom:none}
   .tcirc{width:44px;height:44px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:2.5px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:20px;position:relative}
   .tcirc .d{position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;border:2px solid var(--sky-1);border-radius:50%;background:var(--ink-faint)}
@@ -89,9 +79,7 @@
   .pill{display:inline-block;font-size:10px;font-weight:600;border-radius:99px;padding:3px 9px;margin-top:4px}
   .pill.now{color:var(--good);background:rgba(122,201,160,.1);border:1px solid rgba(122,201,160,.3)}
   .istep{display:flex;gap:9px;margin-top:9px}.istep .k{width:22px;height:22px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:1px solid var(--sky-3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--acc)}.istep .t{font-size:12px;color:var(--ink-dim);line-height:1.5}.istep .t b{color:var(--ink)}
-  .tmpl{background:var(--sky-0);border:1px dashed var(--sky-3);border-radius:10px;padding:10px 11px;font-size:11.5px;color:var(--ink-dim);line-height:1.6;margin-top:10px;font-style:italic}
-  .emptyline{font-size:12px;color:var(--ink-faint);font-style:italic;padding:6px 2px}
-
+  .rfin{padding:8px;border-radius:8px;border:1px solid var(--sky-3);background:var(--sky-0);color:var(--ink);font-family:inherit;font-size:13px;width:100%}
   @media (min-width:640px){
     body{max-width:720px;font-size:16px}.wrap{padding:26px 30px 90px}
     .ring{max-width:400px}.ringhub{width:94px;height:94px}.ringhub .mono{font-size:26px}
@@ -103,20 +91,20 @@
 <body>
 <div class="wrap">
 
-  <!-- MAIN · radial + reach-out list -->
+  <!-- MAIN -->
   <div class="screen active" id="scr-main">
     <a href="index.html" style="display:inline-block;color:var(--ink-faint);font-size:12.5px;text-decoration:none;margin-bottom:8px">← Life OS</a>
-    <div class="top"><div class="gcirc">📇</div><div><h1>CRM · Stone Therapy</h1><div class="sub">Keep the table full. Clients, follow-ups, and the partners who send them.</div></div></div>
+    <div class="top"><div class="gcirc">📇</div><div><h1>CRM · Stone Therapy</h1><div class="sub">Keep the table full. Clients, follow-ups, and the chains that feed them.</div></div></div>
     <div class="patch"><span>🎯</span><div>Target: <b>3 massages/day · 5 days/week.</b> This is the engine that feeds it.</div></div>
     <div class="glance">
-      <div class="gt due"><b id="kDue">0</b><span>rebooks due</span></div>
+      <div class="gt due"><b id="kDue">0</b><span>reach-outs due</span></div>
       <div class="gt win"><b id="kWin">0</b><span>win-back</span></div>
       <div class="gt act"><b id="kAct">0</b><span>active clients</span></div>
       <div class="gt wk"><b id="kTot">0</b><span>total clients</span></div>
     </div>
     <div class="ring">
       <div class="ringhub"><span class="mono">MEC<sup>III</sup></span><small>Matthew</small></div>
-      <div class="fcard" style="left:50%;top:11%" onclick="go('scr-followup')"><div class="fcirc" style="border-color:var(--good)">📋<span class="cnt" id="cPipe">0</span></div><div class="fname">Clients</div><div class="fdesc">full roster</div></div>
+      <div class="fcard" style="left:50%;top:11%" onclick="go('scr-followup')"><div class="fcirc" style="border-color:var(--good)">🌌<span class="cnt" id="cPipe">0</span></div><div class="fname">Client map</div><div class="fdesc">referral chains</div></div>
       <div class="fcard" style="left:86%;top:38%" onclick="go('scr-followup')"><div class="fcirc" style="border-color:var(--amber)">🔔<span class="cnt hot" id="cDue">0</span></div><div class="fname">Follow-ups</div><div class="fdesc">who's due</div></div>
       <div class="fcard" style="left:72%;top:82%" onclick="go('scr-insurance')"><div class="fcirc" style="border-color:var(--selenite)">🏥</div><div class="fname">Insurance / HSA</div><div class="fdesc">covered care</div></div>
       <div class="fcard" style="left:28%;top:82%" onclick="go('scr-partners')"><div class="fcirc" style="border-color:var(--purple)">🤝</div><div class="fname">Partnerships</div><div class="fdesc">referral sources</div></div>
@@ -125,14 +113,15 @@
 
     <div class="seclbl">🔔 Reach out next <span class="c" id="miniCount">0</span></div>
     <div id="reachMini"></div>
-    <div style="text-align:center;margin-top:4px"><button onclick="go('scr-followup')" style="background:none;border:none;color:var(--purple-lt);font:inherit;font-size:12px;cursor:pointer;text-decoration:underline">see the full roster →</button></div>
+    <div style="text-align:center;margin-top:4px"><button onclick="go('scr-followup')" style="background:none;border:none;color:var(--purple-lt);font:inherit;font-size:12px;cursor:pointer;text-decoration:underline">open the client map →</button></div>
   </div>
 
-  <!-- FOLLOW-UPS · full roster -->
+  <!-- CLIENT MAP (constellation) -->
   <div class="screen" id="scr-followup">
-    <div class="topbar"><div class="back" onclick="go('scr-main')">←</div><div><div class="tbtitle">🔔 Follow-ups</div><div class="tbsub">every client · tap to set cadence</div></div></div>
-    <div class="legend"><span><i style="background:var(--good)"></i>active</span><span><i style="background:var(--selenite)"></i>cooling</span><span><i style="background:var(--amber)"></i>dormant</span><span><i style="background:var(--warn)"></i>lost</span><span><i style="background:var(--ink-faint)"></i>one-timer</span></div>
-    <div id="followBody"></div>
+    <div class="topbar"><div class="back" onclick="go('scr-main')">←</div><div><div class="tbtitle">🌌 Client map</div><div class="tbsub">referral chains · tap a star</div></div></div>
+    <div class="legend"><span><i style="background:var(--good)"></i>active</span><span><i style="background:var(--selenite)"></i>cooling</span><span><i style="background:var(--amber)"></i>dormant</span><span><i style="background:var(--warn)"></i>lost</span><span><i style="background:var(--ink-faint)"></i>one-timer</span><span><i style="background:none;box-shadow:0 0 0 1.5px var(--amber)"></i>due</span></div>
+    <div id="mapWrap"></div>
+    <div id="nodeDetail" style="margin-top:12px"></div>
   </div>
 
   <!-- INSURANCE / HSA -->
@@ -145,7 +134,6 @@
       <div class="istep"><div class="k">3</div><div class="t"><b>Superbill template</b> — your info, date, CPT (97124 massage), amount.</div></div>
       <div class="istep"><div class="k">4</div><div class="t"><b>Pick a lane</b> — cash + superbill (client submits) vs. auto-injury / workers-comp.</div></div>
     </div>
-    <div class="card"><h3>📇 Client tracker</h3><p>Per insured client: <b>insured?</b> · <b>LMN on file?</b> · <b>superbill owed?</b> · <b>auto / workers-comp?</b></p><p style="color:var(--purple-lt)">✎ Flag covered clients right from the roster once we know who they are — starting with the one already using insurance.</p></div>
   </div>
 
   <!-- PARTNERSHIPS -->
@@ -159,121 +147,153 @@
       <div class="trow"><div class="tcirc">🏥<span class="d"></span></div><div class="tbody"><div class="tname">Pain clinics / physicians</div><div class="tmeta">Write the LMNs and diagnosed-condition referrals you need.</div><div class="tmove">First move: introduce yourself as their mobile LMT.</div></div></div>
       <div class="trow"><div class="tcirc">👷<span class="d"></span></div><div class="tbody"><div class="tname">Occupational / workers-comp</div><div class="tmeta">Steady WC referrals for work-injury recovery.</div><div class="tmove">First move: find the local occ-health clinics.</div></div></div>
     </div>
-    <p style="color:var(--purple-lt);font-size:11px;padding:0 2px">✎ Each partner moves target → contacted → met → referring. Tell me as you work them and I'll advance the dots.</p>
   </div>
 
   <!-- GET IN FRONT -->
   <div class="screen" id="scr-outreach">
     <div class="topbar"><div class="back" onclick="go('scr-main')">←</div><div><div class="tbtitle">📣 Get in front</div><div class="tbsub">how to open the door</div></div></div>
     <div class="card"><h3>🪑 Door-opener · free chair demo</h3><p>Offer a clinic <b>15 minutes of free chair massage for their staff.</b> The front desk and providers become fans — and fans refer. Nothing sells you like hands-on.</p></div>
-    <div class="card"><h3>🥪 Lunch-and-learn</h3><p>Bring lunch, give a 10-min talk on how massage improves <b>their</b> patients' outcomes (recovery, pain, range of motion). You leave as the name they remember.</p></div>
-    <div class="card"><h3>📄 One-pager + cards</h3><p>A clean leave-behind: what you do, that you're <b>mobile</b>, that you take <b>HSA/FSA</b> and <b>injury referrals</b>, and an easy booking link. Drop it in person, not by email.</p></div>
-    <div class="card"><h3>🔁 Make referring easy</h3><p>Hand them referral cards or a QR to your booking page, and <b>refer back</b> — send your clients to them too. Thank them every time they send someone.</p></div>
+    <div class="card"><h3>🥪 Lunch-and-learn</h3><p>Bring lunch, give a 10-min talk on how massage improves <b>their</b> patients' outcomes (recovery, pain, range of motion).</p></div>
+    <div class="card"><h3>📄 One-pager + cards</h3><p>A clean leave-behind: what you do, that you're <b>mobile</b>, that you take <b>HSA/FSA</b> and <b>injury referrals</b>, and an easy booking link.</p></div>
     <div class="card"><h3>👣 This week</h3><p><b>Walk into 3 chiropractors</b> near your route, offer the free staff chair demo, leave the one-pager.</p><span class="pill now">start here</span></div>
   </div>
 
 </div>
 <script>
-function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0); if(id==='scr-followup')renderMap();}
 
-/* ---- real roster, ported from the app's client book (last-seen · visit count) ---- */
+/* roster: [name, city, last-seen, visits, phone, referred-by-key] */
 var ROSTER=[
- ["Aaron Swift","Denver","2026-10-01",13],["George Gramer","Denver","2026-10-02",11],["Sam Irvin","Denver","2026-10-01",10],
- ["Paul Sablich","Denver","2026-10-07",9],["Tony Rodelli","Denver","2026-08-26",9],["Steve","Dallas","2026-10-19",8],
- ["Chris Chovan","Denver","2026-05-06",6],["Meg Arthur","Denver","2026-05-12",4],["Amanda","Denver","2026-10-08",2],
- ["Cristal","Denver","2026-09-01",2],["Robert","Denver","2026-10-10",2],["Jason","Dallas","2026-10-11",2],
- ["Holt","Dallas","2026-09-18",2],["Paul","Denver","2026-10-12",1],
- ["Jalan","Denver","2025-09-07",4],["Troy Cairns","Denver","2024-09-08",5],["Nate Shafer","Denver","2024-08-10",5],
- ["Ally","Denver","2024-08-08",4],["Hannah Delap","Denver","2024-09-27",3],["Christy","Denver","2024-08-22",3],
- ["Kiki Stone","Denver","2024-03-17",3],["Tabitha Collins","Denver","2025-07-15",2],["TJ","Denver","2025-08-04",2],
- ["Rachel Daly","Denver","2025-09-01",2],["Vince","Denver","2024-08-01",2],["Lloyd Mills","Denver","2024-09-26",2],
- ["Roger","Denver","2023-12-21",2],["Keilani Hang","Denver","2024-04-07",2],["Braden Rice","Denver","2024-01-16",2],
- ["Miriam","Denver","",1],["Landon Harding","Denver","",1],["Remington","Denver","",1],["Alejandro","Denver","",1],
- ["Henry","Denver","",1],["Max","Denver","",1],["Ricky","Denver","",1],["Roy","Denver","",1],["Daniel","Denver","",1],
- ["Charlie Price","Denver","",1],["Mitch West","Dallas","",1],["Jay","Dallas","",1],["Jordon","Dallas","",1],
- ["Martin","Dallas","",1],["Reid","Dallas","",1],["Scott","Dallas","",1],["Shen","Dallas","",1],["Ahmed","Dallas","",1],
- ["Sean House","Dallas","",1],["John","Dallas","",1],["Bob","Dallas","",1],["Gil","Dallas","",1],["Jerry","Dallas","",1],
- ["Jon","Dallas","",1],["Matt","Dallas","",1],["Benjamin","Dallas","",1],["Richard","Dallas","",1],
- ["Rob Townsend","Dallas","",1],["Rob Sullins","Dallas","",1],["Jeff","Virginia","",1],["Chad","Florida","",1],
- ["Joseph Palacios","Other","",1],
- ["Jonathan","Denver","2026-10-30",1]
+ ["Aaron Swift","Denver","2026-10-01",13,"",""],["George Gramer","Denver","2026-10-02",11,"",""],["Sam Irvin","Denver","2026-10-01",10,"",""],
+ ["Paul Sablich","Denver","2026-10-07",9,"",""],["Tony Rodelli","Denver","2026-08-26",9,"720-908-6279",""],["Steve","Dallas","2026-10-19",8,"214-244-7203",""],
+ ["Chris Chovan","Denver","2026-05-06",6,"",""],["Meg Arthur","Denver","2026-05-12",4,"",""],["Amanda","Denver","2026-10-08",2,"",""],
+ ["Cristal","Denver","2026-09-01",2,"",""],["Robert","Denver","2026-10-10",2,"985-774-3098",""],["Jason","Dallas","2026-10-11",2,"214-862-4820",""],
+ ["Holt","Dallas","2026-09-18",2,"214-763-5965",""],["Paul","Denver","2026-10-12",1,"720-503-2718",""],
+ ["Jalan","Denver","2025-09-07",4,"",""],["Troy Cairns","Denver","2024-09-08",5,"",""],["Nate Shafer","Denver","2024-08-10",5,"",""],
+ ["Ally","Denver","2024-08-08",4,"",""],["Hannah Delap","Denver","2024-09-27",3,"",""],["Christy","Denver","2024-08-22",3,"",""],
+ ["Kiki Stone","Denver","2024-03-17",3,"",""],["Tabitha Collins","Denver","2025-07-15",2,"",""],["TJ","Denver","2025-08-04",2,"",""],
+ ["Rachel Daly","Denver","2025-09-01",2,"",""],["Vince","Denver","2024-08-01",2,"",""],["Lloyd Mills","Denver","2024-09-26",2,"",""],
+ ["Roger","Denver","2023-12-21",2,"",""],["Keilani Hang","Denver","2024-04-07",2,"",""],["Braden Rice","Denver","2024-01-16",2,"",""],
+ ["Miriam","Denver","",1,"303-505-7730",""],["Landon Harding","Denver","",1,"720-333-2290",""],["Remington","Denver","",1,"720-443-2307",""],
+ ["Alejandro","Denver","",1,"720-322-3847",""],["Henry","Denver","",1,"303-378-2551",""],["Max","Denver","",1,"720-327-0006",""],
+ ["Ricky","Denver","",1,"720-402-6147",""],["Roy","Denver","",1,"720-203-1497",""],["Daniel","Denver","",1,"720-212-1718",""],
+ ["Charlie Price","Denver","",1,"",""],["Mitch West","Dallas","",1,"214-668-1181",""],["Jay","Dallas","",1,"972-746-8529",""],
+ ["Jordon","Dallas","",1,"214-498-5240",""],["Martin","Dallas","",1,"817-229-2038",""],["Reid","Dallas","",1,"214-244-8920",""],
+ ["Scott","Dallas","",1,"469-712-6780",""],["Shen","Dallas","",1,"469-438-5854",""],["Ahmed","Dallas","",1,"972-741-5234",""],
+ ["Sean House","Dallas","",1,"972-824-6873",""],["John","Dallas","",1,"214-415-0771",""],["Bob","Dallas","",1,"469-849-2073",""],
+ ["Gil","Dallas","",1,"214-674-7217",""],["Jerry","Dallas","",1,"817-880-1507",""],["Jon","Dallas","",1,"469-243-6045",""],
+ ["Matt","Dallas","",1,"469-223-0306",""],["Benjamin","Dallas","",1,"817-363-3777",""],["Richard","Dallas","",1,"469-844-8216",""],
+ ["Rob Townsend","Dallas","",1,"",""],["Rob Sullins","Dallas","",1,"",""],["Jeff","Virginia","",1,"703-303-1564",""],
+ ["Chad","Florida","",1,"850-800-5714",""],["Joseph Palacios","Other","",1,"806-407-7334",""],["Jonathan","Denver","2026-10-30",1,"",""],
+ ["Adam Consigli","Denver","",1,"720-297-0088","tony rodelli"],["Claire","Denver","",1,"703-216-8617","adam consigli"]
 ];
-var REGULARS=["Aaron Swift","George Gramer","Sam Irvin","Paul Sablich"]; // standing weekly-ish
 
-/* per-client cadence (weeks, 1-8) + reached flags — persisted on device */
 function load(k){try{return JSON.parse(localStorage.getItem(k)||"{}")}catch(e){return{}}}
+function loadA(k){try{return JSON.parse(localStorage.getItem(k)||"[]")}catch(e){return[]}}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-var CAD=load("crm-cadence"), LOG=load("crm-contacted"); // LOG[key]="YYYY-MM-DD" last CRM contact
-var DEFCAD={jonathan:4}; Object.keys(DEFCAD).forEach(function(k){ if(CAD[k]==null) CAD[k]=DEFCAD[k]; }); // baked-in cadences from contact convention
-var NOW=new Date();
+var CAD=load("crm-cadence"), LOG=load("crm-contacted"), REF=load("crm-ref"), EXTRA=loadA("crm-extra");
+var DEFCAD={jonathan:4}; Object.keys(DEFCAD).forEach(function(k){ if(CAD[k]==null) CAD[k]=DEFCAD[k]; });
+var NOW=new Date(), SELECTED=null, LEAD=7;
 function daysSince(d){ if(!d)return null; var p=d.split("-"); var dt=new Date(+p[0],+p[1]-1,+p[2]); return Math.round((NOW-dt)/86400000); }
 function todayStr(){ return NOW.getFullYear()+"-"+String(NOW.getMonth()+1).padStart(2,"0")+"-"+String(NOW.getDate()).padStart(2,"0"); }
-function keyOf(n){return n.toLowerCase();}
+function keyOf(n){return (n||"").toLowerCase().trim();}
+function clients(){
+  var base=ROSTER.map(r=>({name:r[0],city:r[1],last:r[2],count:r[3],phone:r[4]||"",ref:r[5]||""}));
+  EXTRA.forEach(e=>base.push({name:e.name,city:e.city||"Denver",last:e.last||"",count:e.count||1,phone:e.phone||"",ref:e.ref||""}));
+  base.forEach(c=>{ var k=keyOf(c.name); if(REF[k]!=null) c.ref=REF[k]; });
+  return base;
+}
+function get(k){ return clients().find(c=>keyOf(c.name)===k); }
+function referralsOf(k){ return clients().filter(c=>c.ref===k).map(c=>c.name); }
 function contactedOn(c){ return LOG[keyOf(c.name)]||""; }
-var LEAD=7; // reach out ~1 week early so the booking lands on the cadence mark
 function lastTouch(c){ var k=keyOf(c.name), l=LOG[k]; if(l&&(!c.last||l>c.last)) return l; return c.last; }
 function nextReach(c){ var k=keyOf(c.name), cad=CAD[k], lt=lastTouch(c); if(!cad||!lt) return null; var d=(cad*7-LEAD)-daysSince(lt); return d<=0?0:d; }
 function statusOf(c){ if(!c.last) return "new"; var dl=daysSince(c.last); if(dl<45)return"active"; if(dl<90)return"cooling"; if(dl<270)return"dormant"; return"lost"; }
+function statusColor(st){return st==="active"?"#7ac9a0":st==="cooling"?"#84b8ca":st==="dormant"?"#e9a95c":st==="lost"?"#e07a7a":"#6d7199";}
 function whenLabel(c){ if(!c.last) return "one-timer · "+c.city; var dl=daysSince(c.last); if(dl<31)return dl+"d ago"; if(dl<365)return Math.round(dl/30)+"mo ago"; return (dl/365).toFixed(1)+"y ago"; }
-function stratOf(st,c){
-  if(st==="active") return "Seen recently. Rebook nudge near their cadence — “about due for a reset?”";
-  if(st==="cooling") return "Starting to drift. Light check-in now, while you're fresh in mind.";
-  if(st==="dormant") return "Win-back — a personal note + a returning-client reason to come in.";
-  if(st==="lost") return "Reactivate — “I'm back in Denver, would love to get you on the table,” offer a specific slot.";
-  return "Came once, never rebooked. Biggest conversion pool — one warm text can make them a regular.";
-}
-/* is this client "due" to reach out? fires a LEAD week before the cadence mark so booking lands on time */
+function stratOf(st){ if(st==="active")return"Seen recently. Rebook nudge near their cadence."; if(st==="cooling")return"Starting to drift. Light check-in now, while you're fresh in mind."; if(st==="dormant")return"Win-back — a personal note + a reason to come in."; if(st==="lost")return"Reactivate — “I'm back in Denver, would love to get you on the table.”"; return"Came once / referred lead — one warm text can make them a regular."; }
 function isDue(c){ var k=keyOf(c.name), cad=CAD[k], lt=lastTouch(c);
-  if(cad){ if(!lt) return true; return daysSince(lt) >= (cad*7 - LEAD); } // e.g. 4wk → due at 21 days
-  if(LOG[k]) return false;            // contacted, no cadence yet → cleared until you set one
-  if(!c.last) return true;            // never-contacted one-timer → convert target
-  return statusOf(c)!=="active";      // no cadence: cooling/dormant/lost are due; active waits for a cadence
+  if(cad){ if(!lt) return true; return daysSince(lt) >= (cad*7 - LEAD); }
+  if(LOG[k]) return false;
+  if(!c.last) return true;
+  return statusOf(c)!=="active";
 }
-function clients(){ return ROSTER.map(r=>({name:r[0],city:r[1],last:r[2],count:r[3]})); }
-
-function reachList(){ // sorted: warm first (fewest days), one-timers, then win-back by value
-  var cs=clients().filter(isDue);
-  cs.sort((a,b)=>{ var sa=statusOf(a),sb=statusOf(b);
-    var rank={cooling:0,active:1,new:2,dormant:3,lost:4};
-    if(rank[sa]!==rank[sb])return rank[sa]-rank[sb];
-    var da=daysSince(a.last), db=daysSince(b.last);
-    if(da==null)return (b.count)-(a.count); if(db==null)return 1; return da-db; });
-  return cs;
-}
+function reachList(){ var cs=clients().filter(isDue); var rank={cooling:0,active:1,new:2,dormant:3,lost:4};
+  cs.sort((a,b)=>{ var ra=rank[statusOf(a)],rb=rank[statusOf(b)]; if(ra!==rb)return ra-rb; var da=daysSince(lastTouch(a)),db=daysSince(lastTouch(b)); if(da==null)return (b.count)-(a.count); if(db==null)return 1; return da-db; });
+  return cs; }
 function cadLabel(n){ var cad=CAD[keyOf(n)]; return cad?("every "+cad+" wk"):"set cadence"; }
+function hashN(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h;}
 
-function clientRow(c,idx){ var st=statusOf(c), k=keyOf(c.name), con=contactedOn(c), done=!!CAD[k] && !isDue(c) && lastTouch(c);
-  var nr=nextReach(c);
-  var schedLine = CAD[k] ? ('<div style="margin-top:9px;font-size:11.5px;color:var(--acc)">🗓 '+(isDue(c)?'Reach out now':'Reach out in '+nr+'d')+' — to book the '+CAD[k]+'-wk mark</div>') : '';
-  return '<div class="cli'+(done?' reached':'')+'" data-k="'+k+'">'+
-    '<div class="clih" onclick="toggleCli(this)">'+
-      '<span class="cdot '+st+'"></span>'+
-      '<span class="cnm">'+c.name+(done?' ✓':'')+'</span>'+
-      '<span class="cwhen"><b>'+st+'</b>'+whenLabel(c)+' · '+c.count+'×</span>'+
-    '</div>'+
-    '<div class="clibody" style="display:none">'+
-      '<div class="strat">'+stratOf(st,c)+'</div>'+
-      schedLine+
-      (con?'<div style="margin-top:7px;font-size:11.5px;color:var(--good)">✓ Last contacted '+(daysSince(con)===0?'today':daysSince(con)+'d ago')+'</div>':'')+
-      '<div class="cadrow"><span class="lb">Cadence</span><div class="step">'+
-        '<button onclick="bumpCad(\''+k+'\',-1)">−</button>'+
-        '<span class="val'+(CAD[k]?'':' unset')+'">'+cadLabel(c.name)+'</span>'+
-        '<button onclick="bumpCad(\''+k+'\',1)">+</button></div></div>'+
-      '<button class="reachbtn'+(con?' undo':'')+'" onclick="markDone(\''+k+'\')">'+(con?'↩ undo contact':'✓ Done — contacted today')+'</button>'+
-    '</div></div>';
+/* ---- constellation map ---- */
+function renderMap(){
+  var wrap=document.getElementById("mapWrap"); if(!wrap)return;
+  var cs=clients(), byKey={}; cs.forEach(c=>byKey[keyOf(c.name)]=c);
+  var kids={}; cs.forEach(c=>{ if(c.ref&&byKey[c.ref]) (kids[c.ref]=kids[c.ref]||[]).push(c); });
+  var W=430, MX=52, COLW=118, ROWH=56, y=44;
+  var roots=cs.filter(c=> !(c.ref&&byKey[c.ref]) );
+  var chainRoots=roots.filter(c=>kids[keyOf(c.name)]);
+  var solo=roots.filter(c=>!kids[keyOf(c.name)]);
+  function lay(c,depth){ c._x=MX+depth*COLW; var ks=kids[keyOf(c.name)]||[]; if(!ks.length){ c._y=y; y+=ROWH; } else { ks.forEach(k=>lay(k,depth+1)); c._y=(ks[0]._y+ks[ks.length-1]._y)/2; } }
+  chainRoots.forEach(r=>{ lay(r,0); y+=10; });
+  var chainsBottom=y, soloTop=0;
+  if(solo.length){ soloTop=y+30; var cols=6, gapx=(W-36)/cols, sx0=18+gapx/2, rh=50;
+    solo.forEach((c,i)=>{ var col=i%cols,row=Math.floor(i/cols); var jx=(hashN(keyOf(c.name))%14)-7, jy=(hashN(keyOf(c.name)+"y")%12)-6;
+      c._x=sx0+col*gapx+jx; c._y=soloTop+6+row*rh+jy+rh/2; });
+    y=soloTop+6+Math.ceil(solo.length/cols)*rh+10; }
+  var H=Math.max(y,180);
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block">';
+  // background star dust
+  for(var i=0;i<40;i++){ var hx=(hashN("d"+i)%W), hy=(hashN("e"+i)%H); s+='<circle cx="'+hx+'" cy="'+hy+'" r="'+(0.5+(hashN("r"+i)%10)/12)+'" fill="#ffffff" opacity="0.07"/>'; }
+  // headers
+  if(chainRoots.length) s+='<text x="'+MX+'" y="20" fill="var(--ink-faint)" font-size="10" font-weight="700" letter-spacing=".6">✦ REFERRAL CHAINS</text>';
+  if(solo.length) s+='<text x="18" y="'+(chainsBottom+22)+'" fill="var(--ink-faint)" font-size="10" font-weight="700" letter-spacing=".6">UNLINKED · tap a star, then “add referral” to connect</text>';
+  // edges
+  cs.forEach(c=>{ if(c.ref&&byKey[c.ref]){ var p=byKey[c.ref]; s+='<line x1="'+p._x+'" y1="'+p._y+'" x2="'+c._x+'" y2="'+c._y+'" stroke="#a487da" stroke-opacity=".55" stroke-width="1.4"/>'; } });
+  // nodes
+  cs.forEach(c=>{ var k=keyOf(c.name), st=statusOf(c), r=5+Math.min(5,(c.count||1)*0.6), due=isDue(c), sel=SELECTED===k, nm=c.name.split(" ")[0];
+    s+='<g onclick="selectNode(\''+k+'\')" style="cursor:pointer">';
+    s+='<circle cx="'+c._x+'" cy="'+c._y+'" r="'+(r+10)+'" fill="transparent"/>';
+    if(due) s+='<circle cx="'+c._x+'" cy="'+c._y+'" r="'+(r+4)+'" fill="none" stroke="#e9a95c" stroke-opacity=".9" stroke-width="1.5"/>';
+    if(sel) s+='<circle cx="'+c._x+'" cy="'+c._y+'" r="'+(r+7)+'" fill="none" stroke="#eceaf4" stroke-width="1.5"/>';
+    s+='<circle cx="'+c._x+'" cy="'+c._y+'" r="'+r+'" fill="'+statusColor(st)+'"/>';
+    s+='<text x="'+c._x+'" y="'+(c._y+r+10)+'" text-anchor="middle" fill="'+(sel?"#eceaf4":"#a1a4c2")+'" font-size="8" font-weight="'+(sel?"700":"400")+'">'+nm+'</text>';
+    s+='</g>';
+  });
+  s+='</svg>';
+  wrap.innerHTML=s;
 }
-function toggleCli(h){ var b=h.nextElementSibling; b.style.display=b.style.display==="none"?"block":"none"; }
-function bumpCad(k,d){ var v=(CAD[k]||0)+d; if(v<1)v=1; if(v>8)v=8; CAD[k]=v; save("crm-cadence",CAD); renderAll(); reopen(k); }
-function markDone(k){ if(LOG[k])delete LOG[k]; else LOG[k]=todayStr(); save("crm-contacted",LOG); renderAll(); reopen(k); }
-function reopen(k){ var el=document.querySelector('.cli[data-k="'+CSS.escape(k)+'"] .clibody'); if(el)el.style.display="block"; }
+function selectNode(k){ SELECTED=k; renderMap(); var c=get(k); var d=document.getElementById("nodeDetail"); d.innerHTML=nodeDetailHTML(c); d.scrollIntoView({behavior:"smooth",block:"nearest"}); }
+function nodeDetailHTML(c){ var k=keyOf(c.name), st=statusOf(c), refby=c.ref?((get(c.ref)||{}).name||""):"", ks=referralsOf(k), nr=nextReach(c), con=contactedOn(c);
+  return '<div class="card">'+
+    '<h3><span class="cdot '+st+'" style="width:12px;height:12px"></span> '+c.name+'</h3>'+
+    (c.phone?'<p>📞 <a href="tel:'+c.phone.replace(/\D/g,"")+'" style="color:var(--acc)">'+c.phone+'</a></p>':'')+
+    '<p>'+st+' · '+(c.city||"?")+' · '+(c.count||1)+'× · '+whenLabel(c)+'</p>'+
+    (refby?'<p>🔗 Referred by <b>'+refby+'</b></p>':'')+
+    (ks.length?'<p>↳ Referred in: <b>'+ks.join(", ")+'</b></p>':'')+
+    '<p style="color:var(--ink-dim);margin-top:7px">'+stratOf(st)+'</p>'+
+    (CAD[k]?'<div style="font-size:11.5px;color:var(--acc);margin-top:8px">🗓 '+(isDue(c)?"Reach out now":"Reach out in "+nr+"d")+' — books the '+CAD[k]+'-wk mark</div>':'')+
+    '<div class="cadrow"><span class="lb">Cadence</span><div class="step"><button onclick="bumpCad(\''+k+'\',-1)">−</button><span class="val'+(CAD[k]?"":" unset")+'">'+cadLabel(c.name)+'</span><button onclick="bumpCad(\''+k+'\',1)">+</button></div></div>'+
+    '<button class="reachbtn'+(con?" undo":"")+'" onclick="markDone(\''+k+'\')">'+(con?"↩ undo contact (contacted "+(daysSince(con)===0?"today":daysSince(con)+"d ago")+")":"✓ Done — contacted today")+'</button>'+
+    '<button class="reachbtn" style="border-color:var(--purple);color:var(--purple-lt);background:rgba(138,111,212,.08)" onclick="showRefForm(\''+k+'\')">＋ Add a referral from '+c.name.split(" ")[0]+'</button>'+
+    '<div id="refForm"></div>'+
+  '</div>';
+}
+function showRefForm(k){ document.getElementById("refForm").innerHTML=
+  '<div style="margin-top:10px;display:flex;flex-direction:column;gap:7px">'+
+  '<input id="rfN" class="rfin" placeholder="New client’s name">'+
+  '<input id="rfP" class="rfin" placeholder="Phone (optional)">'+
+  '<button class="reachbtn" onclick="addReferral(\''+k+'\')">Save — referred by '+(get(k)||{}).name.split(" ")[0]+'</button></div>'; }
+function addReferral(k){ var n=(document.getElementById("rfN").value||"").trim(); if(!n)return; var p=(document.getElementById("rfP").value||"").trim();
+  EXTRA.push({name:n,city:"Denver",last:"",count:1,phone:p,ref:k}); save("crm-extra",EXTRA);
+  SELECTED=keyOf(n); renderAll(); selectNode(keyOf(n)); }
+function bumpCad(k,d){ var v=(CAD[k]||0)+d; if(v<1)v=1; if(v>8)v=8; CAD[k]=v; save("crm-cadence",CAD); renderAll(); refreshDetail(); }
+function markDone(k){ if(LOG[k])delete LOG[k]; else LOG[k]=todayStr(); save("crm-contacted",LOG); renderAll(); refreshDetail(); }
+function refreshDetail(){ if(SELECTED){ var c=get(SELECTED), d=document.getElementById("nodeDetail"); if(c&&d&&d.innerHTML.trim()) d.innerHTML=nodeDetailHTML(c); } }
 
 function renderAll(){
-  var cs=clients();
-  var due=reachList();
-  var dueKeys=new Set(due.map(c=>keyOf(c.name)));
+  var cs=clients(), due=reachList();
   var winback=cs.filter(c=>["dormant","lost"].includes(statusOf(c)));
   var active=cs.filter(c=>statusOf(c)==="active");
-  // glance + badges
   document.getElementById("kDue").textContent=due.length;
   document.getElementById("kWin").textContent=winback.length;
   document.getElementById("kAct").textContent=active.length;
@@ -281,20 +301,11 @@ function renderAll(){
   document.getElementById("cPipe").textContent=cs.length;
   document.getElementById("cDue").textContent=due.length;
   document.getElementById("miniCount").textContent=due.length+" due";
-  // mini reach list (top 8)
-  var mini=due.slice(0,8).map(c=>{ var st=statusOf(c);
-    return '<div class="mini" onclick="go(\'scr-followup\')"><span class="cdot '+st+'"></span><span class="cnm">'+c.name+'</span><span class="cwhen">'+whenLabel(c)+'</span></div>';
-  }).join("")|| '<div class="emptyline">All caught up — nobody’s overdue. 🎉</div>';
+  var mini=due.slice(0,8).map(c=>{ var st=statusOf(c), k=keyOf(c.name);
+    return '<div class="mini" onclick="go(\'scr-followup\');selectNode(\''+k+'\')"><span class="cdot '+st+'"></span><span class="cnm">'+c.name+'</span><span class="cwhen">'+whenLabel(c)+'</span></div>';
+  }).join("")|| '<div style="font-size:12px;color:var(--ink-faint);font-style:italic">All caught up — nobody’s overdue. 🎉</div>';
   document.getElementById("reachMini").innerHTML=mini;
-  // full follow-ups, grouped
-  var groups=[
-    ["🔔 Due now",due],
-    ["💤 Win-back · lapsed",winback.filter(c=>!dueKeys.has(keyOf(c.name)))],
-    ["🟢 Active · not due yet",active.filter(c=>!dueKeys.has(keyOf(c.name)))]
-  ];
-  var fh="";
-  groups.forEach(g=>{ if(!g[1].length)return; fh+='<div class="seclbl">'+g[0]+' <span class="c">'+g[1].length+'</span></div>'; g[1].forEach(c=>fh+=clientRow(c)); });
-  document.getElementById("followBody").innerHTML=fh;
+  renderMap();
 }
 renderAll();
 </script>
