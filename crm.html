@@ -208,21 +208,17 @@ function get(k){ return clients().find(c=>keyOf(c.name)===k); }
 function referralsOf(k){ return clients().filter(c=>c.ref===k).map(c=>c.name); }
 function contactedOn(c){ return LOG[keyOf(c.name)]||""; }
 function lastTouch(c){ var k=keyOf(c.name), l=LOG[k]; if(l&&(!c.last||l>c.last)) return l; return c.last; }
-function nextReach(c){ var k=keyOf(c.name), cad=CAD[k], lt=lastTouch(c); if(!cad||!lt) return null; var d=(cad*7-LEAD)-daysSince(lt); return d<=0?0:d; }
+function cadWk(k){ return CAD[k]||2; } // standard rebooking cycle = 2 weeks unless set
+function nextReach(c){ var k=keyOf(c.name), lt=lastTouch(c); if(!lt) return null; var d=(cadWk(k)*7-LEAD)-daysSince(lt); return d<=0?0:d; }
 function statusOf(c){ if(!c.last) return "new"; var dl=daysSince(c.last); if(dl<45)return"active"; if(dl<90)return"cooling"; if(dl<270)return"dormant"; return"lost"; }
 function statusColor(st){return st==="active"?"#7ac9a0":st==="cooling"?"#84b8ca":st==="dormant"?"#e9a95c":st==="lost"?"#e07a7a":"#6d7199";}
 function whenLabel(c){ if(!c.last) return "one-timer · "+c.city; var dl=daysSince(c.last); if(dl<31)return dl+"d ago"; if(dl<365)return Math.round(dl/30)+"mo ago"; return (dl/365).toFixed(1)+"y ago"; }
 function stratOf(st){ if(st==="active")return"Seen recently. Rebook nudge near their cadence."; if(st==="cooling")return"Starting to drift. Light check-in now, while you're fresh in mind."; if(st==="dormant")return"Win-back — a personal note + a reason to come in."; if(st==="lost")return"Reactivate — “I'm back in Denver, would love to get you on the table.”"; return"Came once / referred lead — one warm text can make them a regular."; }
-function isDue(c){ var k=keyOf(c.name), cad=CAD[k], lt=lastTouch(c);
-  if(cad){ if(!lt) return true; return daysSince(lt) >= (cad*7 - LEAD); }
-  if(LOG[k]) return false;
-  if(!c.last) return true;
-  return statusOf(c)!=="active";
-}
+function isDue(c){ var k=keyOf(c.name), lt=lastTouch(c); if(!lt) return true; return daysSince(lt) >= (cadWk(k)*7 - LEAD); }
 function reachList(){ var cs=clients().filter(isDue); var rank={cooling:0,active:1,new:2,dormant:3,lost:4};
   cs.sort((a,b)=>{ var ra=rank[statusOf(a)],rb=rank[statusOf(b)]; if(ra!==rb)return ra-rb; var da=daysSince(lastTouch(a)),db=daysSince(lastTouch(b)); if(da==null)return (b.count)-(a.count); if(db==null)return 1; return da-db; });
   return cs; }
-function cadLabel(n){ var cad=CAD[keyOf(n)]; return cad?("every "+cad+" wk"):"set cadence"; }
+function cadLabel(n){ var cad=CAD[keyOf(n)]; return cad?("every "+cad+" wk"):"every 2 wk · default"; }
 function hashN(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h;}
 
 /* ---- constellation map ---- */
@@ -240,18 +236,25 @@ function renderMap(){
   var wrap=document.getElementById("mapWrap"); if(!wrap)return;
   var cs=clients(), byKey={}; cs.forEach(c=>byKey[keyOf(c.name)]=c);
   var kids={}; cs.forEach(c=>{ if(c.ref&&byKey[c.ref]) (kids[c.ref]=kids[c.ref]||[]).push(c); });
-  var W=440,H=486,cx=W/2,cy=H/2+2;
+  var W=440,H=512,cx=W/2,cy=H/2+2;
   var direct=cs.filter(c=>!(c.ref&&byKey[c.ref]));
   var ring=[[],[],[]]; direct.forEach(c=>ring[tierOf(c)].push(c));
-  ring.forEach((arr,t)=>{ arr.sort((a,b)=>keyOf(a.name)<keyOf(b.name)?-1:1); layBand(arr,BAND[t][0],BAND[t][1],cx,cy); });
+  ring.forEach(a=>a.sort((x,y)=>keyOf(x.name)<keyOf(y.name)?-1:1));
+  // Mercury: tight honeycomb shells hugging the center (cells close, interlocking)
+  var merc=ring[0], mi=0, shell=1, SR0=42, SSTEP=19, mercOut=SR0;
+  while(mi<merc.length){ var cap=6*shell, r=SR0+(shell-1)*SSTEP, ph=-Math.PI/2+(shell%2)*(Math.PI/cap);
+    for(var i=0;i<cap && mi<merc.length;i++){ var c=merc[mi++]; c._ang=ph+(i/cap)*2*Math.PI; c._r=r; c._x=cx+r*Math.cos(c._ang); c._y=cy+r*Math.sin(c._ang); } mercOut=r; shell++; }
+  // Middle + Pluto: clean, symmetric, well-separated single rings
+  var RMID=182, RPLU=236;
+  [[ring[1],RMID],[ring[2],RPLU]].forEach(pair=>{ var arr=pair[0],R=pair[1],m=arr.length||1; arr.forEach((c,i)=>{ c._ang=-Math.PI/2+(i/m)*2*Math.PI; c._r=R; c._x=cx+R*Math.cos(c._ang); c._y=cy+R*Math.sin(c._ang); }); });
+  var BANDC=[Math.max(64,mercOut-12),RMID,RPLU];
   // referred clients: their own band, parked near the referrer's angle so the chain runs on one ray
   function placeKids(p,depth){ var ks=kids[keyOf(p.name)]||[]; ks.forEach((c,j)=>{ var off=(ks.length>1?(j-(ks.length-1)/2)*0.17:0)+depth*0.05; c._ang=p._ang+off; c._r=BANDC[tierOf(c)]; c._x=cx+c._r*Math.cos(c._ang); c._y=cy+c._r*Math.sin(c._ang); placeKids(c,depth+1); }); }
   direct.forEach(c=>placeKids(c,1));
   var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block">';
-  for(var i=0;i<48;i++){ s+='<circle cx="'+(hashN("d"+i)%W)+'" cy="'+(hashN("e"+i)%H)+'" r="'+(0.4+(hashN("r"+i)%8)/12)+'" fill="#fff" opacity="0.06"/>'; }
-  var names=["MERCURY · new","MIDDLE · regulars","PLUTO · veterans"];
-  for(var t=0;t<3;t++){ s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+BAND[t][1]+'" fill="none" stroke="#a487da" stroke-opacity="'+(0.09-t*0.012)+'" stroke-width="1"/>';
-    s+='<text x="'+cx+'" y="'+(cy-BAND[t][1]+12)+'" text-anchor="middle" fill="#6d7199" font-size="7" font-weight="700" letter-spacing=".6" opacity=".75">'+names[t]+'</text>'; }
+  for(var i=0;i<52;i++){ s+='<circle cx="'+(hashN("d"+i)%W)+'" cy="'+(hashN("e"+i)%H)+'" r="'+(0.4+(hashN("r"+i)%8)/12)+'" fill="#fff" opacity="0.06"/>'; }
+  var guides=[[mercOut+13,"MERCURY · new"],[RMID,"MIDDLE · regulars"],[RPLU,"PLUTO · veterans"]];
+  guides.forEach((g,t)=>{ s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+g[0]+'" fill="none" stroke="#a487da" stroke-opacity="'+(0.1-t*0.012)+'" stroke-width="1"/>'; s+='<text x="'+cx+'" y="'+(cy-g[0]+12)+'" text-anchor="middle" fill="#6d7199" font-size="7" font-weight="700" letter-spacing=".6" opacity=".75">'+g[1]+'</text>'; });
   // referral edges
   cs.forEach(c=>{ if(c.ref&&byKey[c.ref]){ var p=byKey[c.ref]; s+='<line x1="'+p._x+'" y1="'+p._y+'" x2="'+c._x+'" y2="'+c._y+'" stroke="#a487da" stroke-opacity=".6" stroke-width="1.3"/>'; } });
   // nodes
@@ -282,7 +285,7 @@ function nodeDetailHTML(c){ var k=keyOf(c.name), st=statusOf(c), refby=c.ref?((g
     (refby?'<p>🔗 Referred by <b>'+refby+'</b></p>':'')+
     (ks.length?'<p>↳ Referred in: <b>'+ks.join(", ")+'</b></p>':'')+
     '<p style="color:var(--ink-dim);margin-top:7px">'+stratOf(st)+'</p>'+
-    (CAD[k]?'<div style="font-size:11.5px;color:var(--acc);margin-top:8px">🗓 '+(isDue(c)?"Reach out now":"Reach out in "+nr+"d")+' — books the '+CAD[k]+'-wk mark</div>':'')+
+    '<div style="font-size:11.5px;color:var(--acc);margin-top:8px">🗓 '+(isDue(c)?"Reach out now":"Reach out in "+nr+"d")+' — books the '+cadWk(k)+'-wk mark'+(CAD[k]?'':' (default)')+'</div>'+
     '<div class="cadrow"><span class="lb">Cadence</span><div class="step"><button onclick="bumpCad(\''+k+'\',-1)">−</button><span class="val'+(CAD[k]?"":" unset")+'">'+cadLabel(c.name)+'</span><button onclick="bumpCad(\''+k+'\',1)">+</button></div></div>'+
     '<button class="reachbtn'+(con?" undo":"")+'" onclick="markDone(\''+k+'\')">'+(con?"↩ undo contact (contacted "+(daysSince(con)===0?"today":daysSince(con)+"d ago")+")":"✓ Done — contacted today")+'</button>'+
     '<button class="reachbtn" style="border-color:var(--purple);color:var(--purple-lt);background:rgba(138,111,212,.08)" onclick="showRefForm(\''+k+'\')">＋ Add a referral from '+c.name.split(" ")[0]+'</button>'+
