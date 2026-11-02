@@ -59,9 +59,12 @@ html{zoom:1.5;overflow-x:hidden}
   .ghub .mono{font-family:'Fraunces',Georgia,serif;font-size:23px;font-weight:600;line-height:.9;letter-spacing:.5px;color:var(--purple-lt)}
   .ghub .mono sup{font-size:.5em;letter-spacing:0;margin-left:1px}
   .ghub small{font-size:7px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-top:2px}
-  .gring .cnode{position:absolute;transform:translate(-50%,-50%);width:74px;gap:6px}
+  .gring .cnode{position:absolute;transform:translate(-50%,-50%);width:66px;gap:4px}
   .gring .cnode:active{transform:translate(-50%,-50%) scale(.92)}
-  .gring .circ{width:54px;height:54px;font-size:23px}
+  .gring .circ{width:46px;height:46px;font-size:20px}
+  .gring .cname{font-size:9.5px;max-width:70px}
+  .gring .csub{font-size:8.5px}
+  .gring .circ .pct{font-size:8px;padding:1px 5px;bottom:-4px;right:-5px}
 
   .stratgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:4px}
   .scard{display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;cursor:pointer;
@@ -165,7 +168,7 @@ html{zoom:1.5;overflow-x:hidden}
     .wrap{padding:28px 32px 90px}
     h1{font-size:32px}
     .circ{width:86px;height:86px;font-size:36px}
-    .gring{max-width:440px}.gring .circ{width:66px;height:66px;font-size:29px}.gring .cnode{width:92px}.ghub{width:104px;height:104px;font-size:38px}
+    .gring{max-width:440px}.gring .circ{width:58px;height:58px;font-size:25px}.gring .cnode{width:84px}.gring .cname{font-size:11.5px;max-width:84px}.gring .csub{font-size:10px}.ghub{width:104px;height:104px;font-size:38px}
     .scard .circ{width:92px;height:92px;font-size:40px}
     .col-ref{flex:0 0 40%}
     .rcirc{width:44px;height:44px;font-size:21px}
@@ -190,17 +193,18 @@ html{zoom:1.5;overflow-x:hidden}
   <div class="screen active" id="scr-shelf">
     <h1>Megalomania Management</h1>
     <div class="sub">How Alexander became Great.</div>
-    <div class="seclbl">The curriculum · 8 games <span class="n">tap a circle</span></div>
+    <div class="seclbl">The curriculum · 9 games <span class="n">tap a circle</span></div>
     <div class="gring">
       <div class="ghub"><span class="mono">MEC<sup>III</sup></span><small>Matthew</small></div>
       <div class="cnode" style="left:50%;top:12%" onclick="go('scr-game')"><div class="circ dev">🌌<span class="pct">55%</span></div><div class="cname">Stellaris</div><div class="csub">2 strategies</div></div>
-      <div class="cnode" style="left:77%;top:23%" onclick="location.href='loki.html'"><div class="circ strong">🏛️<span class="pct">70%</span></div><div class="cname">AoM: Retold</div><div class="csub">Loki build tree</div></div>
-      <div class="cnode" style="left:88%;top:50%"><div class="circ dev">☀️<span class="pct">45%</span></div><div class="cname">Sins II</div><div class="csub">TEC</div></div>
-      <div class="cnode" style="left:77%;top:77%" onclick="location.href='tyranids.html'"><div class="circ learn">🦑<span class="pct">30%</span></div><div class="cname">BFG: Armada 2</div><div class="csub">Tyranid fleet</div></div>
-      <div class="cnode" style="left:50%;top:88%"><div class="circ dev">⚔️<span class="pct">50%</span></div><div class="cname">TWW IV</div><div class="csub">Dwarfs</div></div>
-      <div class="cnode" style="left:23%;top:77%"><div class="circ learn">💀<span class="pct">25%</span></div><div class="cname">DoW 40k V</div><div class="csub">Marines</div></div>
-      <div class="cnode" style="left:12%;top:50%" onclick="location.href='kingdoms.html'"><div class="circ learn">🏰<span class="pct">10%</span></div><div class="cname">Kingdoms Reborn</div><div class="csub">city / economy</div></div>
-      <div class="cnode" style="left:23%;top:23%" onclick="location.href='driftland.html'"><div class="circ learn">🧙<span class="pct">10%</span></div><div class="cname">Driftland</div><div class="csub">mage islands</div></div>
+      <div class="cnode" style="left:74%;top:21%" onclick="location.href='loki.html'"><div class="circ strong">🏛️<span class="pct">70%</span></div><div class="cname">AoM: Retold</div><div class="csub">Loki build tree</div></div>
+      <div class="cnode" style="left:87%;top:43%"><div class="circ dev">☀️<span class="pct">45%</span></div><div class="cname">Sins II</div><div class="csub">TEC</div></div>
+      <div class="cnode" style="left:83%;top:69%" onclick="location.href='tyranids.html'"><div class="circ learn">🦑<span class="pct">30%</span></div><div class="cname">BFG: Armada 2</div><div class="csub">Tyranid fleet</div></div>
+      <div class="cnode" style="left:63%;top:86%"><div class="circ dev">⚔️<span class="pct">50%</span></div><div class="cname">TWW IV</div><div class="csub">Dwarfs</div></div>
+      <div class="cnode" style="left:37%;top:86%"><div class="circ learn">💀<span class="pct">25%</span></div><div class="cname">DoW 40k V</div><div class="csub">Marines</div></div>
+      <div class="cnode" style="left:17%;top:69%" onclick="location.href='kingdoms.html'"><div class="circ learn">🏰<span class="pct">10%</span></div><div class="cname">Kingdoms Reborn</div><div class="csub">city / economy</div></div>
+      <div class="cnode" style="left:13%;top:43%" onclick="location.href='simcity4.html'"><div class="circ teal">🏙️</div><div class="cname">SimCity 4</div><div class="csub">field manual</div></div>
+      <div class="cnode" style="left:26%;top:21%" onclick="location.href='driftland.html'"><div class="circ learn">🧙<span class="pct">10%</span></div><div class="cname">Driftland</div><div class="csub">mage islands</div></div>
     </div>
   </div>
 

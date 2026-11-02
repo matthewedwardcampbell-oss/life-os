@@ -277,7 +277,8 @@ html{zoom:1.5;overflow-x:hidden}
   .todayband .th span{font-family:'Inter';font-size:12px;color:var(--ink-dim);font-weight:400}
   .thadd{margin-left:auto;align-self:center}
   .horo{margin:11px 0 2px;background:linear-gradient(180deg,rgba(138,111,212,.10),rgba(132,184,202,.05));border:1px solid var(--sky-3);border-radius:12px;padding:11px 13px}
-  .horogrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:11px 16px 2px;align-items:stretch}
+  .horogrid{display:grid;grid-template-columns:1fr;gap:9px;margin:11px 16px 2px;align-items:stretch}
+  .skynow .snrow>div{min-width:0}
   .horobox{background:linear-gradient(180deg,rgba(138,111,212,.10),rgba(132,184,202,.05));border:1px solid var(--sky-3);border-radius:13px;padding:11px 13px}
   .horobox:nth-child(2){background:linear-gradient(180deg,rgba(132,184,202,.08),rgba(138,111,212,.04))}
   .horo-h{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--purple-lt);font-weight:700;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
@@ -378,6 +379,29 @@ html{zoom:1.5;overflow-x:hidden}
   .bz-grid .dm{border-color:var(--amber);background:rgba(233,169,92,.1)}
   .bz-road{font-size:12px;color:var(--ink-dim);line-height:1.5;margin-top:9px}
   .bz-road b{color:var(--ink)}
+  /* merged readings (today / tomorrow / week / fortnight) */
+  .rdcard{margin:2px 16px 12px;background:var(--sky-0);border:1px solid var(--sky-2);border-radius:16px;padding:12px 13px}
+  .rdtabs{display:flex;gap:6px;margin-bottom:11px}
+  .rdtab{flex:1;background:var(--sky-1);border:1px solid var(--sky-3);color:var(--ink-dim);font-family:inherit;font-size:11.5px;font-weight:600;padding:7px 4px;border-radius:99px;cursor:pointer}
+  .rdtab.on{color:var(--amber);border-color:var(--amber);background:rgba(233,169,92,.1)}
+  .rdlabel{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-bottom:8px}
+  .rdweave{font-family:'Fraunces',serif;font-size:14.5px;line-height:1.5;color:var(--ink);margin-bottom:10px}
+  .rdsame,.rddiff{font-size:12px;line-height:1.55;color:var(--ink-dim);border-radius:10px;padding:8px 10px;margin-bottom:7px}
+  .rdsame{background:rgba(122,201,160,.08);border:1px solid rgba(122,201,160,.35)}
+  .rddiff{background:rgba(233,169,92,.07);border:1px solid rgba(233,169,92,.32)}
+  .rdsame span,.rddiff span{display:block;font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;margin-bottom:3px}
+  .rdsame span{color:var(--good)} .rddiff span{color:var(--amber)}
+  .rdsame b,.rddiff b{color:var(--ink);font-weight:600}
+  .rdsame i,.rddiff i{color:var(--ink-faint);font-style:normal;font-size:11px}
+  .rdmods{display:flex;flex-direction:column;gap:8px}
+  .rdmod{display:flex;gap:10px;align-items:flex-start;background:var(--sky-1);border:1px solid var(--sky-2);border-radius:11px;padding:9px 11px}
+  .rdg{flex:0 0 26px;width:26px;height:26px;border-radius:99px;border:1px solid var(--sky-3);font-size:13px;color:var(--purple-lt);text-align:center;line-height:25px}
+  .rdb{flex:1;min-width:0}
+  .rdb b{font-size:12.5px;color:var(--ink);font-weight:600}
+  .rdd{font-size:12px;color:var(--ink-dim);line-height:1.5;margin-top:2px}
+  .rdtags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+  .rdtag{font-size:10px;color:var(--ink-faint);background:var(--sky-0);border:1px solid var(--sky-3);border-radius:99px;padding:2px 8px}
+  .rdtag.on{color:var(--good);border-color:rgba(122,201,160,.5);background:rgba(122,201,160,.08)}
   /* division editor */
   .subchips,.chipwrap{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px}
   .subchip{font-size:11.5px;color:var(--selenite);background:rgba(132,184,202,.12);border:1px solid var(--selenite);border-radius:8px;padding:4px 10px}
@@ -553,7 +577,7 @@ html{zoom:1.5;overflow-x:hidden}
   .skyev .sed{font-size:11px;color:var(--ink-dim);margin-top:1px}
   .d_cal.work{color:var(--amber);background:rgba(233,169,92,.14)}
   .askbar{display:flex;gap:7px;margin-top:9px}
-  .askbar input{flex:1;background:var(--sky-0);border:1px solid var(--sky-3);border-radius:99px;color:var(--ink);font-family:inherit;font-size:13px;padding:9px 14px;outline:none}
+  .askbar input{flex:1;min-width:0;background:var(--sky-0);border:1px solid var(--sky-3);border-radius:99px;color:var(--ink);font-family:inherit;font-size:13px;padding:9px 14px;outline:none}
   .askbar input:focus{border-color:var(--purple)}
   .askbar button{flex:0 0 auto;background:var(--purple);border:none;color:#fff;font-size:14px;width:38px;border-radius:99px;cursor:pointer}
   .toast{position:fixed;left:50%;bottom:78px;transform:translateX(-50%) translateY(14px);background:var(--sky-2);border:1px solid var(--purple-lt);color:var(--ink);font-size:12.5px;padding:9px 15px;border-radius:99px;opacity:0;pointer-events:none;transition:.25s;z-index:60}
@@ -585,17 +609,6 @@ html{zoom:1.5;overflow-x:hidden}
       <div class="cyc"><b id="fnDay">—</b>of the fortnight</div>
     </div>
     <div class="sync" id="syncbar"><span class="pip"></span><span id="synctxt">—</span></div>
-    <nav id="nav">
-      <button data-v="hub" class="on">⌂ Home</button>
-      <button data-v="fn">Fortnight</button>
-      <button data-v="map">Map</button>
-      <button data-v="trust">Circle</button>
-      <button data-v="ins">Projects</button>
-      <button data-v="sky">Sky</button>
-      <button data-v="lists">MISC</button>
-      <button data-v="learn">Learn</button>
-      <button data-v="lab">Lab</button>
-    </nav>
     <div class="askbar">
       <input id="askin" placeholder="Ask the Ansible…" autocomplete="off">
       <button id="asksend" aria-label="Send">➤</button>
@@ -605,25 +618,31 @@ html{zoom:1.5;overflow-x:hidden}
   <!-- HUB · radial launcher / landing -->
   <style>
   #hub{padding:12px 15px 34px;min-height:66vh}
-  #hub .hub-top{text-align:center;margin:6px 0 2px}
-  #hub .hub-top h2{font-family:'Fraunces',serif;font-size:24px;font-weight:600;margin:0}
-  #hub .hub-top .sub{color:var(--ink-dim);font-size:12px;font-style:italic;margin-top:2px}
-  #hub .hub-ring{position:relative;width:100%;max-width:300px;margin:16px auto;aspect-ratio:1/1}
+  #hub .hub-ring{position:relative;width:100%;max-width:min(350px,84vmin);margin:8px auto 20px;aspect-ratio:100/158;container-type:size}
   #hub .hub-geo{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
-  #hub .hub-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:108px;height:108px;border-radius:50%;background:var(--sky-2);border:3px solid var(--c,var(--purple));display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;box-shadow:0 0 0 7px rgba(138,111,212,.08);z-index:3;padding:4px}
-  #hub .hub-center:active{transform:translate(-50%,-50%) scale(.94)}
-  #hub .hub-center .ic{font-size:30px;line-height:1}
-  #hub .hub-center .nm{font-family:'Fraunces',serif;font-size:15.5px;font-weight:600;color:var(--ink);margin-top:3px;line-height:1}
-  #hub .hub-center .sub{font-size:7.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-top:3px;line-height:1.1}
-  #hub .hub-tile{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;width:62px;text-align:center;z-index:2}
-  #hub .hub-tile:active{transform:translate(-50%,-50%) scale(.9)}
-  #hub .hub-tile .tc{width:46px;height:46px;border-radius:50%;background:var(--sky-1);border:2.5px solid var(--sky-3);display:flex;align-items:center;justify-content:center;font-size:20px}
-  #hub .hub-tile .tn{font-size:9px;font-weight:600;line-height:1.05;color:var(--ink-dim)}
+  /* the center: no longer a circle but a portrait screen — a rounded "TV" that tunes itself to whatever is selected */
+  #hub .hub-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:40cqw;height:62cqw;border-radius:50%;background:var(--sky-2);border:3px solid var(--purple);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;box-shadow:0 0 0 6px rgba(138,111,212,.08);z-index:3;padding:5cqw 4.5cqw;transition:border-color .2s}
+  #hub .hub-center:active{transform:translate(-50%,-50%) scale(.96)}
+  #hub .hub-center .hc-ring{position:absolute;inset:1.5%;width:97%;height:97%;pointer-events:none}
+  #hub .hub-center .hc-day{font-family:'Fraunces',serif;font-size:5.8cqw;font-weight:600;color:var(--ink);line-height:1}
+  #hub .hub-center .hc-of{font-size:1.9cqw;letter-spacing:.6px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-top:1.2cqw}
+  #hub .hub-center .hc-range{font-size:2.2cqw;color:var(--ink-dim);margin-top:1cqw}
+  #hub .hub-center .hc-focus{font-size:2.4cqw;font-style:italic;color:var(--purple-lt);margin-top:1.5cqw;line-height:1.25;max-width:29cqw;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  #hub .hub-center .hc-today{font-size:2.4cqw;color:var(--selenite);margin-top:1.5cqw;line-height:1.25;max-width:31cqw;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  #hub .hub-center .hc-sys-ic{font-size:11cqw;line-height:1.15}
+  #hub .hub-center .hc-sys-name{font-family:'Fraunces',serif;font-size:4.4cqw;font-weight:600;color:var(--ink);margin-top:.6cqw}
+  #hub .hub-center .hc-sys-blurb{font-size:2.4cqw;color:var(--ink-dim);line-height:1.35;max-width:30cqw;margin-top:1.4cqw}
+  #hub .hub-center .hc-open{font-size:2.2cqw;letter-spacing:.7px;text-transform:uppercase;font-weight:700;color:var(--purple-lt);margin-top:2.2cqw}
+  #hub .hub-tile{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;cursor:pointer;width:25cqw;height:25cqw;z-index:2}
+  #hub .hub-tile:active .tc{transform:scale(.94)}
+  #hub .hub-tile .tc{width:25cqw;height:25cqw;border-radius:50%;background:var(--sky-1);border:2.5px solid var(--sky-3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8cqw;font-size:5.4cqw;transition:transform .16s,box-shadow .16s,background .16s}
+  #hub .hub-tile.sel .tc{transform:scale(1.07);background:var(--sky-2);box-shadow:0 0 16px rgba(138,111,212,.42)}
+  #hub .hub-tile.sel .tn{color:var(--ink)}
+  #hub .hub-tile .tn{font-size:2.85cqw;font-weight:600;line-height:1.12;color:var(--ink-dim);max-width:19cqw;text-align:center}
   #hub .hub-hint{text-align:center;color:var(--ink-faint);font-size:11px;line-height:1.55;max-width:300px;margin:6px auto 0}
   #hub .hub-tree{display:none;width:100%;max-width:360px;margin:8px auto 0}
   </style>
   <div class="view on" id="hub">
-    <div class="hub-top"><h2>Life OS</h2><div class="sub">your worlds, in orbit</div></div>
     <div class="hub-ring" id="hubRing"></div>
     <div class="hub-tree" id="hubTree"></div>
     <div class="hub-hint" id="hubHint">Left-click a world to open it · right-click to go back · right-click the center to branch the whole map.</div>
@@ -1370,7 +1389,7 @@ if(!S.lists) S.lists={trips:[],goals:[],todo:[],buy:[]};  // migrate older saves
 
 /* ---------- date helpers ---------- */
 const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-function ymd(d){return d.toISOString().slice(0,10);}
+function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function fromYmd(s){const [y,m,dd]=s.split('-').map(Number);return new Date(y,m-1,dd);}
 function lastTuesday(d){const x=new Date(d);const diff=(x.getDay()-2+7)%7;x.setDate(x.getDate()-diff);x.setHours(0,0,0,0);return x;}
 function ensureFortnight(){
@@ -1550,6 +1569,169 @@ function dailyHoroscope(date){
   s.push(cap(ph.note)+'.');
   const rn=retros.map(r=>RETRO_NOTE[r.p]).filter(Boolean); if(rn.length) s.push(rn[0]);
   return s.join(' ');
+}
+/* ---------- the merged read: all four modalities, one horoscope, agreements + differences marked ---------- */
+// sexagenary day pillar — offset verified against the recorded natal chart (May 18 1987 = 丁卯 Ding Mao day)
+const STEMS=['Jia','Yi','Bing','Ding','Wu','Ji','Geng','Xin','Ren','Gui'];
+const STEM_HAN=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const STEM_EL=['Wood','Wood','Fire','Fire','Earth','Earth','Metal','Metal','Water','Water'];
+const BRANCH=['Rat','Ox','Tiger','Rabbit','Dragon','Snake','Horse','Goat','Monkey','Rooster','Dog','Pig'];
+const BRANCH_HAN=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+function noonOf(d){ return new Date(d.getFullYear(),d.getMonth(),d.getDate(),12); }
+function dayPillar(d){ const JDN=Math.floor(noonOf(d).getTime()/86400000+2440587.5); const i=((JDN+49)%60+60)%60; return {stem:i%10,branch:i%12}; }
+// theme tags — the shared vocabulary the merge reads agreements/differences from
+const MOON_TAGS={Aries:['action','play'],Taurus:['care','build'],Gemini:['social','learn'],Cancer:['care','rest'],Leo:['express','play'],Virgo:['structure','focus'],Libra:['social','flow'],Scorpio:['depth','focus'],Sagittarius:['learn','action'],Capricorn:['build','structure'],Aquarius:['learn','flow'],Pisces:['rest','flow']};
+const PHASE_TAGS={'new':['focus'],'waxing crescent':['build'],'first-quarter':['action'],'waxing gibbous':['focus'],'full':['release','express'],'waning gibbous':['express'],'last-quarter':['release'],'waning crescent':['rest']};
+const BAZI_REL={
+ Wood:{tags:['learn','care'],what:'a Resource day — Wood feeds your Ding fire: take in — learn, be taught, be nourished. Input over output.'},
+ Fire:{tags:['express','action'],what:'a Peer day — the same flame as your Day Master: energy is yours to spend; just don’t burn the room down.'},
+ Earth:{tags:['build','express'],what:'an Output day — your Fire produces Earth: make the thing, ship it, say it out loud.'},
+ Metal:{tags:['money','focus'],what:'a Wealth day — Fire controls Metal, and Metal is your chart’s money element: price it, ask for it, collect.'},
+ Water:{tags:['structure','focus'],what:'an Officer day — Water, the element your chart lacks: outside structure carries you. Lists, timers, appointments.'}};
+function westernRead(date){
+  const noon=noonOf(date), ms=moonSign(noon), ph=moonPhase(noon), rel=moonRel(ms.name), retros=retrosOn(ymd(date));
+  const tags=(MOON_TAGS[ms.name]||[]).concat(PHASE_TAGS[ph.name]||[]);
+  let text='The '+ph.name+' Moon in '+ms.name+' — '+MOON_VIBE[ms.name]+'. '+cap(REL_SHORT[rel])+'. '+cap(ph.note)+'.';
+  const rn=retros.map(r=>RETRO_NOTE[r.p]).filter(Boolean); if(rn.length) text+=' '+rn[0];
+  return {name:'Western sky',glyph:'☽',tags:tags,text:text};
+}
+function baziRead(date){
+  const p=dayPillar(date), el=STEM_EL[p.stem], r=BAZI_REL[el];
+  return {name:'BaZi · Four Pillars',glyph:'丁',tags:r.tags.slice(),
+    text:'Day pillar '+STEM_HAN[p.stem]+BRANCH_HAN[p.branch]+' '+STEMS[p.stem]+' '+BRANCH[p.branch]+' — '+el+' day, '+r.what};
+}
+function chineseRead(date){
+  const p=dayPillar(date), b=p.branch; let tags,text;
+  if(b===3){ tags=['care','build']; text='A Rabbit day like your own Yin Fire Rabbit — home ground; move at your natural pace and things land.'; }
+  else if(b===7||b===11){ tags=['social','flow']; text='The day’s '+BRANCH[b]+' sits in your Rabbit’s harmony trine — people and plans cooperate; ask for the favor, book the thing.'; }
+  else if(b===10){ tags=['social','care']; text='The day’s Dog is your Rabbit’s secret friend — quiet support is around; let yourself be helped.'; }
+  else if(b===9){ tags=['focus','release']; text='The day’s Rooster clashes with your Rabbit — expect rub and misread signals; keep it loose and don’t force the big thing.'; }
+  else if(b===4||b===0){ tags=['focus']; text='The day’s '+BRANCH[b]+' grazes your Rabbit — minor friction only; hold plans lightly.'; }
+  else { tags=['flow']; text='The day’s '+BRANCH[b]+' is neutral to your Rabbit — no push, no pull; routine runs fine.'; }
+  return {name:'Chinese zodiac',glyph:'🐇',tags:tags,text:text};
+}
+const NUM_TXT={1:'a 1 day — start things; the first brick matters more than the blueprint.',2:'a 2 day — cooperate and pair up; listen twice as much as you talk.',3:'a 3 day — your own Life Path number: express, create, be seen. Green light for the playful route.',4:'a 4 day — build the boring structure that buys you freedom later.',5:'a 5 day — change and motion; expect detours, enjoy them.',6:'a 6 day — tend home, body and the people at your table.',7:'a 7 day — pull back and reflect; solitude charges you more than company.',8:'an 8 day — money and power moves; name the rate, sign the thing.',9:'a 9 day — finish and release; clear the decks for the next cycle.',11:'an 11 day — master number; intuition runs loud — write the download down.',22:'a 22 day — master-builder energy; big-structure moves stick.'};
+const NUM_TAGS={1:['action'],2:['social'],3:['express','play'],4:['structure','build'],5:['action','flow'],6:['care'],7:['rest','learn'],8:['money','build'],9:['release'],11:['learn','focus'],22:['build','structure']};
+function dayNumber(d){ let n=[...(''+d.getFullYear()+(d.getMonth()+1)+d.getDate())].reduce((a,c)=>a+(+c),0); while(n>9&&n!==11&&n!==22) n=[...(''+n)].reduce((a,c)=>a+(+c),0); return n; }
+function numRead(date){
+  const n=dayNumber(date);
+  return {name:'Numerology',glyph:'🔢',tags:(NUM_TAGS[n]||['flow']).slice(),text:'The date reduces to '+n+' — '+(NUM_TXT[n]||'a quiet day numerically.')};
+}
+const TAG_WORD={action:'action',rest:'rest',build:'building',release:'letting go',social:'people',structure:'structure',flow:'flow',money:'money',learn:'learning',express:'expression',care:'body & home',focus:'focus',depth:'depth',play:'play'};
+const OPP=[['build','release'],['action','rest'],['structure','flow'],['social','depth']];
+function tallyMods(mods){
+  const tally={}, byTag={};
+  mods.forEach(m=>{ const seen={}; m.tags.forEach(t=>{ if(seen[t])return; seen[t]=1; tally[t]=(tally[t]||0)+1; (byTag[t]=byTag[t]||[]).push(m.name); }); });
+  return {tally:tally,byTag:byTag};
+}
+function mergedRead(date){
+  const mods=[westernRead(date),baziRead(date),chineseRead(date),numRead(date)];
+  const t=tallyMods(mods), tally=t.tally, byTag=t.byTag;
+  const same=Object.keys(tally).filter(k=>tally[k]>=2).sort((a,b)=>tally[b]-tally[a]);
+  const diffs=OPP.filter(([a,b])=>tally[a]&&tally[b]).map(([a,b])=>({a:a,b:b,am:byTag[a],bm:byTag[b]}));
+  let weave;
+  if(same.length){
+    const top=same[0], n=tally[top];
+    weave=(n>=4?'Every lane points at '+TAG_WORD[top] : n===3?'Three of four lanes point at '+TAG_WORD[top] : 'The '+byTag[top].join(' and ')+' lanes agree on '+TAG_WORD[top]);
+    if(same[1]) weave+=', with '+TAG_WORD[same[1]]+' close behind';
+    weave+='.';
+  } else weave='No two lanes quite agree — a mixed sky; match the lane to whatever the day already demands.';
+  if(diffs.length){ const d=diffs[0]; weave+=' The pull to manage: '+d.am.join(' + ')+' lean toward '+TAG_WORD[d.a]+' while '+d.bm.join(' + ')+' pull toward '+TAG_WORD[d.b]+' — sequence it, don’t blend it: one first, then the other.'; }
+  return {mods:mods,tally:tally,byTag:byTag,same:same,diffs:diffs,weave:weave};
+}
+function mergedRange(start,days){
+  const dates=[]; for(let i=0;i<days;i++) dates.push(new Date(start.getTime()+i*86400000));
+  const shortD=d=>DOW[d.getDay()]+' '+d.getDate();
+  const unit=days>7?'fortnight':'week';
+  // western: moon arc, quarter turns, sky events inside the window
+  const msFirst=moonSign(noonOf(dates[0])).name, msLast=moonSign(noonOf(dates[dates.length-1])).name;
+  const majors=['new','first-quarter','full','last-quarter'];
+  let prevPh=moonPhase(noonOf(dates[0])).name; const trans=[];
+  for(let i=1;i<dates.length;i++){ const ph=moonPhase(noonOf(dates[i])).name; if(ph!==prevPh){ if(majors.indexOf(ph)>-1) trans.push({d:dates[i],name:ph}); prevPh=ph; } }
+  const evs=upcomingSky(new Date(start.getTime()-86400000),days).filter(e=>!/^Moon enters|^Sun enters/.test(e.label));
+  const illum0=moonPhase(noonOf(dates[0])).illum, illum1=moonPhase(noonOf(dates[dates.length-1])).illum;
+  const arc=trans.some(t=>t.name==='new')?'resetting mid-'+unit:(illum1>=illum0?'waxing':'waning');
+  let wtext='The Moon runs '+msFirst+' → '+msLast+', '+arc+'.';
+  trans.forEach(t=>{ wtext+=' '+cap(t.name)+' Moon '+shortD(t.d)+'.'; });
+  evs.forEach(e=>{ wtext+=' '+e.label+' ('+shortD(e.d)+').'; });
+  const wtags=[]; if(illum1>=illum0)wtags.push('build'); else wtags.push('release','rest');
+  trans.forEach(t=>{ if(t.name==='full')wtags.push('release','express'); if(t.name==='new')wtags.push('focus','build'); });
+  // bazi: element spread across the window
+  const els={}; dates.forEach(d=>{ const el=STEM_EL[dayPillar(d).stem]; (els[el]=els[el]||[]).push(d); });
+  const dom=Object.keys(els).sort((a,b)=>els[b].length-els[a].length)[0];
+  const btags=BAZI_REL[dom].tags.slice();
+  let btext='Mostly '+dom+' days this '+unit+' ('+els[dom].length+' of '+days+').';
+  if(els.Metal){ btext+=' Wealth days (Metal): '+els.Metal.map(shortD).join(', ')+' — put the money asks there.'; btags.push('money'); }
+  if(els.Water){ btext+=' Structure days (Water): '+els.Water.map(shortD).join(', ')+' — your missing element; lean on lists and booked slots those days.'; btags.push('structure'); }
+  // chinese: friendly vs clash days for the Rabbit
+  const harms=dates.filter(d=>[7,10,11].indexOf(dayPillar(d).branch)>-1);
+  const clash=dates.filter(d=>dayPillar(d).branch===9);
+  const ctags=[]; let ctext;
+  if(harms.length){ ctext='Your Rabbit’s friendly days: '+harms.map(shortD).join(', ')+' — best for people, bookings, asks.'; ctags.push('social','flow'); }
+  else ctext='No harmony days for your Rabbit this '+unit+' — keep social expectations modest.';
+  if(clash.length){ ctext+=' Rooster clash days: '+clash.map(shortD).join(', ')+' — keep those loose.'; ctags.push('focus','release'); }
+  // numerology: the run of day numbers
+  const nums=dates.map(d=>({d:d,n:dayNumber(d)}));
+  const ntags=[];
+  let ntext='Day numbers run '+nums.map(o=>o.n).join('·')+'.';
+  const pick=(n,label,tags)=>{ const hits=nums.filter(o=>o.n===n); if(hits.length){ ntext+=' '+label+': '+hits.map(o=>shortD(o.d)).join(', ')+'.'; tags.forEach(t=>ntags.push(t)); } };
+  pick(3,'Your Life-Path 3 days',['express','play']);
+  pick(8,'Money (8) days',['money','build']);
+  pick(9,'Release (9) days',['release']);
+  pick(1,'Fresh-start (1) days',['action','build']);
+  // the merge: themes that repeat across lanes across the window
+  const dayReads=dates.map(mergedRead), tagDays={};
+  dayReads.forEach((dr,i)=>{ Object.keys(dr.tally).forEach(k=>{ if(dr.tally[k]>=2) (tagDays[k]=tagDays[k]||[]).push(dates[i]); }); });
+  const need=Math.max(2,Math.round(days*0.3));
+  const line=Object.keys(tagDays).map(k=>({tag:k,days:tagDays[k]})).filter(o=>o.days.length>=need).sort((a,b)=>b.days.length-a.days.length);
+  let pull=null,best=0;
+  OPP.forEach(([a,b])=>{ const ad=tagDays[a]||[],bd=tagDays[b]||[]; if(ad.length>=2&&bd.length>=2&&ad.length+bd.length>best){ best=ad.length+bd.length; pull={a:a,b:b,ad:ad,bd:bd}; } });
+  let weave;
+  if(line.length) weave='The through-line: '+line.slice(0,3).map(o=>TAG_WORD[o.tag]).join(', ')+' keep coming back across multiple lanes all '+unit+'.';
+  else weave='A scattered '+unit+' — no theme repeats across lanes. Take it day by day; the daily reads carry the detail.';
+  if(pull) weave+=' The pull to manage: '+TAG_WORD[pull.a]+' days ('+pull.ad.map(shortD).join(', ')+') against '+TAG_WORD[pull.b]+' days ('+pull.bd.map(shortD).join(', ')+') — don’t make one kind of day do the other’s job.';
+  return {
+    mods:[
+      {name:'Western sky',glyph:'☽',tags:wtags,text:wtext},
+      {name:'BaZi · Four Pillars',glyph:'丁',tags:btags,text:btext},
+      {name:'Chinese zodiac',glyph:'🐇',tags:ctags,text:ctext},
+      {name:'Numerology',glyph:'🔢',tags:ntags,text:ntext}
+    ],
+    line:line,pull:pull,weave:weave
+  };
+}
+/* ---------- readings UI ---------- */
+function modChips(tags,onList){
+  const seen={},out=[];
+  tags.forEach(t=>{ if(seen[t]||!TAG_WORD[t])return; seen[t]=1; out.push('<span class="rdtag'+(onList.indexOf(t)>-1?' on':'')+'">'+TAG_WORD[t]+'</span>'); });
+  return out.join('');
+}
+function modRow(m,onList){
+  return '<div class="rdmod"><span class="rdg">'+m.glyph+'</span><div class="rdb"><b>'+m.name+'</b><div class="rdd">'+esc(m.text)+'</div><div class="rdtags">'+modChips(m.tags,onList)+'</div></div></div>';
+}
+function dayReadHTML(date){
+  const r=mergedRead(date);
+  const same=r.same.length?'<div class="rdsame"><span>✦ Where they agree</span>'+r.same.slice(0,3).map(t=>'<b>'+TAG_WORD[t]+'</b> <i>'+r.byTag[t].join(' + ')+'</i>').join(' · ')+'</div>':'';
+  const diff=r.diffs.length?'<div class="rddiff"><span>◇ Where they differ</span>'+r.diffs.map(d=>'<b>'+TAG_WORD[d.a]+'</b> <i>'+d.am.join(' + ')+'</i> vs <b>'+TAG_WORD[d.b]+'</b> <i>'+d.bm.join(' + ')+'</i>').join(' · ')+'</div>':'';
+  return '<div class="rdweave">'+esc(r.weave)+'</div>'+same+diff+'<div class="rdmods">'+r.mods.map(m=>modRow(m,r.same)).join('')+'</div>';
+}
+function rangeReadHTML(start,days){
+  const r=mergedRange(start,days);
+  const onList=r.line.map(o=>o.tag), shortD=d=>DOW[d.getDay()]+' '+d.getDate();
+  const same=r.line.length?'<div class="rdsame"><span>✦ Where they agree</span>'+r.line.slice(0,3).map(o=>'<b>'+TAG_WORD[o.tag]+'</b> <i>'+o.days.length+' days</i>').join(' · ')+'</div>':'';
+  const diff=r.pull?'<div class="rddiff"><span>◇ Where they differ</span><b>'+TAG_WORD[r.pull.a]+'</b> <i>'+r.pull.ad.map(shortD).join(', ')+'</i> vs <b>'+TAG_WORD[r.pull.b]+'</b> <i>'+r.pull.bd.map(shortD).join(', ')+'</i></div>':'';
+  return '<div class="rdweave">'+esc(r.weave)+'</div>'+same+diff+'<div class="rdmods">'+r.mods.map(m=>modRow(m,onList)).join('')+'</div>';
+}
+let skyReadTab='today';
+function renderReading(){
+  const p=document.getElementById('rdPanel'); if(!p)return;
+  const now=new Date(); now.setHours(0,0,0,0);
+  let label='',html='';
+  if(skyReadTab==='today'){ label='Today · '+now.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'}); html=dayReadHTML(now); }
+  else if(skyReadTab==='tomorrow'){ const t=new Date(now.getTime()+86400000); label='Tomorrow · '+t.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'}); html=dayReadHTML(t); }
+  else if(skyReadTab==='week'){ label='This week · the next 7 days'; html=rangeReadHTML(now,7); }
+  else { label='This fortnight · the next 14 days'; html=rangeReadHTML(now,14); }
+  p.innerHTML='<div class="rdlabel">'+label+'</div>'+html;
 }
 function parseCSV(txt){
   const rows=[];let row=[],cell='',q=false;
@@ -2109,6 +2291,13 @@ function renderSkyline(start,now,todayKey){
   const dock=px=>cells.forEach((c,i)=>{const r=c.getBoundingClientRect(),cx=r.left+r.width/2,d=px-cx,f=Math.exp(-(d*d)/(2*44*44));c.style.width=(WB+(WMAX-WB)*f).toFixed(1)+'px';c.style.height=(fnBaseH[i]+(HMAX-fnBaseH[i])*f).toFixed(1)+'px';c.style.fontSize=(RF+(13-RF)*f).toFixed(2)+'px';c.style.zIndex=Math.round(f*20);});
   const rst=()=>cells.forEach((c,i)=>{c.style.width=WB+'px';c.style.height=fnBaseH[i]+'px';c.style.fontSize=RF+'px';c.style.zIndex=1;});
   bar.onpointermove=e=>dock(e.clientX); bar.onpointerleave=rst;
+  /* touch: the browser may steal the gesture for scrolling, but touchmove keeps flowing — drive the dock from it */
+  bar.ontouchmove=e=>{ if(e.touches.length) dock(e.touches[0].clientX); };
+  bar.ontouchend=bar.ontouchcancel=()=>rst();
+  const slab=document.querySelector('.skylab');
+  if(slab) slab.textContent=TOUCH
+    ?'skyline · drag a finger across the days to peek, tap to pin one open'
+    :'skyline · hover to peek, tap a day to pin it open';
   // stacked type/state outlines on each day box
   cells.forEach(c=>{ const key=fnCellKeys[+c.dataset.k], dd=fromYmd(key), isToday=key===todayKey, isPast=dd<now&&!isToday;
     let off=0, sh=[];
@@ -2281,12 +2470,13 @@ function renderToday(){
   box.innerHTML=
     '<div class="th">Today <span>· '+dstr+'</span><button class="taskadd thadd" id="thAdd">＋</button></div>'+
     '<div class="horogrid">'+
-      '<div class="horobox"><div class="horo-h">✦ Your day</div><div class="horo-b">'+esc(dailyHoroscope(now))+'</div></div>'+
+      '<div class="horobox"><div class="horo-h">✦ Your day <span class="tsl-tap" id="horoMore">all four lanes →</span></div><div class="horo-b">'+esc(mergedRead(now).weave)+'</div></div>'+
       '<div class="horobox"><div class="horo-h">☾ Sky today <span class="tsl-tap" id="skyMore">full →</span></div><div class="skynow">'+skyRows+'</div></div>'+
     '</div>'+
     '<div class="tsec-l">Schedule <span class="tsl-tap" id="tflowEdit">edit →</span></div><div class="tflow">'+flowH+'</div>'+
     reachSec+dueSec+backSec;
-  document.getElementById('skyMore').onclick=()=>{ document.querySelector('nav button[data-v="sky"]').click(); };
+  document.getElementById('skyMore').onclick=()=>{ navTo('sky'); };
+  const hm=document.getElementById('horoMore'); if(hm)hm.onclick=()=>{ skyReadTab='today'; navTo('sky'); };
   document.getElementById('tflowEdit').onclick=()=>editDay(key,now);
   document.getElementById('thAdd').onclick=()=>editTask(null);
   const ta=document.getElementById('taskAdd'); if(ta)ta.onclick=()=>editTask(null);
@@ -2438,6 +2628,9 @@ function renderSky(){
   const box=document.getElementById('skyBody'); if(!box)return;
   const now=new Date(), active=retrosOn(ymd(now));
   box.innerHTML=
+    '<div class="rdcard"><div class="rdtabs">'+
+      [['today','Today'],['tomorrow','Tomorrow'],['week','Week'],['fortnight','Fortnight']].map(t=>'<button class="rdtab'+(skyReadTab===t[0]?' on':'')+'" data-rt="'+t[0]+'">'+t[1]+'</button>').join('')+
+    '</div><div id="rdPanel"></div></div>'+
     '<div class="chartcard"><div class="cc-h">Your Chart</div><div class="cc-born">'+NATAL.born+'</div>'+
       '<div class="cc-grid">'+
         '<div class="cc-i"><span class="cc-g">'+NATAL.sun.glyph+'</span><div><b>Sun</b> '+NATAL.sun.sign+'<div class="cc-d">the builder</div></div></div>'+
@@ -2457,6 +2650,8 @@ function renderSky(){
     '<div class="tsec-l agz" style="margin:14px 0 4px">Upcoming shifts</div><div class="skylist" id="skyFore"></div>';
   drawWheel(document.getElementById('zwheel'),100,false);
   drawHorizon(document.getElementById('zhoriz'),320,54);
+  box.querySelectorAll('.rdtab').forEach(b=>b.onclick=()=>{ skyReadTab=b.dataset.rt; renderSky(); });
+  renderReading();
   const base=new Date(now.getFullYear(),now.getMonth(),now.getDate()), evs=upcomingSky(now,160);
   document.getElementById('skyFore').innerHTML=evs.map(e=>{ const n=Math.round((e.d-base)/86400000), when=n===0?'today':(n===1?'tomorrow':'in '+n+' days'); return '<div class="skyev"><span class="seg">'+e.g+'</span><div class="seb"><div class="sel">'+esc(e.label)+'</div><div class="sed">'+e.d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+' · '+when+'</div></div></div>'; }).join('');
 }
@@ -3414,7 +3609,7 @@ function doRestore(file){ const r=new FileReader();
   r.readAsText(file); }
 
 // show the Ansible (chat) view — no nav tab; reached via the Ask bar
-function openChatView(){ document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
+function openChatView(){
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id==='chat'));
   document.getElementById('addbtn').style.display='none'; renderChat();
   const t=document.getElementById('chIn'); if(t) setTimeout(()=>t.focus(),60); }
@@ -3567,7 +3762,6 @@ document.getElementById('instabs').addEventListener('click',e=>{ const b=e.targe
 
 /* ---------- nav + add button ---------- */
 function navTo(v){
-  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x.dataset.v===v));
   document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id===v));
   document.getElementById('addbtn').style.display=(v==='fn'||v==='chat'||v==='lab'||v==='learn'||v==='hub')?'none':'flex';
   if(v==='learn')lrnGo('lrn-main');
@@ -3578,14 +3772,8 @@ function navTo(v){
   if(v==='trust')renderTrust();
   if(v==='ins')renderProjects();
   if(v==='sky')renderSky();
-  if(v!=='hub' && HUBTABS.some(t=>t.v===v)) hubActive=v;
   window.scrollTo(0,0);
 }
-document.getElementById('nav').addEventListener('click',e=>{
-  const b=e.target.closest('button');if(!b)return;
-  b.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
-  navTo(b.dataset.v);
-});
 
 /* ---------- Hub: radial launcher + tree map ---------- */
 const HUBTABS=[
@@ -3611,7 +3799,7 @@ const HUBKIDS={
   ins:[{t:'Ventures'}], trust:[{t:'Circle of trust'}], map:[{t:'Constellation'}]
 };
 const HUBURL={}; HUBTABS.forEach(t=>{ if(t.url)HUBURL[t.v]=t.url; });
-let hubActive='fn', treeMode=false;
+let treeMode=false;
 const TOUCH=window.matchMedia&&matchMedia('(pointer:coarse)').matches;
 /* The Flower of Life field — circles on a triangular lattice (spacing = radius, so each
    passes through its neighbours' centres), fading outward to suggest the infinite field. */
@@ -3630,27 +3818,118 @@ function flower(cx,cy,step,maxR,stroke){
   }
   return s+'</g>';
 }
+/* The hub center: the fortnight, alive. 14 dots around the rim = the 14 days,
+   filled up to today; inside, the day, the focus, and what's next today. */
+function hubCenterHTML(){
+  try{ ensureFortnight(); }catch(e){}
+  const now=new Date(); now.setHours(0,0,0,0);
+  const start=S.fnStart?fromYmd(S.fnStart):now;
+  const end=new Date(start.getTime()+13*86400000);
+  const dayIdx=Math.min(Math.max(Math.floor((now-start)/86400000)+1,1),14);
+  const opt={month:'short',day:'numeric'};
+  const range=start.toLocaleDateString('en-US',opt)+' – '+end.toLocaleDateString('en-US',opt);
+  let dots='';
+  for(let i=1;i<=14;i++){
+    const a=(-90+(i-1)*(360/14))*Math.PI/180;
+    const x=50+46*Math.cos(a), y=77.5+71*Math.sin(a);
+    const cur=i===dayIdx, past=i<dayIdx;
+    dots+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+(cur?3.4:2.2)+'" fill="'+(cur?'#e9a95c':past?'#a487da':'#3a4374')+'"/>';
+  }
+  const focus=(S.fnFocus||'').trim();
+  let today='';
+  try{
+    const key=ymd(now), evs=fnDayEvents(key).filter(e=>!e.tmpl);
+    const hNow=(new Date()).getHours()+(new Date()).getMinutes()/60;
+    const nx=evs.find(e=>e.e>hNow);
+    if(nx) today='▸ '+fnFmtH(nx.s)+' · '+esc(fnShort(nx.t));
+    else if(evs.length) today=evs.length+' session'+(evs.length>1?'s':'')+' done today';
+    else today='an open day — nothing booked';
+  }catch(e){}
+  return '<div class="hub-center" id="hubCenter">'
+    +'<svg class="hc-ring" viewBox="0 0 100 155">'+dots+'</svg>'
+    +'<div class="hc-day">Day '+dayIdx+'</div>'
+    +'<div class="hc-of">of the fortnight</div>'
+    +'<div class="hc-range">'+range+'</div>'
+    +(focus?'<div class="hc-focus">“'+esc(focus)+'”</div>':'')
+    +(today?'<div class="hc-today">'+today+'</div>':'')
+    +'</div>';
+}
+/* What the screen says about each system when it is tuned in. */
+const HUBBLURB={
+  crm:'Clients, leads and follow-ups — the outer court.',
+  fin:'The ledger — money in, money out.',
+  ins:'Ventures under construction.',
+  ideas:'Sparks before they become plans.',
+  learn:'Study tracks: AI/ML, languages, clinical.',
+  gym:'The body, trained and tended.',
+  food:'The kitchen — fuel and ritual.',
+  games:'Worlds at play.',
+  trust:'The inner circle — the people who matter.',
+  sky:'Charts and horizons — the sky above.',
+  map:'The constellation — everything, everywhere.',
+  lists:'Loose threads, gathered.'
+};
+function hubSysHTML(v){
+  const t=HUBTABS.find(x=>x.v===v); if(!t) return hubCenterHTML();
+  return '<div class="hub-center" id="hubCenter" style="border-color:'+t.col+'">'
+    +'<div class="hc-sys-ic">'+t.ic+'</div>'
+    +'<div class="hc-sys-name">'+t.name+'</div>'
+    +'<div class="hc-sys-blurb">'+(HUBBLURB[v]||'')+'</div>'
+    +'<div class="hc-open">'+(TOUCH?'tap again to open':'click to open')+' ▸</div>'
+    +'</div>';
+}
+/* The screen: tuned to the fortnight by default, to whatever is selected otherwise. */
+let hubSel=null;
+function updateTV(){
+  const c=document.getElementById('hubCenter'); if(!c) return;
+  const tmp=document.createElement('div'); tmp.innerHTML=hubSel?hubSysHTML(hubSel):hubCenterHTML();
+  c.replaceWith(tmp.firstChild);
+  document.querySelectorAll('#hubRing .hub-tile').forEach(el=>el.classList.toggle('sel',el.dataset.hubv===hubSel));
+}
+/* Ring geometry: 12 circles (25cqw) on a tall ellipse inside a 100x158 field,
+   spaced by equal arc length so every gap is identical — close but never touching. */
+const RINGA=65, RINGB=37.5, RINGH=158, RINGCY=79;
+function ringPos(n){
+  const M=4096, xs=[], ys=[], cum=[0];
+  for(let i=0;i<M;i++){ const t=i/M*2*Math.PI; xs.push(RINGB*Math.cos(t)); ys.push(RINGA*Math.sin(t)); }
+  let total=0;
+  for(let i=0;i<M;i++){ const j=(i+1)%M; total+=Math.hypot(xs[j]-xs[i],ys[j]-ys[i]); cum.push(total); }
+  const s0=cum[M>>3], pos=[];
+  for(let k=0;k<n;k++){
+    const target=(s0+total*k/n)%total;
+    let lo=0, hi=M;
+    while(lo<hi){ const mid=(lo+hi)>>1; if(cum[mid]<target) lo=mid+1; else hi=mid; }
+    const i=Math.min(lo,M-1);
+    pos.push([50+xs[i], RINGCY-ys[i]]);
+  }
+  return pos;
+}
 function renderHub(){
   const ring=document.getElementById('hubRing'); if(!ring)return;
+  hubSel=null;
   document.getElementById('hubTree').style.display='none'; ring.style.display='block';
-  const act=HUBTABS.find(t=>t.v===hubActive)||HUBTABS[0];
-  const others=HUBTABS.filter(t=>t.v!==hubActive);
-  const N=others.length, R=41;
-  const pos=others.map((t,i)=>{const a=(-90+i*360/N)*Math.PI/180;return [50+R*Math.cos(a),50+R*Math.sin(a)];});
-  let geo='<svg class="hub-geo" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">'+flower(50,50,7.3,55);
+  const others=HUBTABS.filter(t=>t.v!=='fn');
+  const N=others.length;
+  const pos=ringPos(N);
+  let geo='<svg class="hub-geo" viewBox="0 0 100 158" preserveAspectRatio="xMidYMid meet">'+flower(50,RINGCY,8.2,88);
   geo+='<g stroke="#4a4f86" fill="none" stroke-width="0.35" stroke-opacity="0.5">';
-  pos.forEach(p=>geo+='<line x1="50" y1="50" x2="'+p[0].toFixed(2)+'" y2="'+p[1].toFixed(2)+'"/>');
+  pos.forEach(p=>geo+='<line x1="50" y1="'+RINGCY+'" x2="'+p[0].toFixed(2)+'" y2="'+p[1].toFixed(2)+'"/>');
   for(let i=0;i<N;i++){const j=(i+1)%N; geo+='<line x1="'+pos[i][0].toFixed(2)+'" y1="'+pos[i][1].toFixed(2)+'" x2="'+pos[j][0].toFixed(2)+'" y2="'+pos[j][1].toFixed(2)+'"/>';}
   geo+='</g></svg>';
   let h=geo;
-  h+='<div class="hub-center" id="hubCenter" style="--c:'+act.col+'"><span class="ic">'+act.ic+'</span><span class="nm">'+act.name+'</span><span class="sub">'+(act.v==='fn'?'home · ⌥branch':'tap to open')+'</span></div>';
-  others.forEach((t,i)=>{ h+='<div class="hub-tile" data-hubv="'+t.v+'" style="left:'+pos[i][0].toFixed(2)+'%;top:'+pos[i][1].toFixed(2)+'%"><span class="tc" style="border-color:'+t.col+'">'+t.ic+'</span><span class="tn">'+t.name+'</span></div>'; });
+  h+=hubCenterHTML();
+  others.forEach((t,i)=>{
+    h+='<div class="hub-tile" data-hubv="'+t.v+'" style="left:'+pos[i][0].toFixed(2)+'%;top:'+(pos[i][1]/RINGH*100).toFixed(2)+'%"><span class="tc" style="border-color:'+t.col+'">'+t.ic+'<span class="tn">'+t.name+'</span></span></div>';
+  });
   ring.innerHTML=h;
+  /* On computers, hovering a circle tunes the screen to it (click still opens directly). */
+  ring.onmouseover=e=>{ if(TOUCH) return; const t=e.target.closest('.hub-tile'); const v=t?t.dataset.hubv:null; if(v!==hubSel){ hubSel=v; updateTV(); } };
+  ring.onmouseleave=()=>{ if(TOUCH||!hubSel) return; hubSel=null; updateTV(); };
   document.getElementById('hubHint').textContent=TOUCH
-    ?'Your systems, on the Flower of Life. Tap to open · long-press to go back · long-press the center to branch the whole map.'
-    :'Your systems, on the Flower of Life. Left-click to open · right-click to go back · right-click the center to branch the whole map.';
+    ?'Your systems, on the Flower of Life. Tap a circle to tune the screen to it · tap again to open · long-press the screen to branch the whole map.'
+    :'Your systems, on the Flower of Life. Hover to tune the screen · click to open · right-click the screen to branch the whole map.';
 }
-function selectHub(v){ if(HUBURL[v]){ location.href=HUBURL[v]; return; } hubActive=v; navTo(v); }
+function selectHub(v){ if(HUBURL[v]){ location.href=HUBURL[v]; return; } navTo(v); }
 function openKid(tab,i){ const k=(HUBKIDS[tab]||[])[i]; if(!k){navTo(tab);return;} if(k.url){location.href=k.url;return;} if(k.go){navTo(k.go[0]); if(k.go[0]==='learn')lrnGo(k.go[1]); return;} navTo(tab); }
 function renderTree(){
   const ring=document.getElementById('hubRing'), tw=document.getElementById('hubTree');
@@ -3690,8 +3969,21 @@ document.getElementById('hub').addEventListener('click',e=>{
     const kn=e.target.closest('.knode'); if(kn){ treeMode=false; openKid(kn.dataset.kidtab,+kn.dataset.kidi); return; }
     return;
   }
-  const tile=e.target.closest('.hub-tile'); if(tile){ selectHub(tile.dataset.hubv); return; }
-  if(e.target.closest('#hubCenter')){ navTo(hubActive); return; }
+  const tile=e.target.closest('.hub-tile');
+  if(tile){
+    const v=tile.dataset.hubv;
+    if(TOUCH){
+      if(hubSel===v){ hubSel=null; selectHub(v); }              // second tap opens
+      else { hubSel=v; updateTV(); if(navigator.vibrate)navigator.vibrate(6); }
+      return;
+    }
+    selectHub(v); return;
+  }
+  if(e.target.closest('#hubCenter')){
+    if(hubSel){ const v=hubSel; hubSel=null; selectHub(v); return; }   // the screen opens what it shows
+    navTo('fn'); return;
+  }
+  if(e.target.closest('.hub-ring')&&hubSel){ hubSel=null; updateTV(); return; }   // tap the field to tune back home
 });
 /* Back gesture, two forms of one action: right-click on computers, long-press on phones. */
 function onCtx(e){
@@ -3699,12 +3991,8 @@ function onCtx(e){
   if(e.target.closest('#hub')){
     e.preventDefault();
     if(treeMode){ treeMode=false; renderHub(); return; }
-    if(e.target.closest('#hubCenter')){
-      if(hubActive!=='fn'){ hubActive='fn'; renderHub(); }
-      else { treeMode=true; renderTree(); }
-      return;
-    }
-    hubActive='fn'; renderHub(); return;              // right-click a tile / empty hub -> recenter home
+    if(e.target.closest('#hubCenter')){ treeMode=true; renderTree(); return; }
+    renderHub(); return;              // right-click a tile / empty hub -> refresh home
   }
   if(e.target.closest('.view')){ e.preventDefault(); navTo('hub'); }   // right-click inside any view -> back to hub
 }
@@ -3741,7 +4029,7 @@ document.getElementById('fnSync').onclick=()=>{ if(gcalState!=='loading') syncGc
   let open=true; t.onclick=()=>{ open=!open; c.style.display=open?'block':'none'; t.textContent=(open?'▾':'▸')+' the fortnight at a glance'; };
 })();
 function lrnGo(id){document.querySelectorAll('#learn .l-screen').forEach(s=>s.classList.remove('on'));var el=document.getElementById(id);if(el)el.classList.add('on');window.scrollTo(0,0);}
-function activeView(){const on=document.querySelector('nav button.on');return on?on.dataset.v:'map';}
+function activeView(){const on=document.querySelector('.view.on');return on?on.id:'hub';}
 document.getElementById('addbtn').onclick=()=>{
   const v=activeView();
   if(v==='lists'){ editListItem(); return; }

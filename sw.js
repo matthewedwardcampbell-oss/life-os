@@ -2,12 +2,12 @@
    HTML pages: network-first (fresh when online, cached when offline).
    Static assets (fonts, sub-pages once visited): cache-first.
    Gemini/Ansible API calls: always live (never cached). */
-const CACHE = 'lifeos-v11';
+const CACHE = 'lifeos-v13';
 const ASSETS = [
   './','index.html','manifest.webmanifest',
   'icon-192.png','icon-512.png','icon-maskable-512.png','apple-touch-icon.png',
   'food.html','gym.html','games.html','loki.html','tyranids.html','wishlist.html','formats.html',
-  'kingdoms.html','driftland.html','crm.html','finances.html','ideas.html'
+  'kingdoms.html','driftland.html','crm.html','finances.html','ideas.html','simcity4.html'
 ];
 
 self.addEventListener('install', e => {

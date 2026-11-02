@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SimCity 4 · Field Manual</title>
+<style>
+html{zoom:1.5;overflow-x:hidden}
+  :root{
+    --sky-0:#12162a; --sky-1:#1a2038; --sky-2:#232a48; --sky-3:#2e3760;
+    --purple:#8a6fd4; --purple-lt:#a487da; --amber:#e9a95c; --selenite:#84b8ca;
+    --good:#7ac9a0; --warn:#e07a7a; --ink:#eceaf4; --ink-dim:#a1a4c2; --ink-faint:#6d7199;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--sky-0)}
+  body{color:var(--ink);font-family:'Inter',-apple-system,system-ui,sans-serif;font-size:15px;line-height:1.5;
+    max-width:460px;margin:0 auto;min-height:100vh;
+    background-image:radial-gradient(1200px 520px at 50% -10%,rgba(132,184,202,.12),transparent);}
+  .wrap{padding:18px 15px 70px}
+  h1{font-family:'Fraunces',Georgia,serif;font-size:25px;font-weight:600}
+  .sub{color:var(--ink-dim);font-size:12.5px;margin-top:3px;margin-bottom:6px;font-style:italic}
+  .backlink{display:inline-block;color:var(--ink-faint);font-size:12.5px;text-decoration:none;margin-bottom:8px}
+  .top{display:flex;align-items:center;gap:11px;margin-bottom:6px}
+  .gcirc{width:52px;height:52px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:2.5px solid var(--selenite);
+    display:flex;align-items:center;justify-content:center;font-size:26px}
+  .seclbl{font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:var(--ink-faint);
+    font-weight:700;margin:20px 0 11px;display:flex;align-items:center;gap:7px}
+  .seclbl .n{margin-left:auto;font-size:10px;letter-spacing:.3px;text-transform:none;color:var(--selenite);
+    background:rgba(132,184,202,.12);border-radius:99px;padding:2px 9px;font-weight:600}
+
+  .screen{display:none;animation:fade .22s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .topbar{display:flex;align-items:center;gap:11px;padding:4px 0 12px;position:sticky;top:0;z-index:5;
+    background:linear-gradient(var(--sky-0) 72%,transparent)}
+  .back{width:38px;height:38px;flex:0 0 auto;border-radius:50%;background:var(--sky-1);border:1px solid var(--sky-2);
+    display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink);cursor:pointer}
+  .back:active{transform:scale(.93)}
+  .tbtitle{font-family:'Fraunces',serif;font-size:19px;line-height:1.05}
+  .tbsub{font-size:10.5px;color:var(--ink-faint)}
+
+  /* landing ring */
+  .gring{position:relative;width:100%;max-width:330px;margin:14px auto 16px;aspect-ratio:1/1}
+  .ghub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:74px;height:74px;border-radius:50%;
+    background:var(--sky-2);border:2px solid var(--selenite);display:flex;flex-direction:column;align-items:center;
+    justify-content:center;text-align:center;box-shadow:0 0 0 6px rgba(132,184,202,.08)}
+  .ghub .mono{font-family:'Fraunces',Georgia,serif;font-size:19px;font-weight:600;letter-spacing:.5px;color:var(--selenite)}
+  .ghub small{font-size:7px;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-top:2px}
+  .gring .cnode{position:absolute;transform:translate(-50%,-50%);width:80px;gap:6px}
+  .cnode{display:flex;flex-direction:column;align-items:center;text-align:center;gap:7px;cursor:pointer;transition:transform .1s}
+  .cnode:active{transform:scale(.93)}
+  .gring .cnode:active{transform:translate(-50%,-50%) scale(.92)}
+  .circ{width:54px;height:54px;border-radius:50%;background:var(--sky-1);border:2.5px solid var(--sky-3);
+    display:flex;align-items:center;justify-content:center;font-size:23px;position:relative}
+  .circ.teal{border-color:var(--selenite)} .circ.gold{border-color:var(--amber)}
+  .circ.pur{border-color:var(--purple)} .circ.green{border-color:var(--good)}
+  .cname{font-size:10.5px;line-height:1.2;color:var(--ink);font-weight:600;max-width:92px}
+  .csub{font-size:9px;color:var(--ink-faint)}
+
+  /* content blocks */
+  .card{background:var(--sky-1);border:1px solid var(--sky-2);border-radius:14px;padding:13px 13px;margin-bottom:12px}
+  .card h3{font-family:'Fraunces',serif;font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .card h3 .dot{width:11px;height:11px;flex:0 0 auto;border-radius:50%}
+  .bl{list-style:none;margin-top:4px}
+  .bl li{font-size:12.5px;color:var(--ink-dim);line-height:1.5;padding:5px 0 5px 15px;position:relative}
+  .bl li::before{content:'●';position:absolute;left:0;color:var(--selenite);font-size:7px;top:11px}
+  .bl li b{color:var(--ink)} .bl li .hl{color:var(--selenite);font-weight:600} .bl li .fx{color:var(--amber);font-weight:600}
+  .bl li .bd{color:var(--warn);font-weight:600}
+
+  /* numbered flow */
+  .flow{position:relative;margin-top:4px}
+  .fitem{display:flex;gap:11px;position:relative;padding-bottom:15px}
+  .fitem:not(:last-child)::before{content:'';position:absolute;left:16px;top:36px;bottom:-2px;width:2px;background:var(--sky-3)}
+  .fnode{width:34px;height:34px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:2px solid var(--selenite);
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--selenite);z-index:1;
+    font-family:'Fraunces',serif}
+  .fbody{flex:1;min-width:0;font-size:12.5px;color:var(--ink-dim);line-height:1.45;padding-top:2px}
+  .fbody b{color:var(--ink)} .fbody .hl{color:var(--selenite);font-weight:600}
+  .fbody .kbd{display:inline-block;background:var(--sky-2);border:1px solid var(--sky-3);border-radius:6px;
+    padding:1px 7px;font-size:10.5px;color:var(--ink);font-weight:600;letter-spacing:.3px}
+
+  /* config.bmp cheat rows */
+  .cfgrow{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--sky-2)}
+  .cfgrow:last-child{border-bottom:none}
+  .cfgdot{width:16px;height:16px;flex:0 0 auto;border-radius:50%;border:2px solid var(--sky-0)}
+  .cfgname{font-size:12px;font-weight:600;flex:0 0 86px}
+  .cfgdesc{font-size:11px;color:var(--ink-dim);line-height:1.35}
+
+  /* checklist */
+  .chk{display:flex;align-items:center;gap:11px;padding:9px 4px;cursor:pointer;border-radius:11px;transition:background .12s}
+  .chk:active{background:var(--sky-1)}
+  .chkbox{width:26px;height:26px;flex:0 0 auto;border-radius:50%;background:var(--sky-1);border:2px solid var(--sky-3);
+    display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent;transition:all .15s}
+  .chk.done .chkbox{border-color:var(--good);color:var(--good)}
+  .chk .ctxt{font-size:12.5px;color:var(--ink-dim);line-height:1.35}
+  .chk.done .ctxt{color:var(--ink-faint);text-decoration:line-through;text-decoration-color:var(--ink-faint)}
+  .chk .ctxt b{color:var(--ink)} .chk.done .ctxt b{color:var(--ink-dim)}
+  .chkreset{font-size:10.5px;color:var(--ink-faint);text-align:right;cursor:pointer;padding:4px 2px}
+  .chkreset:active{color:var(--warn)}
+
+  /* archetype mini-cards */
+  .arch{display:flex;align-items:flex-start;gap:11px;background:var(--sky-1);border:1px solid var(--sky-2);
+    border-radius:13px;padding:11px 12px;margin-bottom:9px}
+  .acirc{width:42px;height:42px;flex:0 0 auto;border-radius:50%;background:var(--sky-2);border:2px solid var(--sky-3);
+    display:flex;align-items:center;justify-content:center;font-size:20px}
+  .arch .at{font-size:13px;font-weight:700}
+  .arch .ad{font-size:11.5px;color:var(--ink-dim);line-height:1.45;margin-top:2px}
+  .arch .ad b{color:var(--ink)}
+
+  .tip{display:flex;gap:9px;background:rgba(138,111,212,.09);border:1px dashed rgba(138,111,212,.4);
+    border-radius:11px;padding:9px 11px;font-size:11.5px;color:var(--ink-dim);line-height:1.45;margin:10px 0}
+  .tip b{color:var(--purple-lt)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  .chips span{font-size:10px;color:var(--ink-dim);background:var(--sky-2);border:1px solid var(--sky-3);border-radius:99px;padding:3px 9px}
+
+  @media (min-width:620px){
+    body{max-width:880px;font-size:16px}
+    .wrap{padding:28px 32px 90px}
+    h1{font-size:32px}
+    .gring{max-width:430px}.gring .circ{width:66px;height:66px;font-size:29px}.gring .cnode{width:96px}
+    .ghub{width:104px;height:104px}.ghub .mono{font-size:28px}
+    .cname{font-size:13px;max-width:110px}.csub{font-size:10.5px}
+    .bl li{font-size:14.5px}.fbody{font-size:14.5px}.cfgname{font-size:13.5px}.cfgdesc{font-size:12.5px}
+    .chk .ctxt{font-size:14.5px}.arch .at{font-size:15px}.arch .ad{font-size:13px}
+    .tbtitle{font-size:23px}.card h3{font-size:18px}
+    .cols2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- SCREEN: LANDING -->
+  <div class="screen active" id="scr-home">
+    <a class="backlink" href="games.html">← Games</a>
+    <div class="top"><div class="gcirc">🏙️</div>
+      <div><h1>SimCity 4</h1><div class="sub">Deluxe / Rush Hour field manual — build solvent, moving, region-sized cities.</div></div>
+    </div>
+    <div class="gring">
+      <div class="ghub"><span class="mono">SC4</span><small>field manual</small></div>
+      <div class="cnode" style="left:50%;top:12%" onclick="go('scr-city')"><div class="circ gold">🏙️</div><div class="cname">City &amp; Budget</div><div class="csub">RCI · taxes</div></div>
+      <div class="cnode" style="left:87%;top:50%" onclick="go('scr-transit')"><div class="circ teal">🚇</div><div class="cname">Transit &amp; Traffic</div><div class="csub">commutes · transit</div></div>
+      <div class="cnode" style="left:50%;top:86%" onclick="go('scr-maps')"><div class="circ pur">🗺️</div><div class="cname">Custom Maps</div><div class="csub">new regions</div></div>
+      <div class="cnode" style="left:13%;top:50%" onclick="go('scr-region')"><div class="circ green">🌐</div><div class="cname">Regional Play</div><div class="csub">city specialization</div></div>
+    </div>
+    <div class="tip"><span>🧭</span><div><b>How to use:</b> each circle is a discipline. Custom Maps has a tap-to-check install checklist that remembers your progress on this device.</div></div>
+  </div>
+
+  <!-- SCREEN: CITY & BUDGET -->
+  <div class="screen" id="scr-city">
+    <div class="topbar"><div class="back" onclick="go('scr-home')">←</div>
+      <div><div class="tbtitle">🏙️ City &amp; Budget</div><div class="tbsub">Stay solvent while demand does the work</div></div></div>
+
+    <div class="card"><h3><span class="dot" style="background:var(--selenite)"></span>The RCI loop</h3>
+      <ul class="bl">
+        <li><b>Zone only what the bars ask for.</b> Over-zoning gives you empty lots and zero tax — follow the RCI demand bars, not your dreams.</li>
+        <li><b>Demand has caps.</b> Reward buildings raise them — chase the rewards that match what you're growing (parks and landmarks for wealthier residents, civic/commercial rewards for offices).</li>
+        <li><b>Desirability decides who moves in.</b> Parks, trees, schools, health, clean air, short commutes pull in R$$$; pollution and long drives give you R$ tenements.</li>
+      </ul>
+    </div>
+
+    <div class="card"><h3><span class="dot" style="background:var(--good)"></span>Money rules that keep you solvent</h3>
+      <ul class="bl">
+        <li><b>Fund the plant to the load, not the max.</b> Query your power plant and set funding to ~20–30% above current usage. A new natural gas plant can run at <span class="fx">~20% funding</span> for years.</li>
+        <li><b>Same trick everywhere:</b> set school funding to actual enrollment, hospital funding to actual beds — never pay for empty capacity.</li>
+        <li><b>Services follow demand, not the other way round.</b> School once you have families (~1,000+ sims), hospital later, police/fire placed by coverage radius.</li>
+        <li><b>Water can wait.</b> Farms and low-density industry don't need pipes — delay the water grid until residential density rises and farms give way.</li>
+      </ul>
+    </div>
+
+    <div class="card"><h3><span class="dot" style="background:var(--amber)"></span>Taxes</h3>
+      <ul class="bl">
+        <li><b>9% across the board</b> is the safe default while a city is young.</li>
+        <li><b>Stimulate:</b> drop one sector 1–2% to pull demand — dirty industry early, high-tech later once your schools produce educated workers.</li>
+        <li><b>Harvest:</b> nudge R$$$ and CO$$$ up 0.5–1% once they're established. Watch the bars for a few months and back off if demand craters.</li>
+        <li><b>Move in half-steps.</b> Tax changes take months to show up in demand — small moves, then patience.</li>
+      </ul>
+    </div>
+
+    <div class="card"><h3><span class="dot" style="background:var(--purple)"></span>Ordinances</h3>
+      <ul class="bl">
+        <li>Early game: <b>skip anything with a per-capita cost</b> — they eat a small city's whole margin.</li>
+        <li>Turn on the <b>cheap demand-boosters and pollution reducers</b> once you can carry them; they compound with desirability.</li>
+        <li>Late game, a rich city can afford the full slate — read each one's monthly cost before enabling.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SCREEN: TRANSIT -->
+  <div class="screen" id="scr-transit">
+    <div class="topbar"><div class="back" onclick="go('scr-home')">←</div>
+      <div><div class="tbtitle">🚇 Transit &amp; Traffic</div><div class="tbsub">Commute time is the hidden tax</div></div></div>
+
+    <div class="card"><h3><span class="dot" style="background:var(--warn)"></span>Commute is king</h3>
+      <ul class="bl">
+        <li>Sims tolerate up to <span class="fx">~150 minutes</span> of commute — past that, buildings abandon. Watch the <b>Commute Time</b> graph like a hawk.</li>
+        <li><b>Route-query buildings</b> to see where their workers actually drive; fix the path, not the whole city.</li>
+        <li>Short commutes raise desirability, which raises wealth, which raises taxes. Traffic <i>is</i> your budget.</li>
+      </ul>
+    </div>
+
+    <div class="card"><h3><span class="dot" style="background:var(--selenite)"></span>Road hierarchy</h3>
+      <ul class="bl">
+        <li><b>Streets</b> — cheap and slow. Use inside neighborhoods only.</li>
+        <li><b>Roads</b> — your default grid.</li>
+        <li><b>Avenues</b> — roughly double a road's capacity at higher speed. One avenue beats two parallel roads; use them as trunk routes and downtown spines.</li>
+        <li><b>Highways</b> — regional connectors. Ramps only, nothing zones on them; don't thread one through downtown unless you mean it.</li>
+      </ul>
+    </div>
+
+    <div class="card"><h3><span class="dot" style="background:var(--good)"></span>Layout that flows</h3>
+      <ul class="bl">
+        <li><b>Spine and ribs:</b> an avenue spine, residential ribs facing the quiet side streets, commercial at the rib-ends so jobs sit on the spine.</li>
+        <li>Keep big intersections off the trunk route — offset T-junctions flow better than four-ways.</li>
+        <li>Red road → widen to avenue. <b>Red avenue → add transit</b>, not a second avenue.</li>
+      </ul>
+    </div>
+
+    <div class="card"><h3><span class="dot" style="background:var(--purple)"></span>The mass-transit ladder</h3>
+      <ul class="bl">
+        <li><b>Bus</b> — cheap starter. Stations near homes <i>and</i> jobs, inside walking range of both.</li>
+        <li><b>Subway</b> — the workhorse: invisible, huge capacity, no surface space. Expensive up front, wins at density.</li>
+        <li><b>Rail</b> — best for freight (industry → edge connection or port) and intercity passengers.</li>
+        <li><b>Elevated / monorail</b> — late-game luxury; the subway usually wins on cost per rider.</li>
+        <li><b>Ferries</b> — slow. Fine for a scenic crossing, never your backbone.</li>
+        <li><b>Park-and-ride works:</b> a lot or bus stop at the neighborhood edge, subway into downtown.</li>
+      </ul>
+      <div class="chips"><span>NAM mod: smarter pathfinding</span><span>everyone runs it</span></div>
+    </div>
+
+    <div class="card"><h3><span class="dot" style="background:var(--amber)"></span>Read the data (Rush Hour)</h3>
+      <ul class="bl">
+        <li><b>Congestion view</b> = how far over capacity a link is. Red means widen or give people another way.</li>
+        <li><b>Volume view</b> = raw users per mode, morning vs evening — Sims don't always come home the way they left.</li>
+        <li>Cars pollute. Every rider you shift to transit is cleaner air <i>and</i> a shorter commute for everyone else.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SCREEN: CUSTOM MAPS -->
+  <div class="screen" id="scr-maps">
+    <div class="topbar"><div class="back" onclick="go('scr-home')">←</div>
+      <div><div class="tbtitle">🗺️ Custom Maps</div><div class="tbsub">Install new regions into the game</div></div></div>
+
+    <div class="card"><h3><span class="dot" style="background:var(--selenite)"></span>Where regions live</h3>
+      <ul class="bl">
+        <li><b>Windows:</b> <span class="hl">Documents\SimCity 4\Regions\&lt;RegionName&gt;\</span></li>
+        <li><b>Mac:</b> <span class="hl">~/Documents/SimCity 4/Regions/</span></li>
+        <li>Each region folder holds <b>config.bmp</b> (the city-tile layout), <b>region.ini</b>, and the rendered city files once you start playing.</li>
+        <li>Download regions from <b>Simtropolis (STEX)</b> or <b>SC4 Devotion</b> — they arrive as a .zip with a config.bmp plus a grayscale terrain image, or as an .SC4M file.</li>
+      </ul>
+    </div>
+
+    <div class="card"><h3><span class="dot" style="background:var(--purple)"></span>Install checklist</h3>
+      <div id="chklist"></div>
+      <div class="chkreset" onclick="resetChk()">reset checklist</div>
+    </div>
+
+    <div class="card"><h3><span class="dot" style="background:var(--amber)"></span>config.bmp cheat sheet</h3>
+      <div class="cfgrow"><div class="cfgdot" style="background:#e05050"></div><div class="cfgname">Red · 1 px</div><div class="cfgdesc">Small city — 1×1 km tile</div></div>
+      <div class="cfgrow"><div class="cfgdot" style="background:#50c070"></div><div class="cfgname">Green · 2×2 px</div><div class="cfgdesc">Medium city — 2×2 km tile</div></div>
+      <div class="cfgrow"><div class="cfgdot" style="background:#5080e0"></div><div class="cfgname">Blue · 4×4 px</div><div class="cfgdesc">Large city — 4×4 km tile</div></div>
+      <ul class="bl" style="margin-top:8px">
+        <li>It's a plain <b>24-bit bitmap</b>: one pixel = one kilometer of region. A 16×16 config = the classic 4-large-cities-across region.</li>
+        <li><b>Heightmap size rule:</b> grayscale image = config size <span class="fx">× 64, then + 1</span>. A 16×16 config needs a 1025×1025 image.</li>
+        <li>In the image, <b>black = sea level, white = peaks</b>. Any pixel in config.bmp that isn't pure red/green/blue is left as open water/land with no city tile.</li>
+      </ul>
+    </div>
+
+    <div class="card"><h3><span class="dot" style="background:var(--good)"></span>.SC4M files &amp; making your own</h3>
+      <ul class="bl">
+        <li>Pre-rendered regions come as <b>.SC4M</b> — import them with the free <span class="hl">SC4 Terraformer (SC4T)</span>, which saves the region into your Regions folder.</li>
+        <li>SC4T also converts an .SC4M into an editable grayscale image + config.bmp pair if you want to resize or tweak.</li>
+        <li><b>Your own terrain:</b> any grayscale image works — hand-drawn, a desaturated photo, a real-world elevation export — as long as it obeys the ×64 + 1 rule.</li>
+        <li>After rendering, touch up for free in <b>God mode</b> before you found any city on the tile.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SCREEN: REGIONAL PLAY -->
+  <div class="screen" id="scr-region">
+    <div class="topbar"><div class="back" onclick="go('scr-home')">←</div>
+      <div><div class="tbtitle">🌐 Regional Play</div><div class="tbsub">Optimum specialization for a regional city</div></div></div>
+
+    <div class="card"><h3><span class="dot" style="background:var(--selenite)"></span>Why specialize</h3>
+      <ul class="bl">
+        <li><b>Demand is regional, pollution is local.</b> Industry anywhere feeds jobs region-wide — so put the filth where nobody rich lives.</li>
+        <li>Sims <b>commute across borders</b> through neighbor connections. One city's workers are the next city's workforce.</li>
+        <li>A region of specialists beats a region of all-rounders: every tile does one thing well instead of everything badly.</li>
+      </ul>
+    </div>
+
+    <div class="seclbl">The archetype stack <span class="n">one role per tile</span></div>
+    <div class="arch"><div class="acirc">🏘️</div><div><div class="at">Bedroom suburb</div><div class="ad"><b>Mostly residential.</b> Buys power, sends commuters out. Keep it clean, parked, and desirable — this is where your R$$/R$$$ live.</div></div></div>
+    <div class="arch"><div class="acirc">🏭</div><div><div class="at">Industry hub</div><div class="ad"><b>Dirty + manufacturing.</b> The power-plant city, rail and highway to the edge, low taxes on industry. Nobody rich lives here — on purpose.</div></div></div>
+    <div class="arch"><div class="acirc">🌽</div><div><div class="at">Farm belt</div><div class="ad"><b>Small tiles of agriculture.</b> Pretty and feeds demand, but barely pays for itself — don't expect farm taxes to fund anything.</div></div></div>
+    <div class="arch"><div class="acirc">💼</div><div><div class="at">Downtown core</div><div class="ad"><b>High-density commercial + offices.</b> Only works once the region population is large enough to feed CO$$$ demand. Subway-fed, landmark-rich.</div></div></div>
+    <div class="arch"><div class="acirc">🔬</div><div><div class="at">High-tech enclave</div><div class="ad"><b>Clean industry.</b> Needs educated workers (college-town neighbor) and low pollution. Park it next to the rich suburb, far from the industry hub.</div></div></div>
+    <div class="arch"><div class="acirc">⚡</div><div><div class="at">Utility city <span style="font-size:9.5px;color:var(--ink-faint)">(optional)</span></div><div class="ad"><b>Power, water, waste for everyone.</b> Overbuilt capacity funded by neighbor deals from the whole region.</div></div></div>
+
+    <div class="card" style="margin-top:12px"><h3><span class="dot" style="background:var(--good)"></span>Neighbor deals</h3>
+      <ul class="bl">
+        <li><b>You start them.</b> In SC4 you control both cities, so you can open a power, water, or garbage deal any time.</li>
+        <li>Deals need the right <b>connection to the border</b>: power lines for power, pipes for water, a road link for garbage.</li>
+        <li><b>Canceling costs a penalty</b> — and if the seller runs out of capacity, the deal auto-closes and you pay it anyway. Overbuild the selling city.</li>
+      </ul>
+    </div>
+
+    <div class="card"><h3><span class="dot" style="background:var(--amber)"></span>A region opening that works</h3>
+      <div class="flow">
+        <div class="fitem"><div class="fnode">1</div><div class="fbody">Pick a city <b>surrounded by neighbors</b>. Pause the simulation to plan streets and leave open land for later.</div></div>
+        <div class="fitem"><div class="fnode">2</div><div class="fbody">In a corner: <b>natural gas plant funded to ~20%</b>, plus a small parcel of high-density industry for starter jobs.</div></div>
+        <div class="fitem"><div class="fnode">3</div><div class="fbody">Zone high-density residential, un-pause, and let it fill <b>until demand tapers off</b>.</div></div>
+        <div class="fitem"><div class="fnode">4</div><div class="fbody">Pause, <b>replace the industry corner with residential</b> — the region's industry hub takes over the jobs.</div></div>
+        <div class="fitem"><div class="fnode">5</div><div class="fbody">Save, exit to region, open the <b>adjacent tile</b> — that becomes your industry &amp; power hub.</div></div>
+        <div class="fitem"><div class="fnode">6</div><div class="fbody">Connect the two: <b>road + power line across the border</b>, then start a power deal so the hub sells to the suburb.</div></div>
+        <div class="fitem"><div class="fnode">7</div><div class="fbody">Repeat outward: farms on small tiles, high-tech beside the rich suburb, <b>downtown core last</b> — once regional population can feed it.</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);}
+
+/* install checklist — own localStorage key, per Life OS convention */
+var KEY='simcity4-v1';
+var STEPS=[
+  ['Download a region','Simtropolis (STEX) or SC4 Devotion — usually a .zip'],
+  ['Create the folder','New folder in Documents\\SimCity 4\\Regions, named after the region'],
+  ['Extract the files','Keep config.bmp + the grayscale image + region.ini; delete the rest'],
+  ['Check the sizes','Grayscale image must be config size × 64 + 1 (16×16 → 1025×1025)'],
+  ['Load the region in SC4','It appears in your region list once the folder exists'],
+  ['Render the terrain','Ctrl+Shift+Alt+R, pick the grayscale image, wait — big regions take minutes'],
+  ['Fix the level if needed','Mostly underwater or black? Re-render with a different scale factor'],
+  ['Save & God-mode touch-ups','Free terraforming before you found any city']
+];
+function loadChk(){try{var d=JSON.parse(localStorage.getItem(KEY));if(d&&d.chk&&d.chk.length===STEPS.length)return d.chk;}catch(e){}return STEPS.map(function(){return false});}
+function saveChk(c){try{localStorage.setItem(KEY,JSON.stringify({chk:c}));}catch(e){}}
+var chk=loadChk();
+function renderChk(){
+  var el=document.getElementById('chklist');el.innerHTML='';
+  var done=chk.filter(Boolean).length;
+  STEPS.forEach(function(s,i){
+    var d=document.createElement('div');
+    d.className='chk'+(chk[i]?' done':'');
+    d.innerHTML='<div class="chkbox">✓</div><div class="ctxt"><b>'+(i+1)+'. '+s[0]+'</b><br>'+s[1]+'</div>';
+    d.onclick=function(){chk[i]=!chk[i];saveChk(chk);renderChk();};
+    el.appendChild(d);
+  });
+  var p=document.createElement('div');
+  p.style.cssText='font-size:10px;color:var(--ink-faint);padding:4px 2px 0';
+  p.textContent=done+' of '+STEPS.length+' done — progress saves on this device';
+  el.appendChild(p);
+}
+function resetChk(){chk=STEPS.map(function(){return false});saveChk(chk);renderChk();}
+renderChk();
+</script>
+</body>
+</html>
