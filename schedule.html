@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>The Fortnight</title>
+<style>
+  :root{--bg:#0f1226;--panel:#1a1f3d;--ink:#e8e9f5;--mut:#9aa0c8;--line:#2a3157;
+    --pur:#8a6fd4;--teal:#84b8ca;--grn:#7ac9a0;--org:#e9a95c;--vio:#a487da;
+    color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(130% 90% at 50% 0,#171c3a,var(--bg));color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    padding:max(18px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 28px max(16px,env(safe-area-inset-left));
+    -webkit-font-smoothing:antialiased;line-height:1.5}
+  .wrap{max-width:560px;margin:0 auto}
+  h1{font-weight:650;font-size:1.5rem;margin:.2rem 0 .1rem;letter-spacing:.01em}
+  .sub{color:var(--mut);font-size:.82rem;margin:0 0 2px}
+  .say{color:var(--vio);font-size:.8rem;margin:.3rem 0 0}
+  .stage{position:relative;width:min(84vw,360px);aspect-ratio:1;margin:14px auto 2px}
+  .hub,.blk{position:absolute;transform:translate(-50%,-50%);border-radius:50%;display:flex;
+    flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;
+    border:2px solid var(--line);background:var(--panel);transition:transform .12s,border-color .12s}
+  .hub{width:30%;aspect-ratio:1;left:50%;top:50%;border-color:var(--pur);
+    background:radial-gradient(circle at 50% 38%,#2a2f58,var(--panel))}
+  .hub b{color:var(--pur);font-weight:750;font-size:clamp(.85rem,3.4vw,1.1rem)}
+  .hub small{display:block;color:var(--mut);font-size:.5em;letter-spacing:.14em;margin-top:2px}
+  .blk{width:23%;aspect-ratio:1;gap:1px}
+  .blk .nm{font-size:clamp(.56rem,2vw,.7rem);font-weight:600;line-height:1.05;padding:0 2px}
+  .blk .s{font-size:clamp(.46rem,1.6vw,.56rem);color:var(--mut)}
+  .blk[data-done="1"]{border-color:var(--grn);background:linear-gradient(160deg,#1f3b32,var(--panel))}
+  .blk[data-done="1"] .nm::after{content:" ✓";color:var(--grn)}
+  .blk:active{transform:translate(-50%,-50%) scale(.94)}
+  .meter{text-align:center;font-size:.9rem;margin:6px 0 2px}
+  .meter b{color:var(--grn)}
+  .fort{margin:16px 0 0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+  .fort h2{font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin:0 0 8px;font-weight:650}
+  .strip{display:grid;grid-template-columns:repeat(14,1fr);gap:4px}
+  .d{aspect-ratio:1;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;
+    justify-content:center;font-size:.6rem;color:var(--mut)}
+  .d.work{background:#242a4e;border-color:#38406e;color:var(--ink)}
+  .d.off{background:transparent;border-style:dashed;border-color:var(--teal);color:var(--teal)}
+  .d.today{box-shadow:0 0 0 2px var(--org);border-color:var(--org)}
+  .legend{display:flex;gap:14px;margin-top:9px;font-size:.72rem;color:var(--mut);flex-wrap:wrap}
+  .legend i{display:inline-block;width:.7rem;height:.7rem;border-radius:50%;margin-right:4px;vertical-align:-1px}
+  .foot{color:var(--mut);font-size:.74rem;text-align:center;margin-top:16px}
+  a.back{color:var(--teal);font-size:.8rem;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">‹ hub</a>
+  <h1>The Fortnight</h1>
+  <p class="sub" id="daline">—</p>
+  <p class="say">Blocks flex when — they just need doing. Keep your word to yourself.</p>
+
+  <div class="stage" id="stage">
+    <div class="hub"><b>MEC III<small>TODAY</small></b></div>
+  </div>
+  <p class="meter" id="meter">—</p>
+
+  <div class="fort">
+    <h2>The 14-day cycle</h2>
+    <div class="strip" id="strip"></div>
+    <div class="legend">
+      <span><i style="background:#242a4e;border:1.5px solid #38406e"></i>Work (10)</span>
+      <span><i style="border:1.5px dashed var(--teal)"></i>Break (4)</span>
+      <span><i style="box-shadow:0 0 0 2px var(--org)"></i>Today</span>
+    </div>
+  </div>
+
+  <p class="foot">10 of 14, days off clustered · cycle anchored to Wed Nov 25</p>
+</div>
+
+<script>
+  var ANCHOR = new Date(2026,10,25); // fortnight restarts Wed Nov 25, 2026
+  function midnight(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate());}
+  var now = new Date(), today = midnight(now);
+  var dayNum = Math.floor((today-ANCHOR)/864e5);
+  var cyc = ((dayNum % 14) + 14) % 14;        // 0..13
+  var cycleDay = cyc + 1;                       // 1..14
+  var isWork = cycleDay <= 10;
+  var dow = today.getDay();                      // 0 Sun .. 6 Sat
+  var isWed = dow === 3;
+
+  var BLOCKS = [
+    {id:'wake', nm:'Wake', s:'fasted'},
+    {id:'gym',  nm:'Gym', s:'flex PM'},
+    {id:'fast', nm:'Break fast', s:'½ protein + meds'},
+    {id:'work', nm: isWork?'Work':'Off', s: isWork?'12–8':'rest / flex'},
+    {id:'meal', nm:'Big meal', s:'night'},
+    {id:'wind', nm:'Wind down', s:'game'}
+  ];
+  if(isWed) BLOCKS.splice(3,0,{id:'crm', nm:'CRM', s:'outreach'});
+  if(cycleDay===10) BLOCKS.push({id:'prep', nm:'Meal prep', s:'self + roomies'});
+
+  var KEY = 'kmw-' + today.toISOString().slice(0,10);
+  var done = {};
+  try{ done = JSON.parse(localStorage.getItem(KEY)||'{}'); }catch(e){ done={}; }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(done)); }catch(e){} }
+
+  var stage = document.getElementById('stage');
+  var N = BLOCKS.length, R = 0.5, ring = 0.70;
+  BLOCKS.forEach(function(b,i){
+    var el = document.createElement('div');
+    el.className = 'blk'; el.dataset.id = b.id;
+    el.dataset.done = done[b.id] ? '1':'0';
+    el.innerHTML = '<span class="nm">'+b.nm+'</span><span class="s">'+b.s+'</span>';
+    var a = -Math.PI/2 + i*2*Math.PI/N;
+    el.style.left = (50 + ring*50*Math.cos(a)) + '%';
+    el.style.top  = (50 + ring*50*Math.sin(a)) + '%';
+    el.addEventListener('click', function(){
+      done[b.id] = !done[b.id];
+      el.dataset.done = done[b.id] ? '1':'0';
+      save(); meter();
+    });
+    stage.appendChild(el);
+  });
+  function meter(){
+    var k=0; BLOCKS.forEach(function(b){ if(done[b.id]) k++; });
+    document.getElementById('meter').innerHTML = 'Kept my word: <b>'+k+' / '+N+'</b> today';
+  }
+  meter();
+
+  var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('daline').textContent =
+    (isWork?'Work day':'Break day') + ' · day ' + cycleDay + ' of 14 · ' +
+    ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dow] + ' ' + months[today.getMonth()] + ' ' + today.getDate();
+
+  var strip = document.getElementById('strip');
+  for(var c=1;c<=14;c++){
+    var d = document.createElement('div');
+    d.className = 'd ' + (c<=10?'work':'off') + (c===cycleDay?' today':'');
+    d.textContent = c;
+    strip.appendChild(d);
+  }
+</script>
+</body>
+</html>
