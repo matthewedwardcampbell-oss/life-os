@@ -385,23 +385,12 @@ html{zoom:1.5;overflow-x:hidden}
   .rdtab{flex:1;background:var(--sky-1);border:1px solid var(--sky-3);color:var(--ink-dim);font-family:inherit;font-size:11.5px;font-weight:600;padding:7px 4px;border-radius:99px;cursor:pointer}
   .rdtab.on{color:var(--amber);border-color:var(--amber);background:rgba(233,169,92,.1)}
   .rdlabel{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin-bottom:8px}
-  .rdweave{font-family:'Fraunces',serif;font-size:14.5px;line-height:1.5;color:var(--ink);margin-bottom:10px}
-  .rdsame,.rddiff{font-size:12px;line-height:1.55;color:var(--ink-dim);border-radius:10px;padding:8px 10px;margin-bottom:7px}
-  .rdsame{background:rgba(122,201,160,.08);border:1px solid rgba(122,201,160,.35)}
-  .rddiff{background:rgba(233,169,92,.07);border:1px solid rgba(233,169,92,.32)}
-  .rdsame span,.rddiff span{display:block;font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;margin-bottom:3px}
-  .rdsame span{color:var(--good)} .rddiff span{color:var(--amber)}
-  .rdsame b,.rddiff b{color:var(--ink);font-weight:600}
-  .rdsame i,.rddiff i{color:var(--ink-faint);font-style:normal;font-size:11px}
-  .rdmods{display:flex;flex-direction:column;gap:8px}
-  .rdmod{display:flex;gap:10px;align-items:flex-start;background:var(--sky-1);border:1px solid var(--sky-2);border-radius:11px;padding:9px 11px}
-  .rdg{flex:0 0 26px;width:26px;height:26px;border-radius:99px;border:1px solid var(--sky-3);font-size:13px;color:var(--purple-lt);text-align:center;line-height:25px}
-  .rdb{flex:1;min-width:0}
-  .rdb b{font-size:12.5px;color:var(--ink);font-weight:600}
-  .rdd{font-size:12px;color:var(--ink-dim);line-height:1.5;margin-top:2px}
-  .rdtags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
-  .rdtag{font-size:10px;color:var(--ink-faint);background:var(--sky-0);border:1px solid var(--sky-3);border-radius:99px;padding:2px 8px}
-  .rdtag.on{color:var(--good);border-color:rgba(122,201,160,.5);background:rgba(122,201,160,.08)}
+  .rdweave{font-size:14px;line-height:1.6;color:var(--ink);margin-bottom:10px}
+  .rdmeta{font-size:12.5px;line-height:1.6;color:var(--ink-dim);margin:0 0 8px}
+  .rdmeta b{color:var(--ink);font-weight:600}
+  .rdmods{display:flex;flex-direction:column;gap:7px;margin-top:4px}
+  .rdline{font-size:13px;line-height:1.6;color:var(--ink);margin:0}
+  .rdline b{color:var(--ink);font-weight:600}
   /* division editor */
   .subchips,.chipwrap{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px}
   .subchip{font-size:11.5px;color:var(--selenite);background:rgba(132,184,202,.12);border:1px solid var(--selenite);border-radius:8px;padding:4px 10px}
@@ -1707,20 +1696,20 @@ function modChips(tags,onList){
   return out.join('');
 }
 function modRow(m,onList){
-  return '<div class="rdmod"><span class="rdg">'+m.glyph+'</span><div class="rdb"><b>'+m.name+'</b><div class="rdd">'+esc(m.text)+'</div><div class="rdtags">'+modChips(m.tags,onList)+'</div></div></div>';
+  return '<p class="rdline"><b>'+m.name+':</b> '+esc(m.text)+'</p>';
 }
 function dayReadHTML(date){
   const r=mergedRead(date);
-  const same=r.same.length?'<div class="rdsame"><span>✦ Where they agree</span>'+r.same.slice(0,3).map(t=>'<b>'+TAG_WORD[t]+'</b> <i>'+r.byTag[t].join(' + ')+'</i>').join(' · ')+'</div>':'';
-  const diff=r.diffs.length?'<div class="rddiff"><span>◇ Where they differ</span>'+r.diffs.map(d=>'<b>'+TAG_WORD[d.a]+'</b> <i>'+d.am.join(' + ')+'</i> vs <b>'+TAG_WORD[d.b]+'</b> <i>'+d.bm.join(' + ')+'</i>').join(' · ')+'</div>':'';
-  return '<div class="rdweave">'+esc(r.weave)+'</div>'+same+diff+'<div class="rdmods">'+r.mods.map(m=>modRow(m,r.same)).join('')+'</div>';
+  const same=r.same.length?'<p class="rdmeta"><b>Where they agree:</b> '+r.same.slice(0,3).map(t=>TAG_WORD[t]+' ('+r.byTag[t].join(' + ')+')').join('; ')+'.</p>':'';
+  const diff=r.diffs.length?'<p class="rdmeta"><b>Where they differ:</b> '+r.diffs.map(d=>TAG_WORD[d.a]+' ('+d.am.join(' + ')+') vs '+TAG_WORD[d.b]+' ('+d.bm.join(' + ')+')').join('; ')+'.</p>':'';
+  return '<p class="rdweave">'+esc(r.weave)+'</p>'+same+diff+'<div class="rdmods">'+r.mods.map(m=>modRow(m,r.same)).join('')+'</div>';
 }
 function rangeReadHTML(start,days){
   const r=mergedRange(start,days);
   const onList=r.line.map(o=>o.tag), shortD=d=>DOW[d.getDay()]+' '+d.getDate();
-  const same=r.line.length?'<div class="rdsame"><span>✦ Where they agree</span>'+r.line.slice(0,3).map(o=>'<b>'+TAG_WORD[o.tag]+'</b> <i>'+o.days.length+' days</i>').join(' · ')+'</div>':'';
-  const diff=r.pull?'<div class="rddiff"><span>◇ Where they differ</span><b>'+TAG_WORD[r.pull.a]+'</b> <i>'+r.pull.ad.map(shortD).join(', ')+'</i> vs <b>'+TAG_WORD[r.pull.b]+'</b> <i>'+r.pull.bd.map(shortD).join(', ')+'</i></div>':'';
-  return '<div class="rdweave">'+esc(r.weave)+'</div>'+same+diff+'<div class="rdmods">'+r.mods.map(m=>modRow(m,onList)).join('')+'</div>';
+  const same=r.line.length?'<p class="rdmeta"><b>Where they agree:</b> '+r.line.slice(0,3).map(o=>TAG_WORD[o.tag]+' ('+o.days.length+' days)').join('; ')+'.</p>':'';
+  const diff=r.pull?'<p class="rdmeta"><b>Where they differ:</b> '+TAG_WORD[r.pull.a]+' ('+r.pull.ad.map(shortD).join(', ')+') vs '+TAG_WORD[r.pull.b]+' ('+r.pull.bd.map(shortD).join(', ')+').</p>':'';
+  return '<p class="rdweave">'+esc(r.weave)+'</p>'+same+diff+'<div class="rdmods">'+r.mods.map(m=>modRow(m,onList)).join('')+'</div>';
 }
 let skyReadTab='today';
 function renderReading(){
