@@ -424,6 +424,25 @@ html{zoom:1.5;overflow-x:hidden}
   <div id="dishes"></div>
 
   <div class="note"><b>Rebuilt around meal prep.</b> The <b>store</b> is the hub — two columns, everything you've cooked as tappable icon tiles with portion counts (tap = mark one eaten), freezer vs fridge color-coded, like the fortnight glance. <b>Macros stay up top</b> plus portions-ready / days-covered. <b>🔥 Bulk cook</b> opens a full-screen orchestrator: mise en place first, then a shared timeline so the pressure cooker, oven, air fryer and both burners all run at once and finish together — the batch lands as portions in the store. The <b>cookbook</b> feeds it, each recipe showing how many portions it makes + a ❄ freezer flag. Tell me what to fix — this is the shape before I wire it in.</div>
+
+  <!-- saved recipes from socials (Chez Matthew channel) -->
+  <style>
+    .srsearch{width:100%;background:var(--sky-1);border:1px solid var(--sky-3);border-radius:10px;color:var(--ink);font:inherit;font-size:14px;padding:9px 12px;outline:none;margin:0 0 10px}
+    .srsearch:focus{border-color:var(--selenite)}
+    .srlist{display:flex;flex-direction:column;gap:8px}
+    .srcard{background:var(--sky-1);border:1px solid var(--sky-3);border-left:3px solid var(--amber);border-radius:10px;padding:10px 12px}
+    .srcard .t{font-size:13px;font-weight:600;line-height:1.3}
+    .srcard .t a{color:var(--ink);text-decoration:none}
+    .srcard .t a:active{color:var(--selenite)}
+    .srcard .m{font-size:10px;color:var(--ink-faint);margin-top:3px;display:flex;flex-wrap:wrap;gap:6px}
+    .srcard .m .src{color:var(--selenite)}
+    .srcard .s{font-size:11px;color:var(--ink-dim);margin-top:4px}
+    .srmore{text-align:center;color:var(--ink-faint);font-size:11px;margin-top:10px}
+  </style>
+  <div class="seclbl">Saved recipes · from your socials <span class="n" id="srCount">—</span></div>
+  <input class="srsearch" id="srQ" placeholder="Search 763 saved recipes…" autocomplete="off">
+  <div class="srlist" id="srList"></div>
+  <div class="srmore" id="srMore"></div>
 </div>
 
 <script>
@@ -532,6 +551,35 @@ html{zoom:1.5;overflow-x:hidden}
   document.getElementById('regions').addEventListener('click',e=>{const el=e.target.closest('.region');if(!el)return;
     document.querySelectorAll('.region').forEach(x=>x.classList.remove('on'));el.classList.add('on');renderRegion(el.dataset.r);});
   renderRegion('korean');
+
+  // saved recipes pulled from your socials — the Chez Matthew channel feed
+  (function(){
+    var Q=document.getElementById('srQ'), L=document.getElementById('srList'),
+        M=document.getElementById('srMore'), C=document.getElementById('srCount');
+    var DATA=[], CAP=40;
+    function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    function card(e){
+      var meta='<span class="src">'+esc(e.p)+'</span>';
+      if(e.pr&&e.pr.indexOf('@')===0) meta+='<span>'+esc(e.pr)+'</span>';
+      if(e.c) meta+='<span>▦ '+esc(e.c)+'</span>';
+      if(e.d) meta+='<span>'+e.d+'</span>';
+      var t=e.u?'<a href="'+esc(e.u)+'" target="_blank" rel="noopener">'+esc(e.t)+'</a>':esc(e.t);
+      return '<div class="srcard"><div class="t">'+t+'</div><div class="m">'+meta+'</div>'+(e.s?'<div class="s">'+esc(e.s)+'</div>':'')+'</div>';
+    }
+    function run(){
+      var q=(Q.value||'').trim().toLowerCase(), terms=q?q.split(/\s+/):[];
+      var res=DATA.filter(function(e){ if(!terms.length)return true;
+        var hay=(e.t+' '+(e.kw||[]).join(' ')+' '+(e.s||'')+' '+(e.pr||'')+' '+(e.c||'')).toLowerCase();
+        return terms.every(function(t){return hay.indexOf(t)>-1;}); });
+      if(!q) res=res.slice().sort(function(a,b){return (b.d||'').localeCompare(a.d||'');});
+      C.textContent=res.length+(q?' matches':' saved');
+      L.innerHTML=res.slice(0,CAP).map(card).join('');
+      M.textContent=res.length>CAP?('+ '+(res.length-CAP)+' more — search to narrow'):'';
+    }
+    fetch('food-saves.json').then(function(r){return r.json();}).then(function(d){ DATA=d; run(); })
+      .catch(function(){ if(C)C.textContent='(offline)'; });
+    if(Q) Q.addEventListener('input',run);
+  })();
 </script>
 </body>
 </html>
