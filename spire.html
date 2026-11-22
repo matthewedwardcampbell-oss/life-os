@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>The Spire</title>
+<style>
+  :root{--bg:#0f1226;--panel:#1a1f3d;--p2:#161b38;--ink:#e8e9f5;--mut:#9aa0c8;--ink-faint:#6d7199;--line:#2a3157;
+    --pur:#8a6fd4;--teal:#84b8ca;--grn:#7ac9a0;--org:#e9a95c;--vio:#a487da;--gold:#e8c15a;--white:#eef1ff;
+    color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(135% 90% at 50% 0,#1b2048,var(--bg));color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 36px max(16px,env(safe-area-inset-left));
+    -webkit-font-smoothing:antialiased;line-height:1.5;min-height:100vh}
+  .wrap{max-width:560px;margin:0 auto}
+  a.back{color:var(--teal);font-size:.82rem;text-decoration:none;display:inline-block;margin:0 0 4px}
+  h1{font-weight:650;font-size:1.5rem;margin:.1rem 0 .1rem}
+  .sub{color:var(--mut);font-size:.82rem;margin:0}
+  .say{color:var(--vio);font-size:.8rem;margin:.35rem 0 0}
+  .spire{position:relative;margin:22px 0 0;padding:4px 0}
+  .spine{position:absolute;left:28px;top:14px;bottom:14px;width:2px;
+    background:linear-gradient(var(--gold),var(--vio) 22%,var(--org) 46%,var(--grn) 70%,var(--teal));opacity:.5}
+  .tier{position:relative;display:flex;gap:14px;align-items:flex-start;padding:0 0 26px 0;cursor:pointer}
+  .tier:last-child{padding-bottom:0}
+  .orb{flex:0 0 auto;width:56px;height:56px;border-radius:50%;position:relative;z-index:2;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    border:2px solid var(--c);background:radial-gradient(circle at 50% 36%,color-mix(in srgb,var(--c) 26%,var(--panel)),var(--p2) 72%);
+    box-shadow:0 0 18px color-mix(in srgb,var(--c) 40%,transparent);transition:transform .12s}
+  .tier:active .orb{transform:scale(.94)}
+  .orb .k{font-size:1.1rem;line-height:1}
+  .body{flex:1;min-width:0;padding-top:3px}
+  .tlabel{font-weight:650;font-size:1rem;color:var(--c)}
+  .tmeta{font-size:.72rem;color:var(--mut);letter-spacing:.04em}
+  .tgoal{font-size:.86rem;color:var(--ink);margin:4px 0 0}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 0}
+  .chip{display:inline-flex;align-items:center;gap:5px;font-size:.73rem;color:var(--ink);
+    background:var(--panel);border:1px solid var(--line);border-radius:99px;padding:4px 10px}
+  .chip .dot{width:7px;height:7px;border-radius:50%;background:var(--cc,var(--mut));flex:0 0 auto}
+  .chip.link{cursor:pointer;border-color:var(--c);color:var(--c)}
+  .chip.cur{border-color:var(--c);color:var(--c)}
+  .tap{font-size:.68rem;color:var(--mut);margin-top:7px;opacity:.8}
+  .tap b{color:var(--c)}
+  .radial{position:fixed;inset:0;z-index:40;background:radial-gradient(130% 80% at 50% 40%,#1b2048,var(--bg));
+    padding:max(16px,env(safe-area-inset-top)) 16px 28px;overflow:auto;display:none}
+  .radial.on{display:block}
+  .rwrap{max-width:560px;margin:0 auto;text-align:center}
+  a.rb{color:var(--teal);font-size:.82rem;text-decoration:none;display:inline-block;margin-bottom:6px;cursor:pointer}
+  .rlabel{font-weight:650;font-size:1.25rem;margin:2px 0 0}
+  .rmeta{color:var(--mut);font-size:.78rem}
+  .stage{position:relative;width:min(88vw,380px);aspect-ratio:1;margin:12px auto 2px}
+  .hub,.node{position:absolute;transform:translate(-50%,-50%);border-radius:50%;display:flex;
+    flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    border:2px solid var(--line);background:var(--panel)}
+  .hub{width:30%;aspect-ratio:1;left:50%;top:50%;border-color:var(--c);
+    background:radial-gradient(circle at 50% 38%,color-mix(in srgb,var(--c) 26%,var(--panel)),var(--panel))}
+  .hub b{color:var(--c);font-weight:750;font-size:clamp(.8rem,3.3vw,1rem)}
+  .hub small{display:block;color:var(--mut);font-size:.5em;letter-spacing:.14em;margin-top:2px}
+  .node{width:25%;aspect-ratio:1;padding:3px;gap:1px;border-color:var(--nc,var(--line))}
+  .node .nn{font-size:clamp(.54rem,2vw,.68rem);font-weight:600;line-height:1.05}
+  .node .ns{font-size:clamp(.46rem,1.6vw,.56rem);color:var(--mut)}
+  .rgoal{font-size:.9rem;color:var(--ink);margin:10px auto 0;max-width:420px}
+  .leg{color:var(--mut);font-size:.72rem;margin:16px 0 0;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">‹ Life OS</a>
+  <h1>The Spire</h1>
+  <p class="sub">The climb — this fortnight at the base, the Endowment at the roof.</p>
+  <p class="say">Every rung carries the projects that serve it. Tap a rung to drop into its circle.</p>
+  <div class="spire" id="spire"><div class="spine"></div></div>
+  <p class="leg">Read top-down: the summit you climb toward → where you stand today.</p>
+</div>
+
+<div class="radial" id="radial">
+  <div class="rwrap">
+    <a class="rb" id="rback">‹ the Spire</a>
+    <div class="rlabel" id="rlabel"></div>
+    <div class="rmeta" id="rmeta"></div>
+    <div class="stage" id="stage"></div>
+    <div class="rgoal" id="rgoal"></div>
+    <p class="leg" id="rleg"></p>
+  </div>
+</div>
+
+<script>
+  // ---- live state (shared with the Life OS hub) ----
+  var S={}; try{ S=JSON.parse(localStorage.getItem('constellation-v1'))||{}; }catch(e){ S={}; }
+  var now=new Date(), Y=now.getFullYear(), QI=Math.floor(now.getMonth()/3);
+  var QN=['Q1','Q2','Q3','Q4'];
+  function qGoal(y,qi){ return (S.qGoals&&S.qGoals[y+'-Q'+(qi+1)])||''; }
+  function yGoal(y){ return (S.yGoals&&S.yGoals[String(y)])||''; }
+  function qStep(k){ var y=Y, qi=QI+k; while(qi>3){qi-=4;y++;} return {k:QN[qi]+' '+y, g:qGoal(y,qi), cur:k===0}; }
+
+  var FB={ // fallbacks when a live goal isn't set yet
+    fn:'Day-blocks kept, CRM Wednesday, one real step on the quarter WIG.',
+    year:'Server business live and paying; massage steady as the floor; DJ + Paracosm in real motion.',
+    q:{} };
+  FB.q[Y+'-Q'+(QI+1)]='Massage — stabilize the engine';
+
+  var SC={Active:'#7ac9a0',Building:'#e9a95c',Idea:'#8a6fd4',Paused:'#9aa0c8'};
+  var P={
+    massage:{n:'Massage',s:'Active'}, server:{n:'Server business',s:'Building'},
+    dj:{n:'DJ',s:'Active'}, paracosm:{n:'Paracosm',s:'Building',url:'paracosm.html'},
+    whimsy:{n:'Whimsyco',s:'Building'}, aigen:{n:'AI Gen',s:'Idea'},
+    aileague:{n:'AI Model League',s:'Idea'}, social:{n:'Social',s:'Building'},
+    van:{n:'Van life',s:'Building'}, circle:{n:'The Circle',s:'Active'}
+  };
+
+  var q0=qStep(0), q1=qStep(1), q2=qStep(2);
+  function wig(q,fb){ return q.g || FB.q[q.k.replace(' ','-? ')] || fb; }
+  // build quarter chips with live or fallback WIGs
+  var qMap={}; qMap[q0.k]=q0.g||'Massage — stabilize the engine';
+  var TIERS=[
+    {id:'endow',k:'✦',c:'--gold',label:'Endowment',meta:'TO GAIA · THE ROOF',
+     goal:'Trusts that rebuild nature and rebuild communities — wealth that returns instead of extracts.',
+     nodes:[{n:'Rewild a watershed'},{n:'Community land trust'},{n:'The Dream-Bigger 25'}] },
+    {id:'horizon',k:'🜂',c:'--vio',label:'Horizon',meta:'3 – 10 YEARS',
+     goal:'Off the road and onto the land; the wellness center standing; Paracosm a studio, not a solo build.',
+     nodes:[{n:'Wellness center',s:'with a friend'},{n:'The land',s:'end of the road'},{n:'Paracosm studio'}],
+     projects:['aileague'] },
+    {id:'year',k:'☉',c:'--org',label:String(Y),meta:'THIS YEAR’S VISION',
+     goal: yGoal(Y) || yGoal(Y+1) || FB.year, projects:['social','van'] },
+    {id:'q',k:'◆',c:'--grn',label:'Quarter WIG',meta:'ONE WILDLY IMPORTANT GOAL AT A TIME',
+     goal:'', quarters:[
+       {k:q0.k, wig:q0.g||'Massage — stabilize the engine', cur:true, projects:['massage']},
+       {k:q1.k, wig:q1.g||'Secure data hosting · the server business', projects:['server']},
+       {k:q2.k, wig:q2.g||'Media production · DJ, Paracosm, Whimsyco', projects:['dj','paracosm','whimsy']}
+     ]},
+    {id:'fn',k:'🗓️',c:'--teal',label:'This Fortnight',meta:'THE BASE · KEEP YOUR WORD',
+     goal: (S.fnFocus&&S.fnFocus.trim()) || FB.fn, projects:['circle'] }
+  ];
+
+  function projChips(ids){
+    if(!ids||!ids.length) return '';
+    return '<div class="chips">'+ids.map(function(id){var p=P[id]||{n:id,s:''};
+      var link=p.url?' link" data-url="'+p.url+'" style="--c:var(--grn)':'';
+      return '<span class="chip'+link+'"><span class="dot" style="--cc:'+(SC[p.s]||'#9aa0c8')+'"></span>'+p.n+(p.url?' ›':'')+'</span>';
+    }).join('')+'</div>';
+  }
+  function renderSpire(){
+    var el=document.getElementById('spire'); var h='<div class="spine"></div>';
+    TIERS.forEach(function(t){
+      var chips='';
+      if(t.quarters){ chips='<div class="chips">'+t.quarters.map(function(q){
+          return '<span class="chip'+(q.cur?' cur':'')+'" style="--c:var('+t.c+')">'+q.k+'</span>';
+        }).join('')+'</div>';
+      } else chips=projChips(t.projects);
+      var goal=t.goal?'<p class="tgoal">'+t.goal+'</p>':'';
+      h+='<div class="tier" data-t="'+t.id+'" style="--c:var('+t.c+')">'
+        +'<div class="orb"><span class="k">'+t.k+'</span></div>'
+        +'<div class="body"><div class="tlabel">'+t.label+'</div><div class="tmeta">'+t.meta+'</div>'
+        +goal+chips+'<div class="tap">tap to open the <b>circle</b></div></div></div>';
+    });
+    el.innerHTML=h;
+    el.querySelectorAll('.chip.link').forEach(function(c){ c.onclick=function(e){ e.stopPropagation(); location.href=c.dataset.url; }; });
+    el.querySelectorAll('.tier').forEach(function(x){ x.onclick=function(){ openRadial(x.dataset.t); }; });
+  }
+  function openRadial(id){
+    var t=TIERS.find(function(x){return x.id===id;}); if(!t) return;
+    var r=document.getElementById('radial'); r.style.setProperty('--c','var('+t.c+')');
+    document.getElementById('rlabel').textContent=t.label;
+    document.getElementById('rlabel').style.color='var('+t.c+')';
+    document.getElementById('rmeta').textContent=t.meta;
+    document.getElementById('rgoal').textContent=t.goal||'';
+    var items=[];
+    if(t.quarters){ items=t.quarters.map(function(q){return {nn:q.k,ns:q.wig,cur:q.cur};}); }
+    else { (t.nodes||[]).forEach(function(n){items.push({nn:n.n,ns:n.s||''});});
+           (t.projects||[]).forEach(function(id){var p=P[id]||{n:id,s:''};items.push({nn:p.n,ns:p.s,sc:SC[p.s]});}); }
+    var stage=document.getElementById('stage'), N=items.length, ring=0.74;
+    var hub='<div class="hub" style="--c:var('+t.c+')"><b>MEC<sup>III</sup><small>'+t.label.toUpperCase()+'</small></b></div>';
+    var nodes=items.map(function(it,i){
+      var a=-Math.PI/2 + i*2*Math.PI/Math.max(N,1);
+      var nc=it.cur?'var('+t.c+')':(it.sc||'var(--line)');
+      return '<div class="node" style="left:'+(50+ring*50*Math.cos(a))+'%;top:'+(50+ring*50*Math.sin(a))+'%;--nc:'+nc+'">'
+        +'<span class="nn">'+it.nn+'</span>'+(it.ns?'<span class="ns">'+it.ns+'</span>':'')+'</div>';
+    }).join('');
+    stage.innerHTML=hub+nodes;
+    document.getElementById('rleg').textContent=t.quarters
+      ?'The one-WIG-per-quarter ladder — the lit ring is the quarter you’re in.'
+      :'The goal at center; its projects and aims orbit it.';
+    r.classList.add('on'); window.scrollTo(0,0);
+  }
+  document.getElementById('rback').onclick=function(){ document.getElementById('radial').classList.remove('on'); };
+  renderSpire();
+</script>
+</body>
+</html>

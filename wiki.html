@@ -1,0 +1,264 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Paracosm Wiki</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+  :root{
+    --bg:#0f1226;--panel:#1a1f3d;--p2:#161b38;--ink:#e8e9f5;--mut:#9aa0c8;--line:#2a3157;
+    --pur:#8a6fd4;--teal:#84b8ca;--grn:#7ac9a0;--org:#e9a95c;--vio:#a487da;--gold:#e8c15a;--red:#d98a8a;
+    --vault:#c77dff;--white:#eef1ff;
+    color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(135% 85% at 50% 0,#1b2048,var(--bg));color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+    padding-block:16px 36px;-webkit-font-smoothing:antialiased;line-height:1.55;min-height:100vh}
+  .wrap{max-width:600px;margin:0 auto;position:relative}
+  .crumb{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:.72rem;color:var(--mut);margin:0 0 2px}
+  .crumb b{color:var(--teal);font-weight:600}
+  a.back{color:var(--teal);font-size:.82rem;text-decoration:none;display:inline-block;margin:0 0 4px;cursor:pointer}
+  h1{font-weight:650;font-size:1.5rem;margin:.1rem 0 .1rem}
+  .sub{color:var(--mut);font-size:.82rem;margin:0}
+  .lockbtn{position:absolute;top:2px;right:0;width:34px;height:34px;border-radius:50%;cursor:pointer;
+    border:1px solid var(--line);background:var(--panel);color:var(--mut);font-size:.9rem;line-height:1;
+    display:flex;align-items:center;justify-content:center}
+  .lockbtn.on{border-color:var(--vault);color:var(--vault);box-shadow:0 0 12px color-mix(in srgb,var(--vault) 40%,transparent)}
+  /* radial hub */
+  .stage{position:relative;width:min(92vw,440px);aspect-ratio:1;margin:16px auto 2px}
+  .hub,.cat{position:absolute;transform:translate(-50%,-50%);border-radius:50%;display:flex;
+    flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer;
+    border:2px solid var(--line);background:var(--panel);transition:transform .12s}
+  .hub{width:26%;aspect-ratio:1;left:50%;top:50%;border-color:var(--vio);
+    background:radial-gradient(circle at 50% 38%,#2b2f5c,var(--panel))}
+  .hub b{color:var(--vio);font-weight:750;font-size:clamp(.74rem,3vw,.96rem)}
+  .hub small{display:block;color:var(--mut);font-size:.5em;letter-spacing:.14em;margin-top:2px}
+  .cat{width:29%;aspect-ratio:1;gap:2px;border-color:var(--c);
+    box-shadow:0 0 16px color-mix(in srgb,var(--c) 30%,transparent)}
+  .cat:active{transform:translate(-50%,-50%) scale(.94)}
+  .cat .ic{font-size:1.25rem;line-height:1}
+  .cat .nm{font-size:clamp(.58rem,2.2vw,.76rem);font-weight:650;color:var(--c);line-height:1.05;padding:0 4px}
+  .cat .ct{font-size:.55rem;color:var(--mut)}
+  .hubnote{text-align:center;color:var(--mut);font-size:.76rem;margin:10px auto 0;max-width:440px}
+  /* category list */
+  .cathead{display:flex;align-items:center;gap:12px;margin:14px 0 2px}
+  .catorb{width:50px;height:50px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+    font-size:1.4rem;border:2px solid var(--c);background:radial-gradient(circle at 50% 36%,color-mix(in srgb,var(--c) 24%,var(--panel)),var(--p2))}
+  .cathead h1{color:var(--c);margin:0}
+  .alist{margin:14px 0 0;display:flex;flex-direction:column;gap:10px}
+  .acard{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:12px;
+    padding:12px 14px;cursor:pointer;transition:transform .1s}
+  .acard:active{transform:scale(.99)}
+  .acard .at{font-weight:650;font-size:.98rem;color:var(--ink)}
+  .acard .ab{font-size:.8rem;color:var(--mut);margin-top:3px}
+  /* article */
+  .art{margin:14px 0 0}
+  .art h1{color:var(--c);margin:0 0 2px}
+  .art .kick{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:0 0 10px}
+  .art p{margin:.7rem 0;font-size:.92rem}
+  .art b{color:var(--white)}
+  .art ul{margin:.5rem 0;padding-left:1.1rem}
+  .art li{margin:.35rem 0;font-size:.92rem}
+  .art .lead{font-size:.98rem;color:var(--ink)}
+  .spoiler-banner{background:color-mix(in srgb,var(--vault) 14%,var(--panel));border:1px solid var(--vault);
+    border-radius:10px;padding:8px 12px;font-size:.78rem;color:var(--vault);margin:0 0 12px}
+  .seealso{margin:18px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:.8rem;color:var(--mut)}
+  .foot{color:var(--mut);font-size:.72rem;text-align:center;margin-top:22px}
+  /* pin overlay */
+  .pinovl{position:fixed;inset:0;z-index:60;background:rgba(8,10,24,.72);backdrop-filter:blur(3px);
+    display:flex;align-items:center;justify-content:center;padding:20px}
+  .pinovl[hidden]{display:none}
+  .pinbox{background:var(--panel);border:1px solid var(--vault);border-radius:16px;padding:20px;width:min(90vw,320px);text-align:center;
+    box-shadow:0 0 40px color-mix(in srgb,var(--vault) 30%,transparent)}
+  .pinbox h3{margin:0 0 4px;color:var(--vault);font-size:1.05rem}
+  .pinbox p{margin:0 0 12px;color:var(--mut);font-size:.78rem}
+  .pinbox input{width:100%;background:var(--p2);border:1px solid var(--line);border-radius:10px;color:var(--ink);
+    font-size:1.3rem;letter-spacing:.3em;text-align:center;padding:10px;outline:none}
+  .pinbox input:focus{border-color:var(--vault)}
+  .pinrow{display:flex;gap:8px;margin-top:12px}
+  .pinrow button{flex:1;border-radius:99px;padding:.55rem;font:inherit;font-weight:600;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--mut)}
+  .pinrow .ok{border-color:var(--vault);color:var(--vault)}
+  .pinerr{color:var(--red);font-size:.78rem;margin-top:8px;min-height:1em}
+</style>
+</head><body>
+
+<div class="wrap">
+  <button class="lockbtn" id="lock" title="Keeper’s key">🔒</button>
+  <a class="back" id="back">‹ Paracosm</a>
+  <div class="crumb" id="crumb"></div>
+  <div id="view"></div>
+  <p class="foot">Paracosm Wiki · the living canon · loyal play earns an amendment</p>
+</div>
+
+<div class="pinovl" id="pinovl" hidden>
+  <div class="pinbox">
+    <h3>Keeper’s Key</h3>
+    <p>The Vault holds spoilers — for your eyes for now.</p>
+    <input id="pin" inputmode="numeric" maxlength="8" placeholder="····" autocomplete="off">
+    <div class="pinrow"><button id="pincancel">Cancel</button><button class="ok" id="pinok">Unlock</button></div>
+    <div class="pinerr" id="pinerr"></div>
+  </div>
+</div>
+
+<script>
+var KEY='0518'; // change anytime — soft gate only
+
+var WIKI=[
+ {id:'cosmo',nm:'Cosmology',ic:'✦',c:'--gold',blurb:'The poles, the Source, the shape of everything.',articles:[
+   {id:'poles',t:'The Two Poles & the Grey',k:'the spine of the cosmos',lead:'One cosmic substance, three states — and the whole wheel turns between two poles.',body:
+     "<p><b>White · Gaia</b> is the maker-pole — the Biome Mother, light, cultivation. <b>Black · the Looking-Glass One</b> is the dissolver-pole — the inverted universe where black holes are suns, carnival and psychedelia. Between them runs the <b>Grey</b> — flux, not stasis; the flowing middle where perfection lives as motion.</p>"+
+     "<p>The <b>13 Primordial Ethereals</b>: 1 White (Gaia), 11 Grey (7 Seated of the bright arc + 4 Fallen of the shadow arc), and 1 Black. The 36 manifest gods ride a 36-decan wheel — twelve signs by three forces.</p>"},
+   {id:'source',t:'The Source',k:'the epic that ties it together',lead:'A Wheel-of-Time-scale saga across thousands of worlds.',body:
+     "<p>Not one planet but thousands; a cast carried like League of Legends, dense the way a hurricane is dense — made of the matter drawn in around it. This is <b>the Source</b>: the epic spine the micro-games all hang from.</p>"},
+   {id:'molecules',t:'Sun Molecules & Dyson Hives',k:'magic as stellar chemistry',lead:'The Unity casts by arranging stars.',body:
+     "<p>The atom is a <b>star sealed in a Dyson sphere</b> — a caged sun. Bond many across galaxies and you build an <b>intergalactic molecule</b>, and its <i>geometry</i> is its spell. The water-molecule shape is the <b>Spell of Abundance</b> — overflow, fertility, compounding to Gaia. The Unity doesn't channel with hands; it casts by arranging suns.</p>"}
+ ]},
+ {id:'unity',nm:'The Unity',ic:'⚖',c:'--vio',blurb:'One federal org — three chambers, seven divisions.',articles:[
+   {id:'overview',t:'The Unity',k:'one org, seven divisions',lead:'Not seven factions — one federal Unity with seven governance divisions.',body:
+     "<p>The <b>Unity</b> is a single federal organization across the ROYGBIV spectrum: <b>seven divisions</b> (governance branches, not rival factions), ruled by <b>three chambers</b> — the Aggregate, the Assembly, and the Convergence Council. In the existential hour the seven fuse into one war-body.</p>"+
+     "<p>Beyond the Unity, <b>36+ core factions</b> fill the universe, each a pantheon god — those live in <a class=\"back\" data-c=\"factions\" style=\"margin:0\">Factions ›</a>.</p>"},
+   {id:'aggregate',t:'The Aggregate',k:'the house · direct democracy',lead:'The home world’s whole voice, voting as one.',body:
+     "<p>The <b>Aggregate</b> is direct democracy — the aggregate will of every citizen of the home world, gathered into a single vote. No representatives stand between the people and the decision; the name says exactly what the body does.</p>"},
+   {id:'assembly',t:'The Assembly',k:'representation · the plenums',lead:'The representative chamber, assembled up through nested Plenums.',body:
+     "<p>The <b>Assembly</b> is representation, built in <b>Plenums</b> by scale. The <b>1st Plenum</b> is the lowest house — planet and moon, closest to the people — and however tall the structure grows, the 1st Plenum keeps a direct line to the Assembly, so the ground floor is never buried. The <b>2nd Plenum</b> is the scale above (system), then cluster, region, sector, up to the galactic.</p>"+
+     "<p>Each area runs as many plenums and seats as its density needs — representation tracks people, not a fixed map. The <b>Justicars audit every Plenum</b>.</p>"},
+   {id:'council',t:'The Convergence Council',k:'the apex · the merged mind',lead:'The greatest minds of every division, soul-linked into one.',body:
+     "<p>The <b>Convergence Council</b> — <i>the Council</i> for short — is the apex chamber. Its members are drawn from <b>every division</b> (a Nomad navigator, a Wellspring healer, a Justicar sage, not only scholars), chosen for wisdom and selflessness; ambition disqualifies itself, because ego is amplified in the merge.</p>"+
+     "<p>The Academy supplies minds; the Justicars are the synapses, the Soul-Link lattice. The test for admission is one question: <i>will you dissolve your name into the whole?</i> <b>Convergence</b> names what they become; <b>Council</b> names the body that sits.</p>"},
+   {id:'warbody',t:'The War-Body',k:'seven become one',lead:'When survival demands it, the seven fuse into a single body.',body:
+     "<p>In the existential hour the seven divisions fuse into one — the <b>Unity</b> made flesh. The <b>Council is the mind</b>; the war-body is the body it pilots. Minds merge to <i>rule</i>, the whole merges to <i>survive</i>, and the mind always steers.</p>"},
+   {id:'nomads',t:'Nomads — Red',k:'division · Preservation',lead:'Souls carried, not acreage held.',body:
+     "<p>Mobile and non-territorial. The <b>Nomads</b> read a system's fate early and <b>evacuate the living</b> before a biome bloom remakes it. Tied to no ground, they still hold representation in the Assembly — their constituency is people, not place.</p>"},
+   {id:'techne',t:'Techne — Orange',k:'division · Virtuosity',lead:'The makers.',body:
+     "<p><b>Techne</b> are the engineers and artificers — mastery of craft. They build the works the Unity runs on.</p>"},
+   {id:'quorum',t:'Quorum — Yellow',k:'division · Ambition',lead:'The driven.',body:
+     "<p>The <b>Quorum</b> forges ambition into fuel — the climbers and founders. It is the opposite pole to the Council, which asks you to set ambition down.</p>"},
+   {id:'academy',t:'Academy — Green',k:'division · Reason',lead:'The Well — knowledge as the mission.',body:
+     "<p>The <b>Academy</b> is the mission-faction — reason and endowment. It supplies the minds to the Convergence Council and carries Nomad and Confederacy interests nested within its own structure.</p>"},
+   {id:'justicars',t:'Justicars — Blue',k:'division · Devotion',lead:'The honor-bound.',body:
+     "<p>The <b>Justicars</b> hold the code, <b>audit every Plenum</b>, and serve as the <b>synapses of the Council</b> through the Soul-Link lattice. Their elite individuals are the Executors.</p>"},
+   {id:'wellspring',t:'Wellspring — Indigo',k:'division · Invention',lead:'Care and teaching as a right.',body:
+     "<p><b>Wellspring</b> is universal public health and education — medical shamans and techno-mages. Its free schools are the <b>Lyceum</b>; its field cells are <b>Mission Circles</b> and the permanent <b>Everlasting Circle</b>.</p>"},
+   {id:'establishment',t:'Establishment — Violet',k:'division · Dominion',lead:'The governing and ownership estate.',body:
+     "<p>The <b>Establishment</b> is the Overseer Congress with the old Confederacy folded in — stewardship of what is held and built, the estate of dominion and order.</p>"}
+ ]},
+ {id:'factions',nm:'Factions',ic:'◆',c:'--grn',blurb:'The 36+ core factions of the universe.',articles:[
+   {id:'roster',t:'The 36 Factions',k:'the universe roster',lead:'Thirty-six-plus core factions, each a pantheon god — blatant or hidden.',body:
+     "<p>Beyond the Unity, the universe holds <b>36+ core factions</b>, each reflecting one of the 36 manifest gods on the decan wheel. The Unity is one bloc among them; the Biome factions, the hives of Voracity, and the Separation are others. This roster fills in as the canon grows.</p>"},
+   {id:'shards',t:'The 16 Shards overlay',k:'design mapping',lead:'The Shards of Adonalsium laid over the grid.',body:
+     "<p>Working overlay — Nomads=Preservation, Quorum=Ambition, Academy=Reason+Endowment, Justicars=Devotion, Wellspring=Invention, Techne=Virtuosity, Establishment=Dominion; poles White/Gaia=Cultivation, Black=Whimsy, Grey=Mercy; keystone=Honor.</p>"}
+ ]},
+ {id:'vora',nm:'Voracity',ic:'🜂',c:'--teal',blurb:'The appetite, the swarm, biomes and elementals.',articles:[
+   {id:'loop',t:'Extract vs Cultivate',k:'the core loop',lead:'Every actor runs on appetite; the game is what you do with it.',body:
+     "<p><b>Voracity</b> is appetite — the drive to grow. Spend it <b>extractively</b> (take and keep) and you grow fast and hollow, raising your signature. Spend it <b>cultivationally</b> (take and give onward, to Gaia) and you grow slow and compounding, and your signature falls. Gaia is the one store the swarm can't eat.</p>"},
+   {id:'swarm',t:'The Swarm',k:'appetite with no valve',lead:'A hurricane of consumed matter.',body:
+     "<p>The <b>swarm</b> is Voracity that never learned to give — it eats and becomes what it eats, a storm of consumed matter. You can't out-eat it (that only feeds it); you can only out-cultivate it, starving it by giving matter a home it can't reach.</p>"},
+   {id:'biomes',t:'Biomes vs Elementals',k:'the living terraformers',lead:'Biome factions compose whole systems into living molecules.',body:
+     "<p><b>Biome factions</b> don't build Dyson spheres — they gather until their living mass occludes a sun, then reshape the system into ideal worlds, even walking orbits to the ideal climate band: <b>intergalactic feng shui</b>. Their molecule is a whole tuned solar system. When a bloom gathers, the <b>Nomads evacuate</b> before the worlds start to move.</p>"+
+     "<p>Each biome tames one element into living balance; corrupted, it decays back to its raw <b>elemental</b> (ocean→fire, forest→drought). The elemental factions are, in effect, murdered biomes.</p>"},
+   {id:'voramol',t:'Molecules of Voracity',k:'the free radical',lead:'What the hive builds has one property: it needs the next star.',body:
+     "<p>A molecule built by Voracity is a <b>stellar free radical</b> — a permanent open bond, an unsatisfiable hunger. It grows only by stripping stars off stable structures, the theft chain-propagates like oxidation, all captured light turns inward to the hive-verse, and when the outside runs out it eats itself. Its waste — spent <b>brown dwarfs</b> — becomes the Separation's armory.</p>"}
+ ]},
+ {id:'sep',nm:'The Separation',ic:'🜃',c:'--red',blurb:'Ruin, Odium, and the corruption that un-makes.',articles:[
+   {id:'ruin',t:'Ruin & Odium',k:'the corruption pole',lead:'The force that decomposes what the Unity composes.',body:
+     "<p>The <b>Separation</b> carries Ruin and Odium — the drive to un-make. Where the Unity composes many forces into living balance, the Separation strips balance back to a single screaming force.</p>"},
+   {id:'terangreal',t:'Brown-dwarf ter’angreal',k:'dead stars as weapons',lead:'Failed suns wielded as fixed dark instruments.',body:
+     "<p>The Separation can't build radiant molecules, so it reaches for <b>brown dwarfs</b> — stars that never caught fire — and uses them as <b>ter’angreal</b>: single-purpose dark instruments, no bonding, no growth. A galaxy of shaped light against a fist full of failed stars.</p>"},
+   {id:'deascend',t:'Corruption / De-ascension',k:'abundance in reverse',lead:'The same engine as the biomes, thrown into reverse.',body:
+     "<p>Where the water-molecule speeds a culture's <b>ascension</b>, Separation's corruption runs it backward — <b>de-ascension</b>: dragging a risen culture down, un-tuning the system, letting climates spoil and orbits drift wrong. Not a monster added, but a balance broken.</p>"}
+ ]}
+];
+
+var VAULT={id:'vault',nm:'The Vault',ic:'🔒',c:'--vault',blurb:'Spoilers — plot reveals, kept for your eyes.',articles:[
+   {id:'wanderer',t:'The 37th & the Progenitor',k:'the player reveal',lead:'The one who walks outside the board.',body:
+     "<p>The <b>37th — the Wanderer</b> — is the Player: center and container both, the Fool and the World fused, not a god. The <b>Progenitor</b> sits fully outside. White matter is Saidar, Black matter is Saidin — the two halves that work the Wheel; the Wanderer and the Progenitor wield the <b>True Power</b>, drawn from outside the two.</p>"},
+   {id:'schism',t:'The Bloodline Schism',k:'Academy & Separation',lead:'The enemy is family.',body:
+     "<p>The <b>Academy</b> and the leaders of the <b>Cult of Separation</b> share common ancestry — one lineage stewards knowledge inside the Unity, the other broke away into division. The Academy/Separation duality is a <b>bloodline schism inside the structure</b>, not two unrelated factions.</p>"},
+   {id:'swarmlesson',t:'What the Swarm Teaches',k:'why the Unity fuses',lead:'The swarm is the teacher that forges the Unity.',body:
+     "<p>Meet the swarm with any single virtue and it eats that virtue — ambition, discipline, even flight. The only thing that survives is the seven <b>held together</b>. So the swarm teaches the galaxy the one lesson the Convergence was built to act on: <i>what we learn in the swarm is what unites the Unity.</i> The endgame raid is the first forging of the war-body — fusion learned in fire, not decreed from the top.</p>"},
+   {id:'novacuum',t:'No Vacuum Evil',k:'the compassion engine',lead:'Every villain is the hero of their own story.',body:
+     "<p>There is <b>no vacuum evil</b>. Darkness is a necessary season on the Wheel, not a sin — and the Fallen fell <i>into</i> the middle, not out of it: still family. The White / Grey / Black pantheons are designed on compassion, so every antagonist is walking a real path, not playing a cardboard villain.</p>"}
+ ]};
+
+var state={cat:null,art:null};
+var unlocked=false; try{ unlocked=sessionStorage.getItem('wikiVault')==='1'; }catch(e){}
+var backEl=document.getElementById('back'), crumbEl=document.getElementById('crumb'), viewEl=document.getElementById('view'),
+    lockEl=document.getElementById('lock'), pinovl=document.getElementById('pinovl');
+
+function realms(){ return unlocked ? WIKI.concat([VAULT]) : WIKI; }
+function cat(id){ return WIKI.concat([VAULT]).find(function(c){return c.id===id;}); }
+function art(c,id){ return c.articles.find(function(a){return a.id===id;}); }
+
+function render(){
+  var c=state.cat?cat(state.cat):null;
+  if(c===VAULT && !unlocked){ c=null; state.cat=null; state.art=null; }
+  var a=(c&&state.art)?art(c,state.art):null;
+  var cr='<span>Spire</span> › <span>Paracosm</span> › <b>Wiki</b>';
+  if(c){ cr+=' › '+(a?'<span style="color:var('+c.c+')">'+c.nm+'</span>':'<b style="color:var('+c.c+')">'+c.nm+'</b>'); }
+  if(a){ cr+=' › <b>'+a.t+'</b>'; }
+  crumbEl.innerHTML=cr;
+  backEl.textContent = a?('‹ '+c.nm) : c?'‹ Wiki' : '‹ Paracosm';
+  lockEl.textContent = unlocked?'🔓':'🔒';
+  lockEl.classList.toggle('on',unlocked);
+  if(a) viewEl.innerHTML=renderArticle(c,a);
+  else if(c) viewEl.innerHTML=renderCategory(c);
+  else viewEl.innerHTML=renderHome();
+  bind(); window.scrollTo(0,0);
+}
+function renderHome(){
+  var R=realms(), N=R.length, ring=0.72;
+  var h='<h1>Paracosm Wiki</h1><p class="sub">The living canon — tap a realm.</p><div class="stage">';
+  h+='<div class="hub"><b>MEC<sup>III</sup><small>THE CANON</small></b></div>';
+  R.forEach(function(c,i){
+    var ang=-Math.PI/2 + i*2*Math.PI/N;
+    var left=50+ring*50*Math.cos(ang), top=50+ring*50*Math.sin(ang);
+    h+='<div class="cat" data-c="'+c.id+'" style="left:'+left+'%;top:'+top+'%;--c:var('+c.c+')">'
+      +'<span class="ic">'+c.ic+'</span><span class="nm">'+c.nm+'</span>'
+      +'<span class="ct">'+c.articles.length+' entries</span></div>';
+  });
+  h+='</div><p class="hubnote">'+(unlocked
+      ? 'Six realms open — the <span style="color:var(--vault)">Vault</span> is unlocked.'
+      : 'Five realms of public canon. A sixth is sealed.')+'</p>';
+  return h;
+}
+function renderCategory(c){
+  var h='<div class="cathead" style="--c:var('+c.c+')"><div class="catorb">'+c.ic+'</div>'
+    +'<div><h1>'+c.nm+'</h1><div class="sub">'+c.blurb+'</div></div></div>';
+  if(c===VAULT) h+='<div class="spoiler-banner">⚠ Spoilers below — these are the reveals, kept out of the public wiki.</div>';
+  h+='<div class="alist">';
+  c.articles.forEach(function(a){
+    h+='<div class="acard" data-a="'+a.id+'" style="--c:var('+c.c+')">'
+      +'<div class="at">'+a.t+'</div><div class="ab">'+a.lead+'</div></div>';
+  });
+  return h+'</div>';
+}
+function renderArticle(c,a){
+  var idx=c.articles.indexOf(a), nxt=c.articles[idx+1];
+  var h='<div class="art" style="--c:var('+c.c+')"><div class="kick">'+c.nm+' · '+a.k+'</div><h1>'+a.t+'</h1>';
+  if(c===VAULT) h+='<div class="spoiler-banner">⚠ Spoiler</div>';
+  h+='<p class="lead">'+a.lead+'</p>'+a.body;
+  h+='<div class="seealso">'+(nxt?'Next: <a class="back" data-a="'+nxt.id+'" style="margin:0">'+nxt.t+' ›</a>':'End of '+c.nm+'.')+'</div></div>';
+  return h;
+}
+function bind(){
+  viewEl.querySelectorAll('[data-c]').forEach(function(x){x.onclick=function(){state.cat=x.dataset.c;state.art=null;render();};});
+  viewEl.querySelectorAll('[data-a]').forEach(function(x){x.onclick=function(){state.art=x.dataset.a;render();};});
+}
+backEl.onclick=function(){ if(state.art){state.art=null;} else if(state.cat){state.cat=null;} else { location.href='paracosm.html'; return; } render(); };
+
+// lock / vault
+lockEl.onclick=function(){
+  if(unlocked){ unlocked=false; try{sessionStorage.removeItem('wikiVault');}catch(e){} if(state.cat==='vault'){state.cat=null;state.art=null;} render(); }
+  else { document.getElementById('pinerr').textContent=''; document.getElementById('pin').value=''; pinovl.hidden=false; setTimeout(function(){document.getElementById('pin').focus();},50); }
+};
+function tryUnlock(){
+  if(document.getElementById('pin').value===KEY){ unlocked=true; try{sessionStorage.setItem('wikiVault','1');}catch(e){} pinovl.hidden=true; render(); }
+  else { document.getElementById('pinerr').textContent='Not the key.'; document.getElementById('pin').value=''; }
+}
+document.getElementById('pinok').onclick=tryUnlock;
+document.getElementById('pincancel').onclick=function(){ pinovl.hidden=true; };
+document.getElementById('pin').addEventListener('keydown',function(e){ if(e.key==='Enter')tryUnlock(); });
+
+render();
+</script>
+</body></html>

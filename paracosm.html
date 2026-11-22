@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Paracosm</title>
+<style>
+  :root{--bg:#0f1226;--panel:#1a1f3d;--p2:#161b38;--ink:#e8e9f5;--mut:#9aa0c8;--ink-faint:#6d7199;--line:#2a3157;
+    --pur:#8a6fd4;--teal:#84b8ca;--grn:#7ac9a0;--org:#e9a95c;--vio:#a487da;--gold:#e8c15a;--white:#eef1ff;
+    color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(135% 85% at 50% 0,#1b2048,var(--bg));color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 32px max(16px,env(safe-area-inset-left));
+    -webkit-font-smoothing:antialiased;line-height:1.55;min-height:100vh}
+  .wrap{max-width:560px;margin:0 auto}
+  a.back{color:var(--teal);font-size:.82rem;text-decoration:none;display:inline-block;margin:0 0 4px}
+  .crumb{font-size:.72rem;color:var(--mut);margin:0 0 2px}
+  .crumb b{color:var(--teal)}
+  h1{font-weight:650;font-size:1.5rem;margin:.1rem 0 0}
+  .sub{color:var(--mut);font-size:.82rem;margin:2px 0 0}
+  .stage{position:relative;width:min(90vw,400px);aspect-ratio:1;margin:18px auto 2px}
+  .hub,.node{position:absolute;transform:translate(-50%,-50%);border-radius:50%;display:flex;
+    flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    border:2px solid var(--line);background:var(--panel);transition:transform .12s}
+  .hub{width:30%;aspect-ratio:1;left:50%;top:50%;border-color:var(--vio);
+    background:radial-gradient(circle at 50% 38%,#2b2f5c,var(--panel))}
+  .hub b{color:var(--vio);font-weight:750;font-size:clamp(.82rem,3.2vw,1.05rem)}
+  .hub small{display:block;color:var(--mut);font-size:.5em;letter-spacing:.14em;margin-top:2px}
+  .node{width:30%;aspect-ratio:1;gap:2px;cursor:pointer;border-color:var(--c);
+    box-shadow:0 0 16px color-mix(in srgb,var(--c) 30%,transparent)}
+  .node.soon{opacity:.5;cursor:default;box-shadow:none;border-style:dashed}
+  .node:not(.soon):active{transform:translate(-50%,-50%) scale(.94)}
+  .node .ic{font-size:1.4rem;line-height:1}
+  .node .nm{font-size:clamp(.6rem,2.3vw,.78rem);font-weight:650;color:var(--c);line-height:1.05;padding:0 4px}
+  .node.soon .nm{color:var(--mut)}
+  .node .st{font-size:.55rem;color:var(--mut)}
+  .note{text-align:center;color:var(--mut);font-size:.78rem;margin:10px auto 0;max-width:420px}
+  .foot{color:var(--mut);font-size:.72rem;text-align:center;margin-top:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="spire.html">‹ Spire</a>
+  <div class="crumb">Spire › Projects › <b>Paracosm</b></div>
+  <h1>Paracosm</h1>
+  <p class="sub">The world — its canon, its shell, and the games it grows.</p>
+
+  <div class="stage" id="stage">
+    <div class="hub"><b>MEC<sup>III</sup><small>PARACOSM</small></b></div>
+  </div>
+  <p class="note" id="note">Tap the Wiki to read the canon, or the Penultimate to step behind the Looking Glass.</p>
+
+  <p class="foot">Paracosm · the fruit of the tree · non-extractive, to Gaia</p>
+</div>
+
+<script>
+  var NODES=[
+    {nm:'Wiki', ic:'📖', c:'--gold', st:'the canon', url:'wiki.html'},
+    {nm:'Penultimate', ic:'🪞', c:'--vio', st:'the shell', url:'penultimate.html'},
+    {nm:'Voracity', ic:'🜂', c:'--teal', st:'in dev', soon:true},
+    {nm:'Civ Game', ic:'◆', c:'--grn', st:'in dev', soon:true}
+  ];
+  var stage=document.getElementById('stage'), N=NODES.length, ring=0.72;
+  NODES.forEach(function(nd,i){
+    var el=document.createElement('div');
+    el.className='node'+(nd.soon?' soon':'');
+    el.style.setProperty('--c','var('+nd.c+')');
+    var ang=-Math.PI/2 + i*2*Math.PI/N;
+    el.style.left=(50+ring*50*Math.cos(ang))+'%';
+    el.style.top =(50+ring*50*Math.sin(ang))+'%';
+    el.innerHTML='<span class="ic">'+nd.ic+'</span><span class="nm">'+nd.nm+'</span><span class="st">'+nd.st+'</span>';
+    if(!nd.soon) el.addEventListener('click',function(){ location.href=nd.url; });
+    stage.appendChild(el);
+  });
+</script>
+</body>
+</html>
