@@ -425,8 +425,22 @@ html{zoom:1.5;overflow-x:hidden}
 
   <div class="note"><b>Rebuilt around meal prep.</b> The <b>store</b> is the hub — two columns, everything you've cooked as tappable icon tiles with portion counts (tap = mark one eaten), freezer vs fridge color-coded, like the fortnight glance. <b>Macros stay up top</b> plus portions-ready / days-covered. <b>🔥 Bulk cook</b> opens a full-screen orchestrator: mise en place first, then a shared timeline so the pressure cooker, oven, air fryer and both burners all run at once and finish together — the batch lands as portions in the store. The <b>cookbook</b> feeds it, each recipe showing how many portions it makes + a ❄ freezer flag. Tell me what to fix — this is the shape before I wire it in.</div>
 
-  <!-- saved recipes from socials (Chez Matthew channel) -->
+  <!-- COOKBOOK IMPORTS (alpha): master templates + recipe library -->
   <style>
+    .n.alpha{background:rgba(233,169,92,.16);color:var(--amber)}
+    .tcard{background:var(--sky-1);border:1px solid var(--sky-3);border-radius:11px;margin:0 0 8px;overflow:hidden}
+    .tcard summary{list-style:none;cursor:pointer;padding:11px 13px;display:flex;gap:9px;align-items:baseline}
+    .tcard summary::-webkit-details-marker{display:none}
+    .tlv{font-size:10px;font-weight:700;color:var(--amber);flex:0 0 auto;letter-spacing:.04em}
+    .tnm{font-size:13px;font-weight:600}
+    .tcard[open] summary{border-bottom:1px solid var(--sky-3)}
+    .tbody{padding:4px 13px 12px}
+    .trow{font-size:11.5px;margin:7px 0 0;color:var(--ink-dim);line-height:1.5}
+    .trow b{color:var(--selenite);font-weight:700;display:block;font-size:9px;letter-spacing:.07em;text-transform:uppercase;margin-bottom:1px}
+    .tready{font-size:11px;font-style:italic;color:var(--good);margin-top:9px}
+    .rlcats{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin:0 0 9px;-webkit-overflow-scrolling:touch}
+    .rlcat{flex:0 0 auto;font-size:11px;border:1px solid var(--sky-3);background:var(--sky-1);color:var(--ink-dim);border-radius:8px;padding:5px 10px;cursor:pointer;white-space:nowrap}
+    .rlcat.on{border-color:var(--amber);color:var(--amber)}
     .srsearch{width:100%;background:var(--sky-1);border:1px solid var(--sky-3);border-radius:10px;color:var(--ink);font:inherit;font-size:14px;padding:9px 12px;outline:none;margin:0 0 10px}
     .srsearch:focus{border-color:var(--selenite)}
     .srlist{display:flex;flex-direction:column;gap:8px}
@@ -439,8 +453,13 @@ html{zoom:1.5;overflow-x:hidden}
     .srcard .s{font-size:11px;color:var(--ink-dim);margin-top:4px}
     .srmore{text-align:center;color:var(--ink-faint);font-size:11px;margin-top:10px}
   </style>
-  <div class="seclbl">Saved recipes · from your socials <span class="n" id="srCount">—</span></div>
-  <input class="srsearch" id="srQ" placeholder="Search 763 saved recipes…" autocomplete="off">
+  <div class="seclbl">Master templates · the cook’s ladder <span class="n alpha">alpha</span></div>
+  <div class="note" style="margin-top:0">Eight levels, simple → complex, built from the patterns in your own saves. Master each level’s formula and its “ready when” before moving up.</div>
+  <div id="tpl" style="margin-top:10px"></div>
+
+  <div class="seclbl">The recipe library · <span id="rlN">752</span> saved recipes <span class="n alpha">alpha</span></div>
+  <div class="rlcats" id="rlCats"></div>
+  <input class="srsearch" id="srQ" placeholder="Search your recipe library…" autocomplete="off">
   <div class="srlist" id="srList"></div>
   <div class="srmore" id="srMore"></div>
 </div>
@@ -552,33 +571,60 @@ html{zoom:1.5;overflow-x:hidden}
     document.querySelectorAll('.region').forEach(x=>x.classList.remove('on'));el.classList.add('on');renderRegion(el.dataset.r);});
   renderRegion('korean');
 
-  // saved recipes pulled from your socials — the Chez Matthew channel feed
+  // ---- Cookbook imports (alpha): master templates + recipe library ----
+  var TPL=[
+    {n:"Blends, Sauces & Dressings",f:"Sauce = FAT + ACID + SALT + SWEET + HEAT (one from each, whisk, taste). Vinaigrette 3:1 oil:acid. Smoothie = LIQUID + FROZEN FRUIT + CREAMY + BOOST.",t:"Taste after every addition; add blender liquid gradually; salt last, in pinches.",m:"Skipping salt; overdressing salads; smoothies with nothing frozen (warm & thin).",r:"You can fix a sauce that’s too sharp, flat, or hot without starting over."},
+    {n:"Breakfast & Brunch",f:"Plate = PROTEIN + PRODUCE + GRAIN + a Level-1 SAUCE. Pancake dry = FLOUR + BAKING POWDER + SALT + SUGAR; wet = MILK + EGG + MELTED BUTTER.",t:"Eggs finish on residual heat — pull 30s early, low heat. Flip pancakes once, when bubbles pop and stay open.",m:"High heat for eggs; pressing pancakes; overmixing batter.",r:"Soft scrambled eggs and a from-scratch pancake, right twice in a row."},
+    {n:"Salads & One-Pot Beans",f:"Salad = BASE + CRUNCH + PROTEIN + SOMETHING RICH + Level-1 dressing. Beans = sauté aromatics → bloom spices 30s → beans + liquid → simmer 15–25m → finish with acid + herbs.",t:"Spices bloomed in fat flavor the whole pot; acid goes in at the end.",m:"Salt/acid too early in beans; no crunch in a salad; dressing too early.",r:"Any can of beans + fridge scraps becomes dinner without a recipe."},
+    {n:"Crockpot & Slow Cooker",f:"LAYER: hard veg on the bottom → protein on top → sauce just to mostly cover. LOW 6–8h / HIGH 3–4h; noodles, dairy, delicate greens only the last 15–30m.",t:"Sear meat first (2m/side). Every lid-lift adds ~20m — don’t peek.",m:"Noodles/dairy all day (mush); filling past 2/3; leaving on ‘warm’ for hours.",r:"Load the pot in the morning and predict dinner’s taste."},
+    {n:"Soups, Stews & Chili",f:"AROMATIC BASE → brown protein (optional, in batches) → DEGLAZE → liquid + starch/legumes → simmer tender → FINISH with acid, herbs, or cream.",t:"Brown in batches so it sears not steams; salt in layers.",m:"Hard boil vs simmer (cloudy); pasta/rice too early; under-simmered stew meat.",r:"Build a soup from a protein, two veg, and a pantry staple — no measuring."},
+    {n:"Skillet Proteins: Chicken & Seafood",f:"DRY the surface → HOT PAN + OIL → don’t move until a crust forms → FLIP ONCE → pan SAUCE (butter + garlic + lemon) → REST 5m. Chicken 165°F, fish 145°F (salmon 125–130°F).",t:"Preheat the pan before the oil; if it sticks, it isn’t ready to flip.",m:"Wet protein; crowding (steam); cutting to check; shrimp past a C-curl.",r:"Golden crust, juicy center, pan sauce — on thighs and salmon alike."},
+    {n:"Pasta, Noodles & Hearty Mains",f:"Noodle sauce = SOY + SWEET + ACID + AROMATICS + HEAT. Pasta: salted water → cook 1–2m shy → RESERVE pasta water → finish pasta IN the sauce with splashes until glossy.",t:"Pasta water is liquid gold (starch makes sauce cling); ground meat uses the batch-brown rule.",m:"Oiling pasta water; rinsing pasta; saucing in the bowl not the pan.",r:"Rescue an oversalted, thin, or thick sauce with pasta water, acid, or fat — on instinct."},
+    {n:"Baking & Desserts",f:"Quick-bread ≈ 2 FLOUR : 2 LIQUID : 1 EGG : 1 FAT (by weight) + 1 tsp baking powder/cup + salt. Whisk dry, whisk wet, combine until JUST mixed. Cakes: cream butter + sugar first.",t:"Mise en place; spoon-and-level flour; room-temp eggs & butter.",m:"Overmixing after flour (tough); opening the oven early (collapse); trusting time over the toothpick.",r:"Read a new baking recipe and spot its ratio/method before you start."}
+  ];
+  document.getElementById('tpl').innerHTML=TPL.map(function(x,i){
+    return '<details class="tcard"><summary><span class="tlv">LVL '+(i+1)+'</span><span class="tnm">'+x.n+'</span></summary>'+
+      '<div class="tbody"><div class="trow"><b>Formula</b>'+x.f+'</div>'+
+      '<div class="trow"><b>Technique</b>'+x.t+'</div>'+
+      '<div class="trow"><b>Common mistakes</b>'+x.m+'</div>'+
+      '<div class="tready">Ready when: '+x.r+'</div></div></details>';
+  }).join('');
+
   (function(){
-    var Q=document.getElementById('srQ'), L=document.getElementById('srList'),
-        M=document.getElementById('srMore'), C=document.getElementById('srCount');
-    var DATA=[], CAP=40;
+    var Q=document.getElementById('srQ'),L=document.getElementById('srList'),M=document.getElementById('srMore'),
+        CA=document.getElementById('rlCats'),NN=document.getElementById('rlN');
+    var DATA=[],cat='',CAP=40;
     function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
     function card(e){
-      var meta='<span class="src">'+esc(e.p)+'</span>';
-      if(e.pr&&e.pr.indexOf('@')===0) meta+='<span>'+esc(e.pr)+'</span>';
-      if(e.c) meta+='<span>▦ '+esc(e.c)+'</span>';
-      if(e.d) meta+='<span>'+e.d+'</span>';
+      var meta='';
+      if(e.au) meta+='<span class="src">'+esc(e.au)+'</span>';
+      if(e.p) meta+='<span>'+esc(e.p)+'</span>';
+      if(e.c) meta+='<span>▦ '+esc(e.c.split(/[,&]/)[0].trim())+'</span>';
       var t=e.u?'<a href="'+esc(e.u)+'" target="_blank" rel="noopener">'+esc(e.t)+'</a>':esc(e.t);
-      return '<div class="srcard"><div class="t">'+t+'</div><div class="m">'+meta+'</div>'+(e.s?'<div class="s">'+esc(e.s)+'</div>':'')+'</div>';
+      return '<div class="srcard"><div class="t">'+t+'</div>'+(meta?'<div class="m">'+meta+'</div>':'')+(e.b?'<div class="s">'+esc(e.b)+'</div>':'')+'</div>';
     }
     function run(){
-      var q=(Q.value||'').trim().toLowerCase(), terms=q?q.split(/\s+/):[];
-      var res=DATA.filter(function(e){ if(!terms.length)return true;
-        var hay=(e.t+' '+(e.kw||[]).join(' ')+' '+(e.s||'')+' '+(e.pr||'')+' '+(e.c||'')).toLowerCase();
-        return terms.every(function(t){return hay.indexOf(t)>-1;}); });
-      if(!q) res=res.slice().sort(function(a,b){return (b.d||'').localeCompare(a.d||'');});
-      C.textContent=res.length+(q?' matches':' saved');
+      var q=(Q.value||'').trim().toLowerCase(),terms=q?q.split(/\s+/):[];
+      var res=DATA.filter(function(e){
+        if(cat && e.c!==cat) return false;
+        if(!terms.length) return true;
+        var hay=(e.t+' '+(e.b||'')+' '+(e.au||'')+' '+(e.c||'')).toLowerCase();
+        return terms.every(function(t){return hay.indexOf(t)>-1;});
+      });
       L.innerHTML=res.slice(0,CAP).map(card).join('');
-      M.textContent=res.length>CAP?('+ '+(res.length-CAP)+' more — search to narrow'):'';
+      M.textContent=res.length>CAP?('+ '+(res.length-CAP)+' more — search or pick a category'):(res.length+' shown');
     }
-    fetch('food-saves.json').then(function(r){return r.json();}).then(function(d){ DATA=d; run(); })
-      .catch(function(){ if(C)C.textContent='(offline)'; });
-    if(Q) Q.addEventListener('input',run);
+    fetch('cookbook-data.json').then(function(r){return r.json();}).then(function(d){
+      DATA=d; if(NN)NN.textContent=d.length;
+      var cc={}; d.forEach(function(e){cc[e.c]=(cc[e.c]||0)+1;});
+      var cats=Object.keys(cc).sort(function(a,b){return cc[b]-cc[a];});
+      CA.innerHTML='<span class="rlcat on" data-c="">All '+d.length+'</span>'+cats.map(function(c){
+        return '<span class="rlcat" data-c="'+esc(c)+'">'+esc(c.split(/[,&]/)[0].trim())+' '+cc[c]+'</span>';}).join('');
+      CA.querySelectorAll('.rlcat').forEach(function(x){ x.onclick=function(){ cat=x.dataset.c;
+        CA.querySelectorAll('.rlcat').forEach(function(y){y.classList.toggle('on',y===x);}); run(); }; });
+      run();
+    }).catch(function(){ M.textContent='(library offline)'; });
+    Q.addEventListener('input',run);
   })();
 </script>
 </body>
