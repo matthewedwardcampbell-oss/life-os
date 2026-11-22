@@ -206,7 +206,7 @@ html{zoom:1.5;overflow-x:hidden}
       <div class="foods" id="foodsNext"></div>
     </div>
   </div>
-  <div class="hint">Friendly circles, not squares — this week's cooked food, next week's planned batches. Ring color = where it lives: freezer (purple) · fridge (teal) · shelf (amber). Tap a circle = one gone.</div>
+  <div class="hint">Friendly circles, not squares — this week's cooked food, next week's planned batches. Ring color = where it lives: freezer (purple) · fridge (teal) · shelf (amber). Tap a circle = one gone. <b>Tap a Next-week circle = cooked → store.</b></div>
 
   <!-- SAUCES -->
   <div class="seclbl">Sauces &amp; marinades · frozen, ready to go <span class="n">the secret weapon</span></div>
@@ -451,6 +451,8 @@ html{zoom:1.5;overflow-x:hidden}
     .srcard .m{font-size:10px;color:var(--ink-faint);margin-top:3px;display:flex;flex-wrap:wrap;gap:6px}
     .srcard .m .src{color:var(--selenite)}
     .srcard .s{font-size:11px;color:var(--ink-dim);margin-top:4px}
+    .rlplan{margin-top:8px;font-size:10.5px;border:1px solid var(--selenite);background:transparent;color:var(--selenite);border-radius:99px;padding:3px 11px;cursor:pointer;font-family:inherit}
+    .rlplan:disabled{border-color:var(--good);color:var(--good)}
     .srmore{text-align:center;color:var(--ink-faint);font-size:11px;margin-top:10px}
   </style>
   <div class="seclbl">Master templates · the cook’s ladder <span class="n alpha">alpha</span></div>
@@ -466,7 +468,7 @@ html{zoom:1.5;overflow-x:hidden}
 
 <script>
   // store piles
-  let READY=[
+  let SEED_READY=[
     {em:'🥣',n:'Apple-cinnamon oats',c:4,loc:'fridge',note:'morning · in rotation'},
     {em:'🥣',n:'PB-banana oats',c:3,loc:'fridge',note:'morning · in rotation'},
     {em:'🍜',n:'Lo mein',c:3,loc:'store',note:'sesame-chicken combo'},
@@ -478,7 +480,7 @@ html{zoom:1.5;overflow-x:hidden}
     {em:'🥜',n:'Trail mix',c:5,loc:'shelf',note:'sprouted · rotating blends'},
     {em:'🍮',n:'Sweet treat',c:3,loc:'fridge',note:'rotates · one every 3 days'}
   ];
-  const NEXT=[
+  let SEED_NEXT=[
     {em:'🥣',n:'Oatmeal cups',yield:'→ 6 cups',need:'low — restock soon'},
     {em:'🍖',n:'Galbi',yield:'→ 6 portions',need:'need short rib'},
     {em:'🍅',n:'Sauce batch',yield:'→ freeze 12',need:'marinara + curry'},
@@ -489,6 +491,14 @@ html{zoom:1.5;overflow-x:hidden}
     {em:'🥩',n:'Beef jerky',yield:'→ dehydrator',need:'need top round'},
     {em:'🥬',n:'Kimchi',yield:'2 gal',need:'all on hand'}
   ];
+  // persistent store + cook plan (food automation)
+  var CHEZ='chez-v1', CZ=null;
+  try{ CZ=JSON.parse(localStorage.getItem(CHEZ)); }catch(e){}
+  var READY=(CZ&&CZ.store)?CZ.store:SEED_READY.slice();
+  var NEXT=(CZ&&CZ.plan)?CZ.plan:SEED_NEXT.slice();
+  function czSave(){ try{ localStorage.setItem(CHEZ,JSON.stringify({store:READY,plan:NEXT})); }catch(e){} }
+  var CATEMO={'Mains & Other Recipes':'🍽','Desserts, Sweets & Baking':'🍮','Soups, Stews & Chili':'🍲','Beef & Pork':'🥩','Drinks & Smoothies':'🥤','Chicken & Poultry':'🍗','Snacks, Sides & Sauces':'🥨','Pasta & Noodles':'🍜','Seafood':'🍤','Beans, Vegetarian & Plant-Based':'🫘','Breakfast & Brunch':'🍳','Salads':'🥗','Crockpot & Slow Cooker':'🍲'};
+  function addToPlan(title,cat){ NEXT.push({em:CATEMO[cat]||'🍽',n:title,portions:4,from:'library'}); czSave(); renderNext(); }
   const locClass=l=> l==='store'?'freezer':l; // store = freezer
   function renderReady(){
     document.getElementById('foodsNow').innerHTML=READY.map((d,i)=>{const lc=locClass(d.loc);
@@ -496,16 +506,23 @@ html{zoom:1.5;overflow-x:hidden}
       '<span class="cnt '+lc+'">×'+Math.max(d.c,0)+'</span></div><div class="fn">'+d.n+'</div></div>';}).join('');
   }
   function renderNext(){
-    document.getElementById('foodsNext').innerHTML=NEXT.map(d=>
-      '<div class="fcirc plan"><div class="bub plan"><span>'+d.em+'</span></div><div class="fn">'+d.n+'</div></div>'
-    ).join('');
+    document.getElementById('foodsNext').innerHTML=NEXT.map(function(d,i){
+      var nm=d.n.length>16?d.n.slice(0,15)+'…':d.n;
+      return '<div class="fcirc plan" data-pi="'+i+'" title="tap = cooked → store"><div class="bub plan"><span>'+(d.em||'🍽')+'</span></div><div class="fn">'+nm+'</div></div>';
+    }).join('');
+    var nh=document.querySelector('.weekcol.next .whub b'); if(nh)nh.textContent=NEXT.length;
   }
+  document.getElementById('foodsNext').addEventListener('click',function(e){var el=e.target.closest('.fcirc');if(!el)return;
+    var i=+el.dataset.pi, item=NEXT[i]; if(!item)return; var n=item.portions||4;
+    READY.push({em:item.em||'🍽',n:item.n,c:n,loc:'store',note:'cooked from plan'});
+    NEXT.splice(i,1); czSave(); renderReady(); renderNext(); updateCounts();
+  });
   function updateCounts(){ const total=READY.reduce((s,d)=>s+Math.max(d.c,0),0);
     document.querySelector('.gt.rdy b').textContent=total; document.getElementById('rdyN').textContent=total; }
   document.getElementById('foodsNow').addEventListener('click',e=>{const el=e.target.closest('.fcirc');if(!el)return;
-    const i=+el.dataset.i; if(READY[i].c>0)READY[i].c--; renderReady(); updateCounts();
+    const i=+el.dataset.i; if(READY[i].c>0)READY[i].c--; renderReady(); updateCounts(); czSave();
   });
-  renderReady(); renderNext();
+  renderReady(); renderNext(); updateCounts();
 
   // sauces — batched & frozen (the secret weapon)
   const SAUCES=[
@@ -601,7 +618,7 @@ html{zoom:1.5;overflow-x:hidden}
       if(e.p) meta+='<span>'+esc(e.p)+'</span>';
       if(e.c) meta+='<span>▦ '+esc(e.c.split(/[,&]/)[0].trim())+'</span>';
       var t=e.u?'<a href="'+esc(e.u)+'" target="_blank" rel="noopener">'+esc(e.t)+'</a>':esc(e.t);
-      return '<div class="srcard"><div class="t">'+t+'</div>'+(meta?'<div class="m">'+meta+'</div>':'')+(e.b?'<div class="s">'+esc(e.b)+'</div>':'')+'</div>';
+      return '<div class="srcard"><div class="t">'+t+'</div>'+(meta?'<div class="m">'+meta+'</div>':'')+(e.b?'<div class="s">'+esc(e.b)+'</div>':'')+'<button class="rlplan" data-t="'+esc(e.t).replace(/"/g,'&quot;')+'" data-c="'+esc(e.c)+'">+ cook plan</button></div>';
     }
     function run(){
       var q=(Q.value||'').trim().toLowerCase(),terms=q?q.split(/\s+/):[];
@@ -625,6 +642,10 @@ html{zoom:1.5;overflow-x:hidden}
       run();
     }).catch(function(){ M.textContent='(library offline)'; });
     Q.addEventListener('input',run);
+    L.addEventListener('click',function(ev){var b=ev.target.closest('.rlplan');if(!b)return;
+      addToPlan(b.getAttribute('data-t'),b.getAttribute('data-c'));
+      b.textContent='added ✓'; b.disabled=true; setTimeout(function(){b.textContent='+ cook plan';b.disabled=false;},1100);
+    });
   })();
 </script>
 </body>
